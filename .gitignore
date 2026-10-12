@@ -1,0 +1,16 @@
+# Cache y configuraciones privadas de NetBeans
+nbproject/private/
+nbbuild/
+dist/
+build/
+
+# Archivos de registro y temporales
+*.log
+*.nbattrs
+
+# Si usas Maven
+target/
+
+# Si usas Gradle
+.gradle/
+build/
