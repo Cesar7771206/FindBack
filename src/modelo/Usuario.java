@@ -8,6 +8,10 @@ package modelo;
  *
  * @author cesar
  */
-public class Usuario {
+public abstract class Usuario {
+    private String nombre;
+    private String correo;
+    private String contraseña;
     
+    abstract String getRol();
 }
