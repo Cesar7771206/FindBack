@@ -45,4 +45,15 @@ public class Estudiante extends Usuario{
     public void setCiclo(String ciclo) {
         this.ciclo = ciclo;
     }
+    
+    @Override
+    public String getRol(){
+        return "ESTUDIANTE";
+    }
+    
+    @Override
+    public String toTxt(){
+        String mensajesTxt = mensajes.isEmpty() ? "SIN_MENSAJES" : String.join(";", mensajes); 
+        return  identificacion + "|" + nombre + "|" + correo + "|" + contrasena + "|" + facultad + "|" + carrera + "|" + ciclo + "|" + mensajesTxt;
+    }
 }

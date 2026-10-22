@@ -77,5 +77,13 @@ public abstract class Usuario implements Notificable{
 
     public void setMensajes(ArrayList<String> mensajes) {
         this.mensajes = mensajes;
-    }    
+    } 
+    
+    public abstract String getRol();
+    public abstract String toTxt();
+    
+    @Override
+    public void recibirMensaje(String mensaje){
+        this.mensajes.add(mensaje);
+    }
 }
