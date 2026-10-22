@@ -10,10 +10,10 @@ import java.util.ArrayList;
  * @author cesar
  */
 public abstract class Usuario implements Notificable{
-    private String identificacion;
-    private String nombre;
-    private String correo;
-    private String contrasena;
+    protected String identificacion;
+    protected String nombre;
+    protected String correo;
+    protected String contrasena;
     protected ArrayList<String> mensajes;
 
     public Usuario(String identificacion, String nombre, String correo, String contrasena, ArrayList<String> mensajes) {
