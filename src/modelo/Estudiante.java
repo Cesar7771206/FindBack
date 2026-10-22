@@ -4,7 +4,6 @@
  */
 package modelo;
 
-import java.util.ArrayList;
 
 /**
  *
@@ -13,9 +12,9 @@ import java.util.ArrayList;
 public class Estudiante extends Usuario{
     private String facultad;
     private String carrera;
-    private String ciclo;
+    private int ciclo;
 
-    public Estudiante(String facultad, String carrera, String ciclo, String identificacion, String nombre, String correo, String contrasena) {
+    public Estudiante(String facultad, String carrera, int ciclo, String identificacion, String nombre, String correo, String contrasena) {
         super(identificacion, nombre, correo, contrasena);
         this.facultad = facultad;
         this.carrera = carrera;
@@ -27,7 +26,10 @@ public class Estudiante extends Usuario{
     }
 
     public void setFacultad(String facultad) {
-        this.facultad = facultad;
+        if (facultad == null || facultad.isBlank()){
+            throw new IllegalArgumentException("El campo facultad no puede estar vacío ni contener solo espacios"); 
+        }
+        this.facultad = facultad.trim().toUpperCase();
     }
 
     public String getCarrera() {
@@ -35,14 +37,20 @@ public class Estudiante extends Usuario{
     }
 
     public void setCarrera(String carrera) {
+        if (carrera == null || carrera.isBlank()){
+            throw new IllegalArgumentException("El campo carrera no puede estar vacío ni contener solo espacios"); 
+        }
         this.carrera = carrera;
     }
 
-    public String getCiclo() {
+    public int getCiclo() {
         return ciclo;
     }
 
-    public void setCiclo(String ciclo) {
+    public void setCiclo(int ciclo) {
+        if (ciclo < 0 || ciclo > 10){
+            throw new IllegalArgumentException("El ciclo debe estar entre 0 y 10"); 
+        }
         this.ciclo = ciclo;
     }
     
