@@ -15,8 +15,8 @@ public class Estudiante extends Usuario{
     private String carrera;
     private String ciclo;
 
-    public Estudiante(String facultad, String carrera, String ciclo, String identificacion, String nombre, String correo, String contrasena, ArrayList<String> mensajes) {
-        super(identificacion, nombre, correo, contrasena, mensajes);
+    public Estudiante(String facultad, String carrera, String ciclo, String identificacion, String nombre, String correo, String contrasena) {
+        super(identificacion, nombre, correo, contrasena);
         this.facultad = facultad;
         this.carrera = carrera;
         this.ciclo = ciclo;

@@ -16,7 +16,7 @@ public abstract class Usuario implements Notificable{
     protected String contrasena;
     protected ArrayList<String> mensajes;
 
-    public Usuario(String identificacion, String nombre, String correo, String contrasena, ArrayList<String> mensajes) {
+    public Usuario(String identificacion, String nombre, String correo, String contrasena) {
         setIdentificacion(identificacion);
         setNombre(nombre);
         setCorreo(correo);
