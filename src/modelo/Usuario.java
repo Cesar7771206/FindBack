@@ -5,7 +5,6 @@
 package modelo;
 
 import java.util.ArrayList;
-
 /**
  *
  * @author cesar
@@ -18,10 +17,10 @@ public abstract class Usuario implements Notificable{
     protected ArrayList<String> mensajes;
 
     public Usuario(String identificacion, String nombre, String correo, String contrasena, ArrayList<String> mensajes) {
-        this.identificacion = identificacion;
-        this.nombre = nombre;
-        this.correo = correo;
-        this.contrasena = contrasena;
+        setIdentificacion(identificacion);
+        setNombre(nombre);
+        setCorreo(correo);
+        setContrasena(contrasena);
         this.mensajes = new ArrayList<>();
     }
 
@@ -30,7 +29,10 @@ public abstract class Usuario implements Notificable{
     }
 
     public void setIdentificacion(String identificacion) {
-        this.identificacion = identificacion;
+        if (identificacion == null || identificacion.isBlank()){
+            throw new IllegalArgumentException("La identificación no puede ser nula, estar vacía ni contener solo espacios");
+        }
+        this.identificacion = identificacion.trim();
     }
 
     public String getNombre() {
@@ -38,7 +40,10 @@ public abstract class Usuario implements Notificable{
     }
 
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        if (nombre != null || !nombre.isBlank()) {
+            throw new IllegalArgumentException("El nombre no puede ser nulo, estar vacío ni contener solo espacios");
+        }
+        this.nombre = nombre.trim().toUpperCase();
     }
 
     public String getCorreo() {
@@ -46,6 +51,11 @@ public abstract class Usuario implements Notificable{
     }
 
     public void setCorreo(String correo) {
+        String patronCorreo = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        if (!correo.matches(patronCorreo) || correo == null || correo.isBlank()) {
+            throw new IllegalArgumentException("El correo debe tener el formato correcto, no estar vacío ni contener solo espacios");
+        }
+        
         this.correo = correo;
     }
 
@@ -54,6 +64,10 @@ public abstract class Usuario implements Notificable{
     }
 
     public void setContrasena(String contrasena) {
+        String patronContrasena = "^\\S+$";
+        if (!contrasena.matches(patronContrasena) ||contrasena == null || contrasena.isBlank()){
+            throw new IllegalArgumentException("La contraseña debe tener al menos un caracter y no puede tener espacios en blanco");
+        }
         this.contrasena = contrasena;
     }
 
