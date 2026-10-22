@@ -8,6 +8,6 @@ package modelo;
  *
  * @author cesar
  */
-public class Administrativo {
-    
+public interface Notificable {
+    void recibirMensaje(String mensaje);
 }
