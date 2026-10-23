@@ -8,6 +8,6 @@ package modelo;
  *
  * @author cesar
  */
-public class Docente {
-    
+public interface Buscable {
+    boolean coincideCon(String criterio);
 }
