@@ -53,7 +53,7 @@ public abstract class Usuario implements Notificable{
     public void setCorreo(String correo) {
         String patronCorreo = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
         if (!correo.matches(patronCorreo) || correo == null || correo.isBlank()) {
-            throw new IllegalArgumentException("El correo debe tener el formato correcto, no estar vacío ni contener solo espacios");
+            throw new IllegalArgumentException("El correo debe tener el formato correcto (ej: cesar.villegas@udep.edu.pe), no estar vacío ni contener solo espacios");
         }
         
         this.correo = correo;
