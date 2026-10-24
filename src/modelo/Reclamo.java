@@ -24,6 +24,9 @@ public class Reclamo {
     }
 
     public void setId(String id) {
+        if (id == null || id.trim().isEmpty()){
+            throw new IllegalArgumentException("El id del raclamo no puede ser nulo ni vacío.");
+        }
         this.id = id;
     }
 
@@ -32,6 +35,9 @@ public class Reclamo {
     }
 
     public void setRespuestas(ArrayList<String> respuestas) {
+        if (respuestas == null) {
+            throw new IllegalArgumentException("La lista de respuestas no puede ser nula.");
+        }
         this.respuestas = respuestas;
     }
 
@@ -40,7 +46,14 @@ public class Reclamo {
     }
 
     public void setEstado(String estado) {
-        this.estado = estado;
+        if (estado == null || estado.trim().isEmpty()) {
+            throw new IllegalArgumentException("El estado no puede ser nulo ni vacío.");
+        }
+        String e = estado.trim().toUpperCase();
+        if (!e.equals("PENDIENTE") && !e.equals("APROBADO") && !e.equals("RECHAZADO")) {
+            throw new IllegalArgumentException("Estado inválido. Use PENDIENTE, APROBADO O RECHAZADO.");
+        }
+        this.estado = e;
     }
 
     public String getObservación() {
@@ -48,7 +61,10 @@ public class Reclamo {
     }
 
     public void setObservación(String observación) {
-        this.observación = observación;
+        if (observación == null) {
+            throw new IllegalArgumentException("La obsetvación no puede ser nula.");
+        }
+        this.observación = observación.trim();
     }
 
     public Estudiante getReclamante() {
@@ -56,6 +72,9 @@ public class Reclamo {
     }
 
     public void setReclamante(Estudiante reclamante) {
+        if (reclamante == null) {
+            throw new IllegalArgumentException("El relcmante no puede ser nulo.");
+        }
         this.reclamante = reclamante;
     }
 
@@ -64,6 +83,9 @@ public class Reclamo {
     }
 
     public void setObjeto(ObjetoReportado objeto) {
+        if (objeto == null) {
+            throw new IllegalArgumentException("El objeto reclamado no puede ser nulo.");
+        }
         this.objeto = objeto;
     }
     
