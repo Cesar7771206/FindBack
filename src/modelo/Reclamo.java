@@ -89,5 +89,9 @@ public class Reclamo {
         this.objeto = objeto;
     }
     
+    public String toTXt() {
+        String respTxt = respuestas.isEmpty() ? "SIN RESPUESTAS" : String.join(";", respuestas);
+        return id + "|" + respTxt + "|" + estado + "|" + observación + "|" + reclamante.getCodigo() + "|" + objeto.getId();
+    }
     
 }
