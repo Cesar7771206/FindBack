@@ -11,12 +11,12 @@ public class Reclamo {
     private ObjetoReportado objeto;
 
     public Reclamo(String id, ArrayList<String> respuestas, String estado, String observación, Estudiante reclamante, ObjetoReportado objeto) {
-        this.id = id;
-        this.respuestas = respuestas;
-        this.estado = estado;
-        this.observación = observación;
-        this.reclamante = reclamante;
-        this.objeto = objeto;
+        setId(id);
+        setRespuestas(respuestas);
+        setEstado(estado);
+        setObservación(observación);
+        setReclamante(reclamante);
+        setObjeto(objeto);
     }
 
     public String getId() {
