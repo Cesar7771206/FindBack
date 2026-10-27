@@ -53,4 +53,48 @@ public class ReclamoRepositorio {
             System.out.println("Error al leer reclamos.txt: " + e.getMessage());
         }
     }
+    
+    public void guardarEnTxt() {
+        File archivo = new File(RUTA_ARCHIVO);
+        crearArchivoVacio(archivo);
+        try (PrintWriter pw = new PrintWriter(new FileWriter(archivo, false))) {
+            for (Reclamo r : reclamos) {
+                pw.println(r.toTxt());
+            }
+        } catch (IOException e) {
+            System.out.println("Error al guardar en reclamos.txt: " + e.getMessage());
+        }
+    }
+    
+    public void guardar(Reclamo reclamo) {
+        reclamos.add(reclamo);
+        guardarEnTxt();
+    }
+    
+    public ArrayList<Reclamo> listarPorEstudiante(String identificacionEstudiante) {
+        ArrayList<Reclamo> resultado = new ArrayList<>();
+        for (Reclamo r : reclamos) {
+            if (r.getReclamante().getIdentificacion().equalsIgnoreCase(identificacionEstudiante)){
+                resultado.add(r);
+            }
+        }
+        return resultado;
+    }
+    
+    public ArrayList<Reclamo> listarTodos() {
+        return reclamos;
+    }
+    
+    private void crearArchivoVacio(File archivo) {
+        try {
+            if (archivo.getParentFile() != null) {
+                archivo.getParentFile().mkdirs();
+            }
+            if (!archivo.exists()) {
+                archivo.createNewFile();
+            }
+        } catch (IOException e) {
+            System.out.println("No se pudo crear el archivo: " + archivo.getPath());
+        }
+    }
 }
