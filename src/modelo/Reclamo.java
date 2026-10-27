@@ -91,7 +91,14 @@ public class Reclamo {
     
     public String toTxt() {
         String respTxt = respuestas.isEmpty() ? "SIN RESPUESTAS" : String.join(";", respuestas);
-        return id + "|" + respTxt + "|" + estado + "|" + observación + "|" + reclamante.getIdentificacion() + "|" + objeto.getId();
+        return String.join("|", 
+                id,
+                respTxt,
+                estado,
+                observación,
+                reclamante.getIdentificacion(),
+                String.valueOf(objeto.getId())
+        );
     }
     
 }
