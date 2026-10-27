@@ -11,12 +11,12 @@ public class Reclamo {
     private ObjetoReportado objeto;
 
     public Reclamo(String id, ArrayList<String> respuestas, String estado, String observación, Estudiante reclamante, ObjetoReportado objeto) {
-        this.id = id;
-        this.respuestas = respuestas;
-        this.estado = estado;
-        this.observación = observación;
-        this.reclamante = reclamante;
-        this.objeto = objeto;
+        setId(id);
+        setRespuestas(respuestas);
+        setEstado(estado);
+        setObservación(observación);
+        setReclamante(reclamante);
+        setObjeto(objeto);
     }
 
     public String getId() {
@@ -91,7 +91,14 @@ public class Reclamo {
     
     public String toTxt() {
         String respTxt = respuestas.isEmpty() ? "SIN RESPUESTAS" : String.join(";", respuestas);
-        return id + "|" + respTxt + "|" + estado + "|" + observación + "|" + reclamante.getIdentificacion() + "|" + objeto.getId();
+        return String.join("|", 
+                id,
+                respTxt,
+                estado,
+                observación,
+                reclamante.getIdentificacion(),
+                String.valueOf(objeto.getId())
+        );
     }
     
 }
