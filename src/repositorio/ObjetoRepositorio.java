@@ -89,7 +89,6 @@ public class ObjetoRepositorio {
     } catch (IOException e){
         System.out.println("Error al leer objetos.txt: "+ e.getMessage());
     }
-}
         
     
     public void guardar(ObjetoReportado objeto){
