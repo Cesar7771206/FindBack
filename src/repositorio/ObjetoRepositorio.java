@@ -88,6 +88,7 @@ public class ObjetoRepositorio {
         br.close();
     } catch (IOException e){
         System.out.println("Error al leer objetos.txt: "+ e.getMessage());
+        }
     }
     public void guardarEnTxt(){
     File archivo = new File(RUTA_ARCHIVO);
