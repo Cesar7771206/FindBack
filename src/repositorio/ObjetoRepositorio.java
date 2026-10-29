@@ -89,6 +89,23 @@ public class ObjetoRepositorio {
     } catch (IOException e){
         System.out.println("Error al leer objetos.txt: "+ e.getMessage());
     }
+    public void guardarEnTxt(){
+    File archivo = new File(RUTA_ARCHIVO);
+    crearArchivoVacio(archivo);
+
+    try {
+        PrintWriter pw = new PrintWriter(new FileWriter(archivo, false));
+
+        for (ObjetoReportado o : objetos){
+            pw.println(o.toTxt());
+        }
+
+        pw.close();
+
+    } catch (IOException e){
+        System.out.println("Error al guardar en objetos.txt: " + e.getMessage());
+        }
+    }
         
     
     public void guardar(ObjetoReportado objeto){
