@@ -90,7 +90,7 @@ public class Reclamo {
     }
     
     public String[] toCsvCampos() {
-        String respTxt = respuestas.isEmpty() ? "SIN RESPUESTAS" : String.join(";", respuestas);
+        String respTxt = respuestas.isEmpty() ? "SIN RESPUESTAS" : String.join("|", respuestas);
         return new String[] {
             id,
             respTxt,
