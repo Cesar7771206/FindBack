@@ -6,15 +6,15 @@ public class Reclamo {
     private String id;
     private ArrayList<String> respuestas;
     private String estado;
-    private String observación;
+    private String observacion;
     private Estudiante reclamante;
     private ObjetoReportado objeto;
 
-    public Reclamo(String id, ArrayList<String> respuestas, String estado, String observación, Estudiante reclamante, ObjetoReportado objeto) {
+    public Reclamo(String id, ArrayList<String> respuestas, String estado, String observacion, Estudiante reclamante, ObjetoReportado objeto) {
         setId(id);
         setRespuestas(respuestas);
         setEstado(estado);
-        setObservación(observación);
+        setObservación(observacion);
         setReclamante(reclamante);
         setObjeto(objeto);
     }
@@ -57,14 +57,14 @@ public class Reclamo {
     }
 
     public String getObservación() {
-        return observación;
+        return observacion;
     }
 
-    public void setObservación(String observación) {
-        if (observación == null) {
-            throw new IllegalArgumentException("La obsetvación no puede ser nula.");
+    public void setObservación(String observacion) {
+        if (observacion == null) {
+            throw new IllegalArgumentException("La observacion no puede ser nula.");
         }
-        this.observación = observación.trim();
+        this.observacion = observacion.trim();
     }
 
     public Estudiante getReclamante() {
@@ -89,16 +89,15 @@ public class Reclamo {
         this.objeto = objeto;
     }
     
-    public String toTxt() {
+    public String[] toCsvCampos() {
         String respTxt = respuestas.isEmpty() ? "SIN RESPUESTAS" : String.join(";", respuestas);
-        return String.join("|", 
-                id,
-                respTxt,
-                estado,
-                observación,
-                reclamante.getIdentificacion(),
-                String.valueOf(objeto.getId())
-        );
+        return new String[] {
+            id,
+            respTxt,
+            estado,
+            observacion,
+            reclamante.getIdentificacion(),
+            String.valueOf(objeto.getId())
+        };
     }
-    
 }
