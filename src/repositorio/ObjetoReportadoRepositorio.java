@@ -11,7 +11,7 @@ import modelo.*;
  *
  * @author david
  */
-public interface ObjetosReportadoRepositorio {
+public interface ObjetoReportadoRepositorio {
     void guardar (ObjetoReportado objeto);
     List<ObjetoReportado> obtenerObjetos();
     ObjetoReportado obtenerObjetoPorId(int id);

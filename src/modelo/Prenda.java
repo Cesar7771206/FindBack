@@ -59,11 +59,7 @@ public class Prenda extends ObjetoReportado {
 
     @Override
     public String toTxt() {
-        return String.join("|",
-                baseToTxt(),
-                talla,
-                marca
-        );
+        return baseToTxt() + "|" + talla + ";" + marca;
     }
 
 }
