@@ -9,7 +9,7 @@ import modelo.ObjetoReportado;
 import modelo.Reclamo;
 
 public class ReclamoRepositorio {
-    private static final String CABECERA = "id,idObjeto,codigoReclamante,respuestas,estado,observacion,codigoRevisor";
+    private static final String CABECERA = "id|idObjeto|codigoReclamante|respuestas|estado|observacion|codigoRevisor";
     private final Path archivo;
     private final UsuarioRepositorio usuarioRepo;
     private final ObjetoRepositorio objetoRepo;
@@ -43,7 +43,7 @@ public class ReclamoRepositorio {
             for (int i = 1; i < lineas.size(); i++) {
                 String linea = lineas.get(i).trim();
                 if (linea.isEmpty()) continue;
-                String[] c = linea.split(",", -1);
+                String[] c = linea.split("\\|", -1);
                 ArrayList<String> respuestas = new ArrayList<>();
                 if (!c[3].isEmpty()) {
                     respuestas.addAll(Arrays.asList(c[3].split(";")));
@@ -107,9 +107,9 @@ public class ReclamoRepositorio {
     
     private String armarLinea(Reclamo r) {
         String idObjeto = "OBJ-" + String.format("%04d", r.getObjeto().getId());
-        return r.getId() + "," + idObjeto + "," + r.getReclamante().getIdentificacion() + ","
-                + String.join(";", r.getRespuestas()) + "," + r.getEstado() + ","
-                + r.getObservacion() + "," + r.getCodigoRevisor();
+        return r.getId() + "|" + idObjeto + "|" + r.getReclamante().getIdentificacion() + "|"
+                + String.join(";", r.getRespuestas()) + "|" + r.getEstado() + "|"
+                + r.getObservacion() + "|" + r.getCodigoRevisor();
                 
     }
 }
