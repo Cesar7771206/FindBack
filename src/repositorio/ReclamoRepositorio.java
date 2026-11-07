@@ -1,162 +1,115 @@
 package repositorio;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.nio.file.*;
+import java.util.*;
 import modelo.Estudiante;
 import modelo.ObjetoReportado;
 import modelo.Reclamo;
 
 public class ReclamoRepositorio {
-    private static final String RUTA_ARCHIVO = "data/reclamos.csv";
-    private static final String CABECERA = "id, respuestas, estado, observacion, reclamante, objeto";
-    private static final int NUM_COLUMNAS = 6;
-    private static final String SIN_RESPUESTAS = "SIN RESPUESTAS";
-    private ArrayList<Reclamo> reclamos;
-    private UsuarioRepositorio usarioRepo;
-    private ObjetoRepositorio objetoRepo;
+    private static final String CABECERA = "id,idObjeto,codigoReclamante,respuestas,estado,observacion,codigoRevisor";
+    private final Path archivo;
+    private final UsuarioRepositorio usuarioRepo;
+    private final ObjetoRepositorio objetoRepo;
     
-    public ReclamoRepositorio(UsuarioRepositorio usarioRepo, ObjetoRepositorio objetoRepo) {
-        this.usarioRepo = usarioRepo;
+    public ReclamoRepositorio(UsuarioRepositorio usuarioRepo, ObjetoRepositorio objetoRepo) {
+        this.usuarioRepo = usuarioRepo;
         this.objetoRepo = objetoRepo;
-        this.reclamos = new ArrayList<>();
-        cargarDesdeCsv();
+        this.archivo = Paths.get("data/reclamos.csv");
+        inicializar();
     }
     
-    public void cargarDesdeCsv() {
-        reclamos.clear();
-        File archivo = new File(RUTA_ARCHIVO);
-        if(!archivo.exists()) {
-            crearArchivoVacio(archivo);
-            return;
-        }
+    private void inicializar() {
         try {
-            Scanner sc = new Scanner(archivo, StandardCharsets.UTF_8);
-            boolean primera = true;
-            while (sc.hasNextLine()) {
-                String linea = sc.nextLine();
-                if(linea.trim().isEmpty()) continue;
-                if (primera) {
-                    primera = false;
-                    if (linea.startsWith("id,") || linea.startsWith("\uFEFFid,")) continue;
-                }
-                
-                String [] p = parsearLineaCsv(linea);
-                if (p.length < 6) continue;
-                
-                try {
-                    ArrayList<String> respuestas = new ArrayList<>();
-                    if (!p[1].equals(SIN_RESPUESTAS)) {
-                        respuestas.addAll(Arrays.asList(p[1].split("\\|")));
-                    }
-                    Estudiante reclamante = usarioRepo.buscarPorIdentificacion(p[4]);
-                    ObjetoReportado objeto = objetoRepo.buscarPorId(Integer.parseInt(p[5].trim()));
-                    reclamos.add(new Reclamo(p[0], respuestas, p[2], p[3], reclamante, objeto));
-                } catch (IllegalArgumentException e) {
-                    System.out.println("REclamo ignorado(" + e.getMessage() + "): " + linea);
-                }
+            if (archivo.getParent() != null) {
+                Files.createDirectories(archivo.getParent());
+            }
+            if (Files.notExists(archivo)) {
+                Files.write(archivo,
+                        List.of(CABECERA),
+                        StandardCharsets.UTF_8);
             }
         } catch (IOException e) {
-            System.out.println("Error al leer reclamos.csv: " + e.getMessage());
+            throw new RuntimeException("No se pudo crear el CSV", e);
         }
     }
     
-    public void guardarEnCsv() {
-        File archivo = new File(RUTA_ARCHIVO);
-        crearArchivoVacio(archivo);
+    public List<Reclamo> listar(){
+        List<Reclamo> lista = new ArrayList<>();
         try {
-            PrintWriter pw = new PrintWriter(archivo, StandardCharsets.UTF_8);
-            pw.println(CABECERA);
-            for (Reclamo r: reclamos) {
-                pw.println(armarLineaCsv(r.toCsvCampos()));
+            List<String> lineas = Files.readAllLines(archivo, StandardCharsets.UTF_8);
+            for (int i = 1; i < lineas.size(); i++) {
+                String linea = lineas.get(i).trim();
+                if (linea.isEmpty()) continue;
+                String[] c = linea.split(",", -1);
+                ArrayList<String> respuestas = new ArrayList<>();
+                if (!c[3].isEmpty()) {
+                    respuestas.addAll(Arrays.asList(c[3].split(";")));
+                }
+                Estudiante reclamante = usuarioRepo.buscarPorCodigo(c[2]);
+                ObjetoReportado objeto = objetoRepo.buscarPorId(Integer.parseInt(c[1].replace("OBJ-", "")));
+                lista.add(new Reclamo(c[0], respuestas, c[4], c[5], c[6], reclamante, objeto));
             }
         } catch (IOException e) {
-            System.out.println("Error al guardar en reclamos.csv: " + e.getMessage());
+            throw new RuntimeException("Error leyendo el Csv", e);
+        }
+        return lista;
+    }
+    
+    public void guardar(Reclamo r) {
+        try {
+            Files.write(archivo,
+                    List.of(armarLinea(r)),
+                    StandardCharsets.UTF_8,
+                    StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new RuntimeException("Error escribiendo en el CSV", e);
         }
     }
     
-    
-    public void guardar(Reclamo reclamo) {
-        reclamos.add(reclamo);
-        guardarEnCsv();
+    public Optional<Reclamo> buscarPorId(String id) {
+        return listar().stream().filter(r -> r.getId().equals(id)).findFirst();
     }
     
-    public ArrayList<Reclamo> listarPorEstudiante(String identificacionEstudiante) {
-        ArrayList<Reclamo> resultado = new ArrayList<>();
+    public void actualizar (String id, String estado, String observacion, String codigoRevisor) {
+        List<Reclamo> reclamos = listar();
         for (Reclamo r : reclamos) {
-            if (r.getReclamante().getIdentificacion().equalsIgnoreCase(identificacionEstudiante)){
-                resultado.add(r);
+            if (r.getId().equals(id)){
+                r.setEstado(estado);
+                r.setObservacion(observacion);
+                r.setCodigoRevisor(codigoRevisor);
+                reescribir(reclamos);
+                return;
             }
         }
-        return resultado;
     }
     
-    public ArrayList<Reclamo> listarTodos() {
-        return reclamos;
+    public void eliminar(String id) {
+        List<Reclamo> restantes = listar();
+        restantes.removeIf(r -> r.getId().equals(id));
+        reescribir(restantes);
     }
     
-    private void crearArchivoVacio(File archivo) {
+    private void reescribir(List<Reclamo> reclamos) {
+        List<String> lineas = new ArrayList<>();
+        lineas.add(CABECERA);
+        for (Reclamo r : reclamos) {
+            lineas.add(armarLinea(r));
+        }
         try {
-            if (archivo.getParentFile() != null) {
-                archivo.getParentFile().mkdirs();
-            }
-            if (!archivo.exists()) {
-                archivo.createNewFile();
-            }
+            Files.write(archivo, lineas, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            System.out.println("No se pudo crear el archivo: " + archivo.getPath());
+            throw new RuntimeException("Error reescribiendo el CSV", e);
         }
     }
     
-    private String escaparCampo(String campo) {
-        if (campo == null) return "";
-        campo = campo.replace("\r", " ").replace("\n", " ");
-        if (campo.contains(",") || campo.contains("\"")){
-            return "\"" + campo.replace("\"", "\"\"") + "\"";
-        }
-        return campo;
-    }
-    
-    private String armarLineaCsv(String[] campos) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < campos.length; i++) {
-            if (i > 0) sb.append(',');
-            sb.append(escaparCampo(campos[i]));
-        }
-        return sb.toString();
-    }
-    
-    private String[] parsearLineaCsv(String linea) {
-        ArrayList<String> campos = new ArrayList<>();
-        StringBuilder actual = new StringBuilder();
-        boolean entreComillas = false;
-        for (int i = 0; i < linea.length(); i++) {
-            char c = linea.charAt(i);
-            if (entreComillas) {
-                if (c == '"') {
-                    if (i + 1 < linea.length() && linea.charAt(i + 1) == '"') {
-                        actual.append('"');
-                        i++;
-                    } else{
-                        entreComillas = false;
-                    }
-                } else {
-                    actual.append(c);
-                }
-            } else if (c == '"') {
-                entreComillas = true;
-            } else if (c == ',') {
-                campos.add(actual.toString());
-                actual.setLength(0);
-            } else {
-                actual.append(c);
-            }
-        }
-        campos.add(actual.toString());
-        return campos.toArray(new String[0]);
+    private String armarLinea(Reclamo r) {
+        String idObjeto = "OBJ-" + String.format("%04d", r.getObjeto().getId());
+        return r.getId() + "," + idObjeto + "," + r.getReclamante().getIdentificacion() + ","
+                + String.join(";", r.getRespuestas()) + "," + r.getEstado() + ","
+                + r.getObservacion() + "," + r.getCodigoRevisor();
+                
     }
 }
