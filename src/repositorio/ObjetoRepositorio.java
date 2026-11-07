@@ -1,153 +1,112 @@
 
 package repositorio;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+
+import java.nio.file.Path;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.List;
 import modelo.*;
 
 /**
  *
  * @author david
  */
-public class ObjetoRepositorio {
-    private static final String RUTA_ARCHIVO = "data/objetos.txt";
-    private ArrayList<ObjetoReportado> objetos;
-    private UsuarioRepositorio usuarioRepo;
+public class ObjetoRepositorio implements ObjetosInterfaz{
     
-    public ObjetoRepositorio(UsuarioRepositorio usuarioRepo){
-        this.usuarioRepo= usuarioRepo;
-        this.objetos = new ArrayList<>();
+    private final Path RUTA_ARCHIVO;
+    
+    private UsuarioRepositorio usuarioRepo;
+
+    public ObjetoRepositorio() {
+        this.RUTA_ARCHIVO = Paths.get("data/objetos.csv");
         cargarDesdeTxt();
     }
     
-  public void cargarDesdeTxt(){
-    objetos.clear();
-    File archivo = new File(RUTA_ARCHIVO);
-    if(!archivo.exists()){
-        crearArchivoVacio(archivo);
-        return;
+    
+    private void cargarDesdeTxt(){
+        try{
+            if(RUTA_ARCHIVO.getParent()!=null){
+                Files.createDirectories(RUTA_ARCHIVO.getParent());
+            }
+            if (Files.notExists(RUTA_ARCHIVO)|| Files.readAllLines(RUTA_ARCHIVO, StandardCharsets.UTF_8).isEmpty()){
+                Files.write(RUTA_ARCHIVO, List.of("id|nombre|descripcion|categoria|color|fecha|ubicacion|estado"), StandardCharsets.UTF_8);
+            }
+        }catch(IOException e){
+            throw new RuntimeException("No se pudo crear el archivo", e);
+        }
+    }
+    @Override
+    public void guardar(ObjetoReportado objeto) {
+        String linea= objeto.getId() + "|" + objeto.getNombre()+ "|" + objeto.getDescripcion()
+                + "|" + objeto.getCategoria()+ "|" + objeto.getColor() + "|" + objeto.getFecha() + "|" + objeto.getUbicacion() + "|" + objeto.getEstado();
+        try{
+            Files.write(RUTA_ARCHIVO, List.of(linea), StandardCharsets.UTF_8, StandardOpenOption.APPEND);
+        } catch (IOException e){
+            throw new RuntimeException("No se pudo leer el archivo", e);
+        }
+
     }
     
-    try {
-        BufferedReader br = new BufferedReader(new FileReader(archivo));
-        String linea;
-        while ((linea=br.readLine())!=null){
-            
-            if (linea.trim().isEmpty()) continue;
-            
-            String[] p = linea.split("\\|");
-            
-            if (p.length>=10){
-                String tipo =p[0];
-                int id = Integer.parseInt(p[1]);
-                String nombre = p[2];
-                String descripcion = p[3];
-                String categoria = p[4];
-                String color = p[5];
-                String fecha = p[6];
-                String ubicacion = p[7];
-                String estado = p[8];
-                Estudiante reportadoPor = usuarioRepo.buscarPorCodigo(p[9]);
-                
-                ObjetoReportado obj=null;
-                
-                switch(tipo){
-                    case "DOCUMENTO":
-                        if (p.length>=12){
-                            obj=new Documento( p[10], p[11], id, nombre, descripcion, "DOCUMENTO", color, fecha, ubicacion, estado, reportadoPor);
-                           
-                        }
-                        break;
-                    case "ELECTRONICO":
-                        if(p.length>=13){
-                            obj = new DispositivoElectronico(p[10], p[11], p[12], id, nombre, descripcion, "DISPOSITIVO ELECTRONICO", color, fecha, ubicacion, estado, reportadoPor);
-                        }
-                        break;
-                    case "PRENDA":
-                        if (p.length>=12){
-                            obj = new Prenda(p[10], p[11], id, nombre, descripcion, "PRENDA", color, fecha, ubicacion, estado, reportadoPor);
-                        }
-                        break;
-                    case "GENERICO":
-                        if(p.length>=11){
-                             obj = new ObjetoGenerico(p[10], id, nombre, descripcion, categoria, color, fecha, ubicacion, estado, reportadoPor);
-                        }
-                        break;
-                }
-                
-                if (obj !=null){
-                    objetos.add(obj);
-                }
-            } 
+    @Override
+    public List<ObjetoReportado> obtenerObjetos(){
+        List<ObjetoReportado> objetos = new ArrayList<>();
+        try{
+            List<String> lineas = Files.readAllLines(RUTA_ARCHIVO, StandardCharsets.UTF_8 );
+            for(String linea : lineas){
+                String[] atributos = linea.split("\\|");
+                ObjetoReportado objeto = new ObjetoReportado(Integer.parseInt(atributos[0]), atributos[1], atributos[2],
+                        atributos[3], atributos[4], atributos[5], atributos[6], atributos[7]);   
+            }
+        }catch(IOException e){
+            throw new RuntimeException("No se pudo leer el archivo", e);
         }
-        br.close();
-    } catch (IOException e){
-        System.out.println("Error al leer objetos.txt: "+ e.getMessage());
-        }
-    }
-    public void guardarEnTxt(){
-    File archivo = new File(RUTA_ARCHIVO);
-    crearArchivoVacio(archivo);
-
-    try {
-        PrintWriter pw = new PrintWriter(new FileWriter(archivo, false));
-
-        for (ObjetoReportado o : objetos){
-            pw.println(o.toTxt());
-        }
-
-        pw.close();
-
-    } catch (IOException e){
-        System.out.println("Error al guardar en objetos.txt: " + e.getMessage());
-        }
-    }
-        
-    
-    public void guardar(ObjetoReportado objeto){
-        objetos.add(objeto);
-        guardarEnTxt();
-        
+        return objetos;
     }
     
-    public ObjetoReportado buscarPorId(int id){
-        for (ObjetoReportado o : objetos){
-            if (o.getId()==id){
-                return o;
+    @Override 
+    
+    public ObjetoReportado obtenerObjetoPorId(int id){
+        List<ObjetoReportado> objetos = obtenerObjetos();
+        for(ObjetoReportado O : objetos){
+            if (O.getId()==id){
+                return O;
             }
         }
         return null;
     }
     
-    public ArrayList<ObjetoReportado> listarPorEstado(String estado){
-        ArrayList<ObjetoReportado> resultado=new ArrayList<>();
-        for (ObjetoReportado o: objetos){
-            if (o.getEstado().equalsIgnoreCase(estado)){
-                resultado.add(o);
+    @Override
+    
+    public void eliminarObjeto (int id){
+        List<ObjetoReportado> objetos = obtenerObjetos();
+        for(int i=0; i<objetos.size();i++){
+            if (objetos.get(i).getId()==id){
+                objetos.remove(i);
+                break;
             }
         }
-        return resultado;
+        reescribir(objetos);
     }
     
-    public ArrayList<ObjetoReportado>listarTodos(){
-        return objetos;
-    }
-    
-    private void crearArchivoVacio(File archivo){
+    public void reescribir(List <ObjetoReportado> lista_nueva){
+        List<String> lineas = new ArrayList<>();
+        lineas.add("id|nombre|descripcion|categoria|color|fecha|ubicacion|estado");
+        for(ObjetoReportado objeto : lista_nueva){
+            String linea = objeto.getId() + "|" + objeto.getNombre()+ "|" + objeto.getDescripcion()
+                + "|" + objeto.getCategoria()+ "|" + objeto.getColor() + "|" + objeto.getFecha() + "|" + 
+                    objeto.getUbicacion() + "|" + objeto.getEstado();
+            lineas.add(linea);
+        }
         try{
-            if (archivo.getParentFile() != null){
-                archivo.getParentFile().mkdirs();
-            }
-            if (!archivo.exists()){
-                archivo.createNewFile();
-            }
-        }catch (IOException e){
-            System.out.println("No se pudo crear el archivo: "+ archivo.getPath());
+            Files.write(RUTA_ARCHIVO, lineas, StandardCharsets.UTF_8);
+        }catch(IOException e){
+            throw new RuntimeException("No se pudo escribir en el archivo"+ e);
         }
     }
+
 }
