@@ -7,14 +7,16 @@ public class Reclamo {
     private ArrayList<String> respuestas;
     private String estado;
     private String observacion;
+    private String codigoRevisor;
     private Estudiante reclamante;
     private ObjetoReportado objeto;
 
-    public Reclamo(String id, ArrayList<String> respuestas, String estado, String observacion, Estudiante reclamante, ObjetoReportado objeto) {
+    public Reclamo(String id, ArrayList<String> respuestas, String estado, String observacion, String codigoRevisor, Estudiante reclamante, ObjetoReportado objeto) {
         setId(id);
         setRespuestas(respuestas);
         setEstado(estado);
-        setObservación(observacion);
+        setObservacion(observacion);
+        setCodigoRevisor(codigoRevisor);
         setReclamante(reclamante);
         setObjeto(objeto);
     }
@@ -56,15 +58,23 @@ public class Reclamo {
         this.estado = e;
     }
 
-    public String getObservación() {
+    public String getObservacion() {
         return observacion;
     }
 
-    public void setObservación(String observacion) {
+    public void setObservacion(String observacion) {
         if (observacion == null) {
             throw new IllegalArgumentException("La observacion no puede ser nula.");
         }
         this.observacion = observacion.trim();
+    }
+    
+    public String getCodigoRevisor(){
+        return codigoRevisor;
+    }
+    
+    public void setCodigoRevisor(String codigoRevisor) {
+        this.codigoRevisor = (codigoRevisor == null) ? "" : codigoRevisor.trim();
     }
 
     public Estudiante getReclamante() {
