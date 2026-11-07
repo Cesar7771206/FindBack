@@ -11,10 +11,10 @@ import modelo.Reclamo;
 public class ReclamoRepositorio {
     private static final String CABECERA = "id|idObjeto|codigoReclamante|respuestas|estado|observacion|codigoRevisor";
     private final Path archivo;
-    private final UsuarioRepositorio usuarioRepo;
-    private final ObjetoRepositorio objetoRepo;
+    private final UsuarioCsvRepositorio usuarioRepo;
+    private final ObjetoReportadoCsvRepositorio objetoRepo;
     
-    public ReclamoRepositorio(UsuarioRepositorio usuarioRepo, ObjetoRepositorio objetoRepo) {
+    public ReclamoRepositorio(UsuarioCsvRepositorio usuarioRepo, ObjetoReportadoCsvRepositorio objetoRepo) {
         this.usuarioRepo = usuarioRepo;
         this.objetoRepo = objetoRepo;
         this.archivo = Paths.get("data/reclamos.csv");
@@ -48,8 +48,8 @@ public class ReclamoRepositorio {
                 if (!c[3].isEmpty()) {
                     respuestas.addAll(Arrays.asList(c[3].split(";")));
                 }
-                Estudiante reclamante = usuarioRepo.buscarPorCodigo(c[2]);
-                ObjetoReportado objeto = objetoRepo.buscarPorId(Integer.parseInt(c[1].replace("OBJ-", "")));
+                Estudiante reclamante = usuarioRepo.obtenerUsuarioPorIdentificacion(c[2]);
+                ObjetoReportado objeto = objetoRepo.obtenerObjetoPorId(Integer.parseInt(c[1].replace("OBJ-", "")));
                 lista.add(new Reclamo(c[0], respuestas, c[4], c[5], c[6], reclamante, objeto));
             }
         } catch (IOException e) {
