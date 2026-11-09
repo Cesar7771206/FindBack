@@ -103,5 +103,46 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
         }
         throw new RuntimeException("No se encontró ningún usuario con la identificación: " + identificacion);
     }
+    public void reescribir (List<Usuario> lista_nueva) {
+        List <String> lineas = new ArrayList<>();
+        lineas.add("identificacion|nombre|correo|contrasena|mensajes|facultad|carrera|ciclo");
+        for (Usuario u: lista_nueva){
+            lineas.add(u.toTxt());
+        }
+        try {
+            Files.write(RUTA_ARCHIVO, lineas, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException ("No se pudo reescribir en el archivo" + e); 
+        }
+            
+    }
+    
+    @Override
+    public void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva) {
+        List<Usuario> usuarios = obtenerUsuarios();
+        for (Usuario u: usuarios) {
+            if (u.getIdentificacion() == identificacionBuscar) {
+                u.setNombre(nombreNuevo);
+                u.setCorreo(correoNuevo);
+                u.setContrasena(contrasenaNueva);
+                break;
+                
+            }
+        }
+        reescribir(usuarios);
+        
+    }
+    
+    @Override
+    public void eliminarUsuario(String identificacion) {
+        List <Usuario> usuarios = obtenerUsuarios();
+        for (int i = 0; i<usuarios.size(); i++) {
+            if (usuarios.get(i).getIdentificacion() == identificacion){
+                usuarios.remove(i);
+                break;
+            }
+            
+        }
+    }
 
 }
