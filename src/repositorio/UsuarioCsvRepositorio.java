@@ -90,7 +90,7 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
         }
         return usuarios;
     }
-
+    
     @Override
     public Usuario obtenerUsuarioPorIdentificacion(String identificacion) {
         List<Usuario> usuarios = obtenerUsuarios();
@@ -149,6 +149,19 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
             }
             
         }
+    }
+    @Override
+    
+    public Usuario buscarPorCorreo(String correo) {
+        List<Usuario> usuarios = obtenerUsuarios();
+        for (Usuario u : usuarios) {
+            if (u != null && u.getCorreo() != null) {
+                if (u.getCorreo().equalsIgnoreCase(correo)) {
+                    return u;
+                }
+            }
+        }
+        throw new RuntimeException("No se encontró ningún usuario con la identificación: " + correo);
     }
 
 }
