@@ -12,8 +12,12 @@ import modelo.*;
  * @author david
  */
 public interface ObjetoReportadoRepositorio {
-    void guardar (ObjetoReportado objeto);
+
+    void guardar(ObjetoReportado objeto);
+
     List<ObjetoReportado> obtenerObjetos();
+
     ObjetoReportado obtenerObjetoPorId(int id);
-    void eliminarObjeto (int id);
+
+    void eliminarObjeto(int id);
 }
