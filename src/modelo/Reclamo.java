@@ -99,5 +99,18 @@ public class Reclamo {
         }
         this.objeto = objeto;
     }
+
+    public String toTxt() {
+        String respuestasTxt = String.join(";", this.respuestas);
+        return String.join("|",
+                String.valueOf(this.id),
+                String.valueOf(this.objeto.getId()),
+                this.reclamante.getIdentificacion(),
+                respuestasTxt,
+                this.estado,
+                this.observacion,
+                this.codigoRevisor
+        );
+    }
     
 }
