@@ -118,13 +118,19 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
     }
     
     @Override
-    public void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva) {
+    public void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva, String carreraNueva, String facultadNueva, int cicloNuevo) {
         List<Usuario> usuarios = obtenerUsuarios();
         for (Usuario u: usuarios) {
             if (u.getIdentificacion().equals(identificacionBuscar)) {
                 u.setNombre(nombreNuevo);
                 u.setCorreo(correoNuevo);
                 u.setContrasena(contrasenaNueva);
+                if (u instanceof Estudiante){
+                    Estudiante e = (Estudiante) u;
+                    ((Estudiante) u).setFacultad(facultadNueva);
+                    ((Estudiante) u).setCarrera(carreraNueva);
+                    ((Estudiante) u).setCiclo(cicloNuevo);
+                }
                 break;
                 
             }
