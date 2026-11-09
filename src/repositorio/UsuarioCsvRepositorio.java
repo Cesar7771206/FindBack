@@ -130,9 +130,6 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
                     e.setFacultad(facultadNueva);
                     e.setCarrera(carreraNueva);
                     e.setCiclo(cicloNuevo);
-                    ((Estudiante) u).setFacultad(facultadNueva);
-                    ((Estudiante) u).setCarrera(carreraNueva);
-                    ((Estudiante) u).setCiclo(cicloNuevo);
                 }
                 break;
                 
@@ -164,7 +161,7 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
                 }
             }
         }
-        throw new RuntimeException("No se encontró ningún usuario con la identificación: " + correo);
+        throw new RuntimeException("No se encontró ningún usuario con el corro: " + correo);
     }
 
 }
