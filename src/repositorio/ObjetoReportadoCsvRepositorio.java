@@ -132,10 +132,7 @@ public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio
         List<String> lineas = new ArrayList<>();
         lineas.add("id|nombre|descripcion|categoria|color|fecha|ubicacion|estado|reportado|caracteristicasPropias");
         for (ObjetoReportado objeto : lista_nueva) {
-            String linea = objeto.getId() + "|" + objeto.getNombre() + "|" + objeto.getDescripcion()
-                    + "|" + objeto.getCategoria() + "|" + objeto.getColor() + "|" + objeto.getFecha() + "|"
-                    + objeto.getUbicacion() + "|" + objeto.getEstado() + "|" + objeto.getReportadoPor();
-            lineas.add(linea);
+            lineas.add(objeto.toTxt());
         }
         try {
             Files.write(RUTA_ARCHIVO, lineas, StandardCharsets.UTF_8);
