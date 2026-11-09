@@ -121,7 +121,7 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
     public void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva) {
         List<Usuario> usuarios = obtenerUsuarios();
         for (Usuario u: usuarios) {
-            if (u.getIdentificacion() == identificacionBuscar) {
+            if (u.getIdentificacion().equals(identificacionBuscar)) {
                 u.setNombre(nombreNuevo);
                 u.setCorreo(correoNuevo);
                 u.setContrasena(contrasenaNueva);
