@@ -3,15 +3,16 @@ package modelo;
 import java.util.ArrayList;
 
 public class Reclamo {
+
     private String id;
+    private ObjetoReportado objeto;
+    private Estudiante reclamante;
     private ArrayList<String> respuestas;
     private String estado;
     private String observacion;
     private String codigoRevisor;
-    private Estudiante reclamante;
-    private ObjetoReportado objeto;
 
-    public Reclamo(String id, ArrayList<String> respuestas, String estado, String observacion, String codigoRevisor, Estudiante reclamante, ObjetoReportado objeto) {
+    public Reclamo(String id, ObjetoReportado objeto, Estudiante reclamante, ArrayList<String> respuestas, String estado, String observacion, String codigoRevisor) {
         setId(id);
         setRespuestas(respuestas);
         setEstado(estado);
@@ -26,7 +27,7 @@ public class Reclamo {
     }
 
     public void setId(String id) {
-        if (id == null || id.trim().isEmpty()){
+        if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("El id del raclamo no puede ser nulo ni vacío.");
         }
         this.id = id;
@@ -68,11 +69,11 @@ public class Reclamo {
         }
         this.observacion = observacion.trim();
     }
-    
-    public String getCodigoRevisor(){
+
+    public String getCodigoRevisor() {
         return codigoRevisor;
     }
-    
+
     public void setCodigoRevisor(String codigoRevisor) {
         this.codigoRevisor = (codigoRevisor == null) ? "" : codigoRevisor.trim();
     }
