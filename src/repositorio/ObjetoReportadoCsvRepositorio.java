@@ -40,7 +40,7 @@ public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio
 
     @Override
     public void guardar(ObjetoReportado objeto) {
-        
+
         try {
             Files.write(RUTA_ARCHIVO, List.of(objeto.toTxt()), StandardCharsets.UTF_8, StandardOpenOption.APPEND);
         } catch (IOException e) {
@@ -65,7 +65,7 @@ public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio
                 String estado = atributos[7];
                 String reportadoPor = atributos[8];
                 String caracteristicasPropias = atributos[9];
-                
+
                 switch (categoria) {
                     case "DOCUMENTO" -> {
                         String[] atributos_documento = caracteristicasPropias.split(";");
@@ -73,28 +73,29 @@ public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio
                                 id, nombre, descripcion, categoria, color, fecha, ubicacion, estado, (Estudiante) usuarioRepo.obtenerUsuarioPorIdentificacion(reportadoPor));
                         objetos.add(documento);
                     }
-                    case "PRENDA" -> { 
+                    case "PRENDA" -> {
                         String[] atributos_prenda = caracteristicasPropias.split(";");
-                        Prenda prenda = new Prenda(atributos_prenda[0], atributos_prenda[1],id, nombre, descripcion, categoria, color, fecha, ubicacion, estado,
+                        Prenda prenda = new Prenda(atributos_prenda[0], atributos_prenda[1], id, nombre, descripcion, categoria, color, fecha, ubicacion, estado,
                                 (Estudiante) usuarioRepo.obtenerUsuarioPorIdentificacion(reportadoPor));
                         objetos.add(prenda);
                     }
-                    
+
                     case "DISPOSITIVOELECTRONICO" -> {
                         String[] atributos_dispositivo = caracteristicasPropias.split(";");
                         DispositivoElectronico dispositivo = new DispositivoElectronico(atributos_dispositivo[0], atributos_dispositivo[1], atributos_dispositivo[2],
                                 id, nombre, descripcion, categoria, color, fecha, ubicacion, estado, (Estudiante) usuarioRepo.obtenerUsuarioPorIdentificacion(reportadoPor));
                         objetos.add(dispositivo);
                     }
-                    
+
                     case "OBJETOGENERICO" -> {
                         String[] atributos_ObjetoGenerico = caracteristicasPropias.split(";");
-                        ObjetoGenerico generico = new ObjetoGenerico(atributos_ObjetoGenerico[0], 
+                        ObjetoGenerico generico = new ObjetoGenerico(atributos_ObjetoGenerico[0],
                                 id, nombre, descripcion, categoria, color, fecha, ubicacion, estado, (Estudiante) usuarioRepo.obtenerUsuarioPorIdentificacion(reportadoPor));
                         objetos.add(generico);
                     }
-                        
-                    default -> throw new AssertionError();
+
+                    default ->
+                        throw new AssertionError();
                 }
             }
         } catch (IOException e) {
