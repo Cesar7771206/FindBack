@@ -110,14 +110,14 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
     public void eliminar(String id) {
         List<Reclamo> reclamos = obtenerReclamos();
         for (int i = 0; i < reclamos.size(); i++) {
-            if(reclamos.get(i).getId().equalsIgnoreCase(id)){
+            if (reclamos.get(i).getId().equalsIgnoreCase(id)) {
                 reclamos.remove(i);
                 break;
             }
         }
         reescribir(reclamos);
     }
-    
+
     @Override
     public void actualizar(String id, String estado, String observacion, String codigoRevisor) {
         List<Reclamo> reclamos = obtenerReclamos();
