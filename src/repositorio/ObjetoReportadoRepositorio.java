@@ -16,4 +16,6 @@ public interface ObjetoReportadoRepositorio {
     List<ObjetoReportado> obtenerObjetos();
     ObjetoReportado obtenerObjetoPorId(int id);
     void eliminarObjeto (int id);
+    void actualizarObjeto (int idBuscar, String nombreNuevo, String descripcionNueva, String categoriaNueva,
+            String colorNuevo, String fechaNUeva, String ubicacionNueva, String estadoNuevo, Estudiante reportadoPor );
 }

@@ -127,6 +127,26 @@ public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio
         }
         reescribir(objetos);
     }
+    @Override
+    public void actualizarObjeto (int idBuscar, String nombreNuevo, String descripcionNueva, String categoriaNueva,
+            String colorNuevo, String fechaNUeva, String ubicacionNueva, String estadoNuevo, Estudiante reportadoPor ){
+        List<ObjetoReportado> objetos = obtenerObjetos();
+        
+        for(int i=0; i<objetos.size();i++){
+            if (objetos.get(i).getId()==idBuscar){
+                objetos.get(i).setNombre(nombreNuevo);
+                objetos.get(i).setDescripcion(descripcionNueva);
+                objetos.get(i).setCategoria(categoriaNueva);
+                objetos.get(i).setColor(colorNuevo);
+                objetos.get(i).setFecha(fechaNUeva);
+                objetos.get(i).setUbicacion(ubicacionNueva);
+                objetos.get(i).setEstado(estadoNuevo);
+                objetos.get(i).setReportadoPor(reportadoPor);
+                break;
+            }
+        }
+        reescribir(objetos);
+    }
 
     public void reescribir(List<ObjetoReportado> lista_nueva) {
         List<String> lineas = new ArrayList<>();
