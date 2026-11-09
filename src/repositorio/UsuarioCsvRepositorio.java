@@ -137,7 +137,7 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
     public void eliminarUsuario(String identificacion) {
         List <Usuario> usuarios = obtenerUsuarios();
         for (int i = 0; i<usuarios.size(); i++) {
-            if (usuarios.get(i).getIdentificacion() == identificacion){
+            if (usuarios.get(i).getIdentificacion().equalsIgnoreCase(identificacion)){
                 usuarios.remove(i);
                 break;
             }
