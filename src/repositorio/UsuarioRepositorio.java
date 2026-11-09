@@ -4,10 +4,14 @@
  */
 package repositorio;
 
+import java.util.List;
+import modelo.Usuario;
+
 /**
  *
  * @author cesar
  */
-public class UsuarioRepositorio {
-    
+public interface UsuarioRepositorio {
+    List<Usuario> obtenerUsuarios();
+    Usuario obtenerUsuarioPorIdentificacion(String identificacion);
 }

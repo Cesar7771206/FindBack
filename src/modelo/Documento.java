@@ -59,11 +59,7 @@ public class Documento extends ObjetoReportado {
 
     @Override
     public String toTxt() {
-        return String.join("|",
-                baseToTxt(),
-                tipoDocumento,
-                nombreTitular
-        );
+        return baseToTxt() + "|" + tipoDocumento + ";" + nombreTitular;
     }
 
 }

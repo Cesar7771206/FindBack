@@ -76,12 +76,7 @@ public class DispositivoElectronico extends ObjetoReportado {
 
     @Override
     public String toTxt() {
-        return String.join("|",
-                baseToTxt(),
-                marca,
-                modelo,
-                numeroSerie
-        );
+        return baseToTxt() + "|" + marca + ";" + modelo + ";" + numeroSerie;
     }
 
 }
