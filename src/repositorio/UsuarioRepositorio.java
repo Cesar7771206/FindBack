@@ -10,4 +10,8 @@ public interface UsuarioRepositorio {
     List<Usuario> obtenerUsuarios();
 
     Usuario obtenerUsuarioPorIdentificacion(String identificacion);
+    void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva, String carreraNueva, String facultadNueva, int cicloNuevo);
+    void eliminarUsuario(String identificacion);
+    Usuario buscarPorCorreo(String correo);
+    
 }
