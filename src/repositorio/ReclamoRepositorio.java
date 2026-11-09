@@ -4,10 +4,23 @@
  */
 package repositorio;
 
+import java.util.List;
+import modelo.Reclamo;
+
 /**
  *
  * @author cesar
  */
 public interface ReclamoRepositorio {
-    
+
+    void guardar(Reclamo reclamo);
+
+    List<Reclamo> obtenerReclamos();
+
+    Reclamo buscarPorId(String id);
+
+    void eliminar(String id);
+
+    void actualizar(String id, String estado, String observacion, String codigoRevisor);
+
 }
