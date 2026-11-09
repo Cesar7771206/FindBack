@@ -43,10 +43,7 @@ public class ObjetoGenerico extends ObjetoReportado {
 
     @Override
     public String toTxt() {
-        return String.join("|",
-                baseToTxt(),
-                detalleExtra
-        );
+        return baseToTxt() + "|" + detalleExtra;
     }
 
 }
