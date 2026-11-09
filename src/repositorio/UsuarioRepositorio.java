@@ -17,10 +17,10 @@ public class UsuarioRepositorio {
     
     public UsuarioRepositorio() {
         this.estudiantes = new ArrayList<>();
-        cargarDesdeTxt(); 
+        cargarDesdeCsv(); 
     }
     
-    public void cargarDesdeTxt() {
+    public void cargarDesdeCsv() {
         estudiantes.clear();
         Path archivo = Paths.get(RUTA_ARCHIVO);
         
@@ -64,7 +64,7 @@ public class UsuarioRepositorio {
         }
     }
     
-    public void guardarEnTxt() {
+    public void guardarEnCsv() {
         Path archivo = Paths.get(RUTA_ARCHIVO);
         crearArchivoVacio(archivo);
         
@@ -85,7 +85,7 @@ public class UsuarioRepositorio {
     
     public void guardar (Estudiante estudiante) {
         estudiantes.add(estudiante);
-        guardarEnTxt();
+        guardarEnCsv();
     }
     public Estudiante buscarPorCorreo(String correo) {
         for (Estudiante e : estudiantes) {
