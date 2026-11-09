@@ -127,6 +127,9 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
                 u.setContrasena(contrasenaNueva);
                 if (u instanceof Estudiante){
                     Estudiante e = (Estudiante) u;
+                    e.setFacultad(facultadNueva);
+                    e.setCarrera(carreraNueva);
+                    e.setCiclo(cicloNuevo);
                     ((Estudiante) u).setFacultad(facultadNueva);
                     ((Estudiante) u).setCarrera(carreraNueva);
                     ((Estudiante) u).setCiclo(cicloNuevo);
