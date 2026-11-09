@@ -116,7 +116,6 @@ public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio
     }
 
     @Override
-
     public void eliminarObjeto(int id) {
         List<ObjetoReportado> objetos = obtenerObjetos();
         for (int i = 0; i < objetos.size(); i++) {
