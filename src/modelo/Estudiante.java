@@ -4,11 +4,6 @@
  */
 package modelo;
 
-
-/**
- *
- * @author cesar
- */
 public class Estudiante extends Usuario{
     private String facultad;
     private String carrera;

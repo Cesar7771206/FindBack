@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import modelo.Estudiante;
@@ -40,6 +41,16 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
             throw new RuntimeException("No se pudo crear el archivo", e);
         }
     }
+    
+    @Override
+    public void guardar(Usuario usuario) {
+        try {
+            Files.write(RUTA_ARCHIVO, List.of(usuario.toTxt()), StandardCharsets.UTF_8, StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            System.out.println("Error al guardar en estudiantes.csv: " + e.getMessage());
+        }
+    }
+
 
     @Override
     public List<Usuario> obtenerUsuarios() {

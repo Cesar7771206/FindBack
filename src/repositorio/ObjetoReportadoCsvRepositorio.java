@@ -49,7 +49,7 @@ public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio
 
     @Override
     public void guardar(ObjetoReportado objeto) {
-        
+
         try {
             Files.write(RUTA_ARCHIVO, List.of(objeto.toTxt()), StandardCharsets.UTF_8, StandardOpenOption.APPEND);
         } catch (IOException e) {
@@ -78,7 +78,7 @@ public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio
                 String estado = atributos[7];
                 String reportadoPor = atributos[8];
                 String caracteristicasPropias = atributos[9];
-                
+
                 switch (categoria) {
                     case "DOCUMENTO" -> {
                         String[] atributos_documento = caracteristicasPropias.split(";");
@@ -88,7 +88,7 @@ public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio
                                 id, nombre, descripcion, categoria, color, fecha, ubicacion, estado, (Estudiante) usuarioRepo.obtenerUsuarioPorIdentificacion(reportadoPor));
                         objetos.add(documento);
                     }
-                    case "PRENDA" -> { 
+                    case "PRENDA" -> {
                         String[] atributos_prenda = caracteristicasPropias.split(";");
                         String talla = atributos_prenda.length > 0 ? atributos_prenda[0] : "NO ESPECIFICADO";
                         String marca = atributos_prenda.length > 1 ? atributos_prenda[1] : "NO ESPECIFICADO";
