@@ -28,9 +28,9 @@ public class Reclamo {
 
     public void setId(String id) {
         if (id == null || id.trim().isEmpty()) {
-            throw new IllegalArgumentException("El id del raclamo no puede ser nulo ni vacío.");
+            throw new IllegalArgumentException("El ID del reclamo no puede ser nulo ni estar vacío.");
         }
-        this.id = id;
+        this.id = id.trim();
     }
 
     public ArrayList<String> getRespuestas() {
@@ -38,10 +38,7 @@ public class Reclamo {
     }
 
     public void setRespuestas(ArrayList<String> respuestas) {
-        if (respuestas == null) {
-            throw new IllegalArgumentException("La lista de respuestas no puede ser nula.");
-        }
-        this.respuestas = respuestas;
+        this.respuestas = (respuestas != null) ? respuestas : new ArrayList<>();
     }
 
     public String getEstado() {
@@ -54,7 +51,7 @@ public class Reclamo {
         }
         String e = estado.trim().toUpperCase();
         if (!e.equals("PENDIENTE") && !e.equals("APROBADO") && !e.equals("RECHAZADO")) {
-            throw new IllegalArgumentException("Estado inválido. Use PENDIENTE, APROBADO O RECHAZADO.");
+            throw new IllegalArgumentException("Estado inválido. Use PENDIENTE, APROBADO o RECHAZADO.");
         }
         this.estado = e;
     }
@@ -64,10 +61,7 @@ public class Reclamo {
     }
 
     public void setObservacion(String observacion) {
-        if (observacion == null) {
-            throw new IllegalArgumentException("La observacion no puede ser nula.");
-        }
-        this.observacion = observacion.trim();
+        this.observacion = (observacion == null) ? "" : observacion.trim();
     }
 
     public String getCodigoRevisor() {
@@ -84,7 +78,7 @@ public class Reclamo {
 
     public void setReclamante(Estudiante reclamante) {
         if (reclamante == null) {
-            throw new IllegalArgumentException("El relcmante no puede ser nulo.");
+            throw new IllegalArgumentException("El reclamante no puede ser nulo.");
         }
         this.reclamante = reclamante;
     }
@@ -101,15 +95,15 @@ public class Reclamo {
     }
 
     public String toTxt() {
-        String respuestasTxt = String.join(";", this.respuestas);
+        String respuestasTxt = (this.respuestas != null) ? String.join(";", this.respuestas) : "";
         return String.join("|",
-                String.valueOf(this.id),
+                this.id,
                 String.valueOf(this.objeto.getId()),
                 this.reclamante.getIdentificacion(),
                 respuestasTxt,
                 this.estado,
-                this.observacion,
-                this.codigoRevisor
+                this.observacion != null ? this.observacion : "",
+                this.codigoRevisor != null ? this.codigoRevisor : ""
         );
     }
     
