@@ -98,7 +98,7 @@ public abstract class ObjetoReportado implements Buscable {
 
     public void setFecha(String fecha) {
         String patronFecha = "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$";
-        if (!fecha.matches(patronFecha) || fecha == null || fecha.isBlank()) {
+        if (fecha == null || fecha.isBlank() || !fecha.matches(patronFecha)) {
             throw new IllegalArgumentException("La fecha debe tener el formato correcto (YYYY-MM-DD), no puede ser nula, estar vacía ni contener solo espacios");
         }
         this.fecha = fecha.trim();
@@ -140,7 +140,7 @@ public abstract class ObjetoReportado implements Buscable {
     @Override
     public boolean coincideCon(String criterio) {
         if (criterio == null || criterio.isBlank()) {
-            throw new IllegalArgumentException("El criterior no puede estar vacío ni contener solo espacios");
+            throw new IllegalArgumentException("El criterio no puede estar vacío ni contener solo espacios");
         }
         String crit = criterio.toLowerCase().trim();
         return (nombre.toLowerCase().contains(crit))
