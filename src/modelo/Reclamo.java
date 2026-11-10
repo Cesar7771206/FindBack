@@ -3,18 +3,21 @@ package modelo;
 import java.util.ArrayList;
 
 public class Reclamo {
+
     private String id;
+    private ObjetoReportado objeto;
+    private Estudiante reclamante;
     private ArrayList<String> respuestas;
     private String estado;
-    private String observación;
-    private Estudiante reclamante;
-    private ObjetoReportado objeto;
+    private String observacion;
+    private String codigoRevisor;
 
-    public Reclamo(String id, ArrayList<String> respuestas, String estado, String observación, Estudiante reclamante, ObjetoReportado objeto) {
+    public Reclamo(String id, ObjetoReportado objeto, Estudiante reclamante, ArrayList<String> respuestas, String estado, String observacion, String codigoRevisor) {
         setId(id);
         setRespuestas(respuestas);
         setEstado(estado);
-        setObservación(observación);
+        setObservacion(observacion);
+        setCodigoRevisor(codigoRevisor);
         setReclamante(reclamante);
         setObjeto(objeto);
     }
@@ -24,7 +27,7 @@ public class Reclamo {
     }
 
     public void setId(String id) {
-        if (id == null || id.trim().isEmpty()){
+        if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("El id del raclamo no puede ser nulo ni vacío.");
         }
         this.id = id;
@@ -56,15 +59,23 @@ public class Reclamo {
         this.estado = e;
     }
 
-    public String getObservación() {
-        return observación;
+    public String getObservacion() {
+        return observacion;
     }
 
-    public void setObservación(String observación) {
-        if (observación == null) {
-            throw new IllegalArgumentException("La obsetvación no puede ser nula.");
+    public void setObservacion(String observacion) {
+        if (observacion == null) {
+            throw new IllegalArgumentException("La observacion no puede ser nula.");
         }
-        this.observación = observación.trim();
+        this.observacion = observacion.trim();
+    }
+
+    public String getCodigoRevisor() {
+        return codigoRevisor;
+    }
+
+    public void setCodigoRevisor(String codigoRevisor) {
+        this.codigoRevisor = (codigoRevisor == null) ? "" : codigoRevisor.trim();
     }
 
     public Estudiante getReclamante() {
@@ -88,16 +99,17 @@ public class Reclamo {
         }
         this.objeto = objeto;
     }
-    
+
     public String toTxt() {
-        String respTxt = respuestas.isEmpty() ? "SIN RESPUESTAS" : String.join(";", respuestas);
-        return String.join("|", 
-                id,
-                respTxt,
-                estado,
-                observación,
-                reclamante.getIdentificacion(),
-                String.valueOf(objeto.getId())
+        String respuestasTxt = String.join(";", this.respuestas);
+        return String.join("|",
+                String.valueOf(this.id),
+                String.valueOf(this.objeto.getId()),
+                this.reclamante.getIdentificacion(),
+                respuestasTxt,
+                this.estado,
+                this.observacion,
+                this.codigoRevisor
         );
     }
     

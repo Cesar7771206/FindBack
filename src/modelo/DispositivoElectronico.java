@@ -20,7 +20,14 @@ public class DispositivoElectronico extends ObjetoReportado {
         setModelo(modelo);
         setNumeroSerie(numeroSerie);
     }
-
+    public void setAtributosDispositivoElectronico(String marca, String modelo, String numeroSerie, String nombre, String descripcion, String categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
+        setAtributosObjetoReportado(nombre, descripcion, categoria, color, fecha, ubicacion, estado, reportadoPor);
+        setMarca(marca);
+        setModelo(modelo);
+        setNumeroSerie(numeroSerie);
+        
+    }
+            
     public String getMarca() {
         return marca;
     }
