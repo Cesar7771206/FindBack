@@ -52,11 +52,11 @@ public abstract class Usuario implements Notificable{
 
     public void setCorreo(String correo) {
         String patronCorreo = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-        if (correo == null || correo.isBlank() || !correo.matches(patronCorreo)) {
+        if (correo == null || correo.isBlank() || !correo.trim().matches(patronCorreo)) {
             throw new IllegalArgumentException("El correo debe tener el formato correcto (ej: cesar.villegas@udep.edu.pe), no estar vacío ni contener solo espacios");
         }
         
-        this.correo = correo;
+        this.correo = correo.trim().toLowerCase();
     }
 
     public String getContrasena() {
@@ -76,7 +76,7 @@ public abstract class Usuario implements Notificable{
     }
 
     public void setMensajes(ArrayList<String> mensajes) {
-        this.mensajes = mensajes;
+        this.mensajes = (mensajes != null) ? mensajes : new ArrayList<>();
     } 
     
     public abstract String getRol();
@@ -84,6 +84,8 @@ public abstract class Usuario implements Notificable{
     
     @Override
     public void recibirMensaje(String mensaje){
-        this.mensajes.add(mensaje);
+        if (mensaje != null && !mensaje.isBlank()) {
+            this.mensajes.add(mensaje.trim());
+        }
     }
 }
