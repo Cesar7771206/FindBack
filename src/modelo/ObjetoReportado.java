@@ -22,6 +22,10 @@ public abstract class ObjetoReportado implements Buscable {
 
     public ObjetoReportado(int id, String nombre, String descripcion, String categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
         setId(id);
+        setAtributosObjetoReportado(nombre, descripcion, categoria, color, fecha, ubicacion, estado, reportadoPor);
+    }
+
+    protected void setAtributosObjetoReportado(String nombre, String descripcion, String categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
         setNombre(nombre);
         setDescripcion(descripcion);
         setCategoria(categoria);
@@ -30,7 +34,8 @@ public abstract class ObjetoReportado implements Buscable {
         setUbicacion(ubicacion);
         setEstado(estado);
         setReportadoPor(reportadoPor);
-    }
+    }    
+    
 
     public int getId() {
         return id;
