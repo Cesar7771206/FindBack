@@ -25,7 +25,11 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
     private final Path RUTA_ARCHIVO;
 
     public UsuarioCsvRepositorio() {
-        this.RUTA_ARCHIVO = Paths.get("data/usuarios.csv");
+        this(Paths.get("data/usuarios.csv"));
+    }
+
+    public UsuarioCsvRepositorio(Path rutaArchivo) {
+        this.RUTA_ARCHIVO = rutaArchivo;
         inicializar();
     }
 
@@ -47,7 +51,7 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
         try {
             Files.write(RUTA_ARCHIVO, List.of(usuario.toTxt()), StandardCharsets.UTF_8, StandardOpenOption.APPEND);
         } catch (IOException e) {
-            System.out.println("Error al guardar en estudiantes.csv: " + e.getMessage());
+            throw new RuntimeException("No se pudo escribir en el archivo: " + e.getMessage(), e);
         }
     }
 
@@ -94,75 +98,87 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
     
     @Override
     public Usuario obtenerUsuarioPorIdentificacion(String identificacion) {
+        if (identificacion == null || identificacion.isBlank()) {
+            return null;
+        }
         List<Usuario> usuarios = obtenerUsuarios();
         for (Usuario u : usuarios) {
             if (u != null && u.getIdentificacion() != null) {
-                if (u.getIdentificacion().equalsIgnoreCase(identificacion)) {
-                    return u; // Retorna el usuario encontrado (sea Estudiante o cualquier otro tipo de Usuario)
+                if (u.getIdentificacion().equalsIgnoreCase(identificacion.trim())) {
+                    return u;
                 }
             }
         }
-        throw new RuntimeException("No se encontró ningún usuario con la identificación: " + identificacion);
+        return null;
     }
-    public void reescribir (List<Usuario> lista_nueva) {
-        List <String> lineas = new ArrayList<>();
-        lineas.add("identificacion|nombre|correo|contrasena|mensajes|facultad|carrera|ciclo");
-        for (Usuario u: lista_nueva){
+
+    public void reescribir(List<Usuario> lista_nueva) {
+        List<String> lineas = new ArrayList<>();
+        lineas.add("identificacion|nombre|correo|contrasena|facultad|carrera|ciclo|mensajes");
+        for (Usuario u : lista_nueva) {
             lineas.add(u.toTxt());
         }
         try {
             Files.write(RUTA_ARCHIVO, lineas, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new RuntimeException ("No se pudo reescribir en el archivo" + e); 
+            throw new RuntimeException("No se pudo reescribir en el archivo: " + e.getMessage(), e); 
         }
-            
     }
     
     @Override
     public void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva, String carreraNueva, String facultadNueva, int cicloNuevo) {
         List<Usuario> usuarios = obtenerUsuarios();
-        for (Usuario u: usuarios) {
-            if (u.getIdentificacion().equals(identificacionBuscar)) {
+        boolean encontrado = false;
+        for (Usuario u : usuarios) {
+            if (u.getIdentificacion().equalsIgnoreCase(identificacionBuscar)) {
                 u.setNombre(nombreNuevo);
                 u.setCorreo(correoNuevo);
                 u.setContrasena(contrasenaNueva);
-                if (u instanceof Estudiante){
+                if (u instanceof Estudiante) {
                     Estudiante e = (Estudiante) u;
                     e.setFacultad(facultadNueva);
                     e.setCarrera(carreraNueva);
                     e.setCiclo(cicloNuevo);
                 }
+                encontrado = true;
                 break;
-                
             }
         }
-        reescribir(usuarios);
-        
+        if (encontrado) {
+            reescribir(usuarios);
+        }
     }
     
     @Override
     public void eliminarUsuario(String identificacion) {
-        List <Usuario> usuarios = obtenerUsuarios();
-        for (int i = 0; i<usuarios.size(); i++) {
-            if (usuarios.get(i).getIdentificacion().equalsIgnoreCase(identificacion)){
+        List<Usuario> usuarios = obtenerUsuarios();
+        boolean eliminado = false;
+        for (int i = 0; i < usuarios.size(); i++) {
+            if (usuarios.get(i).getIdentificacion().equalsIgnoreCase(identificacion)) {
                 usuarios.remove(i);
+                eliminado = true;
                 break;
             }
-            
+        }
+        if (eliminado) {
+            reescribir(usuarios);
         }
     }
+
     @Override
-    
     public Usuario buscarPorCorreo(String correo) {
+        if (correo == null || correo.isBlank()) {
+            return null;
+        }
         List<Usuario> usuarios = obtenerUsuarios();
         for (Usuario u : usuarios) {
             if (u != null && u.getCorreo() != null) {
-                if (u.getCorreo().equalsIgnoreCase(correo)) {
+                if (u.getCorreo().equalsIgnoreCase(correo.trim())) {
                     return u;
                 }
             }
         }
-        throw new RuntimeException("No se encontró ningún usuario con el corro: " + correo);
+        return null;
     }
 
 }
