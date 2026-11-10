@@ -13,13 +13,21 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
     private static final String CABECERA = "id|idObjeto|codigoReclamante|respuestas|estado|observacion|codigoRevisor";
     private final Path RUTA_ARCHIVO;
 
-    private final UsuarioCsvRepositorio usuarioRepo;
-    private final ObjetoReportadoCsvRepositorio objetoRepo;
+    private final UsuarioRepositorio usuarioRepo;
+    private final ObjetoReportadoRepositorio objetoRepo;
 
     public ReclamoCsvRepositorio() {
-        this.usuarioRepo = new UsuarioCsvRepositorio();
-        this.objetoRepo = new ObjetoReportadoCsvRepositorio();
-        this.RUTA_ARCHIVO = Paths.get("data/reclamos.csv");
+        this(Paths.get("data/reclamos.csv"), new UsuarioCsvRepositorio(), new ObjetoReportadoCsvRepositorio());
+    }
+
+    public ReclamoCsvRepositorio(UsuarioRepositorio usuarioRepo, ObjetoReportadoRepositorio objetoRepo) {
+        this(Paths.get("data/reclamos.csv"), usuarioRepo, objetoRepo);
+    }
+
+    public ReclamoCsvRepositorio(Path rutaArchivo, UsuarioRepositorio usuarioRepo, ObjetoReportadoRepositorio objetoRepo) {
+        this.RUTA_ARCHIVO = rutaArchivo;
+        this.usuarioRepo = usuarioRepo != null ? usuarioRepo : new UsuarioCsvRepositorio();
+        this.objetoRepo = objetoRepo != null ? objetoRepo : new ObjetoReportadoCsvRepositorio();
         inicializar();
     }
 
