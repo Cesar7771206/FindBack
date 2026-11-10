@@ -40,7 +40,7 @@ public abstract class Usuario implements Notificable{
     }
 
     public void setNombre(String nombre) {
-        if (nombre != null || !nombre.isBlank()) {
+        if (nombre == null || nombre.isBlank()) {
             throw new IllegalArgumentException("El nombre no puede ser nulo, estar vacío ni contener solo espacios");
         }
         this.nombre = nombre.trim().toUpperCase();
@@ -52,7 +52,7 @@ public abstract class Usuario implements Notificable{
 
     public void setCorreo(String correo) {
         String patronCorreo = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-        if (!correo.matches(patronCorreo) || correo == null || correo.isBlank()) {
+        if (correo == null || correo.isBlank() || !correo.matches(patronCorreo)) {
             throw new IllegalArgumentException("El correo debe tener el formato correcto (ej: cesar.villegas@udep.edu.pe), no estar vacío ni contener solo espacios");
         }
         
@@ -65,7 +65,7 @@ public abstract class Usuario implements Notificable{
 
     public void setContrasena(String contrasena) {
         String patronContrasena = "^\\S+$";
-        if (!contrasena.matches(patronContrasena) ||contrasena == null || contrasena.isBlank()){
+        if (contrasena == null || contrasena.isBlank() || !contrasena.matches(patronContrasena)){
             throw new IllegalArgumentException("La contraseña debe tener al menos un caracter y no puede tener espacios en blanco");
         }
         this.contrasena = contrasena;

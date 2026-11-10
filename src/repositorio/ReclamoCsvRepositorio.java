@@ -50,8 +50,9 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
         List<Reclamo> reclamos = new ArrayList<>();
         try {
             List<String> lineas = Files.readAllLines(RUTA_ARCHIVO, StandardCharsets.UTF_8);
-            for (String linea : lineas) {
-                if (linea.isEmpty()) {
+            for (int i = 1; i < lineas.size(); i++) {
+                String linea = lineas.get(i);
+                if (linea.trim().isEmpty()) {
                     continue;
                 }
                 String[] atributos = linea.split("\\|", -1);

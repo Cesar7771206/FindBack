@@ -20,4 +20,17 @@ public interface ObjetoReportadoRepositorio {
     ObjetoReportado obtenerObjetoPorId(int id);
 
     void eliminarObjeto(int id);
+
+    void actualizarObjetoPrenda(int idBuscar, String nombreNuevo, String descripcionNueva, String categoriaNueva,
+            String colorNuevo, String fechaNUeva, String ubicacionNueva, String estadoNuevo, Estudiante reportadoPor, String talla, String marca);
+
+    void actualizarObjetoDocumento(int idBuscar, String nombreNuevo, String descripcionNueva, String categoriaNueva,
+            String colorNuevo, String fechaNUeva, String ubicacionNueva, String estadoNuevo, Estudiante reportadoPor, String tipoDocumento, String nombreTitular);
+    
+    void actualizarObjetoDispositivoElectronico(int idBuscar, String nombreNuevo, String descripcionNueva, String categoriaNueva,
+            String colorNuevo, String fechaNUeva, String ubicacionNueva, String estadoNuevo, Estudiante reportadoPor, String marca, String modelo, String numeroSerie);
+    
+    void actualizarObjetoGenerico(int idBuscar, String nombreNuevo, String descripcionNueva, String categoriaNueva,
+            String colorNuevo, String fechaNUeva, String ubicacionNueva, String estadoNuevo, Estudiante reportadoPor,String detalleExtra);
+
 }

@@ -35,7 +35,7 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
                 Files.createDirectories(RUTA_ARCHIVO.getParent());
             }
             if (Files.notExists(RUTA_ARCHIVO) || Files.readAllLines(RUTA_ARCHIVO, StandardCharsets.UTF_8).isEmpty()) {
-                Files.write(RUTA_ARCHIVO, List.of("identificacion|nombre|correo|contrasena|mensajes|facultad|carrera|ciclo"), StandardCharsets.UTF_8);
+                Files.write(RUTA_ARCHIVO, List.of("identificacion|nombre|correo|contrasena|facultad|carrera|ciclo|mensajes"), StandardCharsets.UTF_8);
             }
         } catch (IOException e) {
             throw new RuntimeException("No se pudo crear el archivo", e);
@@ -57,8 +57,8 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
         List<Usuario> usuarios = new ArrayList<>();
         try {
             List<String> lineas = Files.readAllLines(RUTA_ARCHIVO, StandardCharsets.UTF_8);
-            for (String linea : lineas) {
-
+            for (int i = 1; i < lineas.size(); i++) {
+                String linea = lineas.get(i);
                 if (linea.trim().isEmpty()) {
                     continue;
                 }
@@ -70,16 +70,17 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
                 String correo = atributos[2];
                 String contrasena = atributos[3];
 
-                String[] mensajes_estatico = atributos[4].isEmpty() ? new String[0] : atributos[4].split(";");
+                String facultad = atributos[4];
+                String carrera = atributos[5];
+                int ciclo = Integer.parseInt(atributos[6]);
 
-                String facultad = atributos[5];
-                String carrerar = atributos[6];
-                int ciclo = Integer.parseInt(atributos[7]);
+                String[] mensajes_estatico = (atributos.length > 7 && !atributos[7].isEmpty() && !atributos[7].equals("SIN_MENSAJES"))
+                        ? atributos[7].split(";")
+                        : new String[0];
 
-                ArrayList<String> mensajes;
-                mensajes = new ArrayList<>(List.of(mensajes_estatico));
+                ArrayList<String> mensajes = new ArrayList<>(List.of(mensajes_estatico));
 
-                Estudiante estudiante = new Estudiante(facultad, carrerar, ciclo, identificacion, nombre, correo, contrasena);
+                Estudiante estudiante = new Estudiante(facultad, carrera, ciclo, identificacion, nombre, correo, contrasena);
                 estudiante.setMensajes(mensajes);
                 usuarios.add(estudiante);
             }
