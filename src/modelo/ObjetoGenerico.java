@@ -16,6 +16,13 @@ public class ObjetoGenerico extends ObjetoReportado {
         super(id, nombre, descripcion, categoria, color, fecha, ubicacion, estado, reportadoPor);
         this.detalleExtra = detalleExtra;
     }
+    
+    public void setAtributosObjetoGenerico(String detalleExtra, String nombre, String descripcion, String categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor){
+        setAtributosObjetoReportado(nombre, descripcion, categoria, color, fecha, ubicacion,
+                estado, reportadoPor);
+        setDetalleExtra(detalleExtra);
+        
+    }
 
     public String getDetalleExtra() {
         return detalleExtra;

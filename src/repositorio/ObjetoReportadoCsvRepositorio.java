@@ -129,18 +129,71 @@ public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio
     }
     
     @Override
-    public void actualizarObjeto (int idBuscar, String nombreNuevo, String descripcionNueva, String categoriaNueva,
+    public void actualizarObjetoPrenda(int idBuscar, String nombreNuevo, String descripcionNueva, String categoriaNueva,
             String colorNuevo, String fechaNUeva, String ubicacionNueva, String estadoNuevo, Estudiante reportadoPor, String talla, String marca){
         List<ObjetoReportado> objetos = obtenerObjetos();
         
         for (ObjetoReportado objeto : objetos){
+            if (objeto.getId() == idBuscar){
                 Prenda prenda = (Prenda) objeto;
                 prenda.setAtributosPrenda(talla, marca, nombreNuevo, descripcionNueva, categoriaNueva, colorNuevo, fechaNUeva, ubicacionNueva, estadoNuevo, reportadoPor);
                 break;
+            }   
         }
         
         reescribir(objetos);
     }
+    
+    @Override
+    
+    public void actualizarObjetoDocumento(int idBuscar, String nombreNuevo, String descripcionNueva, String categoriaNueva,
+            String colorNuevo, String fechaNUeva, String ubicacionNueva, String estadoNuevo, Estudiante reportadoPor, String tipoDocumento, String nombreTitular){
+        List<ObjetoReportado> objetos = obtenerObjetos();
+        
+        for (ObjetoReportado objeto : objetos){
+            if (objeto.getId() == idBuscar){
+                Documento documento=(Documento)objeto;
+                documento.setAtributosDocumento(tipoDocumento, nombreTitular, nombreNuevo, descripcionNueva, categoriaNueva, colorNuevo,
+                        fechaNUeva, ubicacionNueva, estadoNuevo, reportadoPor);
+                break;
+            }
+        }
+        reescribir(objetos);    
+    }
+    
+    @Override
+    
+    public void actualizarObjetoDispositivoElectronico(int idBuscar, String nombreNuevo, String descripcionNueva, String categoriaNueva,
+            String colorNuevo, String fechaNUeva, String ubicacionNueva, String estadoNuevo, Estudiante reportadoPor, String marca, String modelo, String numeroSerie){
+        List<ObjetoReportado> objetos = obtenerObjetos();
+        
+        for (ObjetoReportado objeto : objetos){
+            if (objeto.getId() == idBuscar){
+                DispositivoElectronico dispositivoElectronico = (DispositivoElectronico) objeto;
+                dispositivoElectronico.setAtributosDispositivoElectronico(marca, modelo, numeroSerie, nombreNuevo, descripcionNueva, categoriaNueva, colorNuevo, fechaNUeva, ubicacionNueva, estadoNuevo, reportadoPor);
+                break;
+            }
+        }
+        
+        reescribir(objetos); 
+ 
+    }
+    
+    @Override
+    
+    public void actualizarObjetoGenerico(int idBuscar, String nombreNuevo, String descripcionNueva, String categoriaNueva,
+            String colorNuevo, String fechaNUeva, String ubicacionNueva, String estadoNuevo, Estudiante reportadoPor,String detalleExtra){
+        List<ObjetoReportado> objetos = obtenerObjetos();
+        
+        for (ObjetoReportado objeto : objetos){
+            if (objeto.getId()==idBuscar){
+                ObjetoGenerico objetoGenerico = (ObjetoGenerico) objeto;
+                objetoGenerico.setAtributosObjetoGenerico(detalleExtra, nombreNuevo, descripcionNueva, categoriaNueva, colorNuevo,
+                        fechaNUeva, ubicacionNueva, estadoNuevo, reportadoPor);
+            }
+        }
+    }
+
 
     public void reescribir(List<ObjetoReportado> lista_nueva) {
         List<String> lineas = new ArrayList<>();
