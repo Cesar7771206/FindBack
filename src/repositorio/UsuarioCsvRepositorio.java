@@ -11,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import modelo.Estudiante;
@@ -22,7 +21,9 @@ import modelo.Estudiante;
  */
 public class UsuarioCsvRepositorio implements UsuarioRepositorio {
 
+    private static final String CABECERA = "identificacion|nombre|correo|contrasena|facultad|carrera|ciclo|mensajes";
     private final Path RUTA_ARCHIVO;
+    private List<Usuario> usuarios;
 
     public UsuarioCsvRepositorio() {
         this(Paths.get("data/usuarios.csv"));
@@ -30,6 +31,7 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
 
     public UsuarioCsvRepositorio(Path rutaArchivo) {
         this.RUTA_ARCHIVO = rutaArchivo;
+        this.usuarios = new ArrayList<>();
         inicializar();
     }
 
@@ -39,26 +41,19 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
                 Files.createDirectories(RUTA_ARCHIVO.getParent());
             }
             if (Files.notExists(RUTA_ARCHIVO) || Files.readAllLines(RUTA_ARCHIVO, StandardCharsets.UTF_8).isEmpty()) {
-                Files.write(RUTA_ARCHIVO, List.of("identificacion|nombre|correo|contrasena|facultad|carrera|ciclo|mensajes"), StandardCharsets.UTF_8);
+                Files.write(RUTA_ARCHIVO, List.of(CABECERA), StandardCharsets.UTF_8);
             }
         } catch (IOException e) {
             throw new RuntimeException("No se pudo crear el archivo", e);
         }
+        this.usuarios = cargarUsuarios();
     }
-    
-    @Override
-    public void guardar(Usuario usuario) {
-        try {
-            Files.write(RUTA_ARCHIVO, List.of(usuario.toTxt()), StandardCharsets.UTF_8, StandardOpenOption.APPEND);
-        } catch (IOException e) {
-            throw new RuntimeException("No se pudo escribir en el archivo: " + e.getMessage(), e);
+
+    private List<Usuario> cargarUsuarios() {
+        List<Usuario> lista = new ArrayList<>();
+        if (Files.notExists(RUTA_ARCHIVO)) {
+            return lista;
         }
-    }
-
-
-    @Override
-    public List<Usuario> obtenerUsuarios() {
-        List<Usuario> usuarios = new ArrayList<>();
         try {
             List<String> lineas = Files.readAllLines(RUTA_ARCHIVO, StandardCharsets.UTF_8);
             for (int i = 1; i < lineas.size(); i++) {
@@ -67,7 +62,10 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
                     continue;
                 }
 
-                String[] atributos = linea.split("\\|");
+                String[] atributos = linea.split("\\|", -1);
+                if (atributos.length < 7) {
+                    continue;
+                }
 
                 String identificacion = atributos[0];
                 String nombre = atributos[1];
@@ -86,13 +84,27 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
 
                 Estudiante estudiante = new Estudiante(facultad, carrera, ciclo, identificacion, nombre, correo, contrasena);
                 estudiante.setMensajes(mensajes);
-                usuarios.add(estudiante);
+                lista.add(estudiante);
             }
         } catch (IOException e) {
             throw new RuntimeException("Error al leer el CSV", e);
         } catch (NumberFormatException e) {
             throw new RuntimeException("Error al parsear el ciclo del estudiante. Verifica que sea un número.", e);
         }
+        return lista;
+    }
+    
+    @Override
+    public void guardar(Usuario usuario) {
+        if (usuario == null) {
+            throw new IllegalArgumentException("El usuario no puede ser nulo.");
+        }
+        usuarios.add(usuario);
+        reescribir();
+    }
+
+    @Override
+    public List<Usuario> obtenerUsuarios() {
         return usuarios;
     }
     
@@ -101,7 +113,6 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
         if (identificacion == null || identificacion.isBlank()) {
             return null;
         }
-        List<Usuario> usuarios = obtenerUsuarios();
         for (Usuario u : usuarios) {
             if (u != null && u.getIdentificacion() != null) {
                 if (u.getIdentificacion().equalsIgnoreCase(identificacion.trim())) {
@@ -112,46 +123,40 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
         return null;
     }
 
-    public void reescribir(List<Usuario> lista_nueva) {
-        List<String> lineas = new ArrayList<>();
-        lineas.add("identificacion|nombre|correo|contrasena|facultad|carrera|ciclo|mensajes");
-        for (Usuario u : lista_nueva) {
-            lineas.add(u.toTxt());
+    @Override
+    public void actualizar(Usuario usuarioActualizado) {
+        if (usuarioActualizado == null) {
+            return;
         }
-        try {
-            Files.write(RUTA_ARCHIVO, lineas, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException("No se pudo reescribir en el archivo: " + e.getMessage(), e); 
+        for (int i = 0; i < usuarios.size(); i++) {
+            if (usuarios.get(i).getIdentificacion().equalsIgnoreCase(usuarioActualizado.getIdentificacion())) {
+                usuarios.set(i, usuarioActualizado);
+                reescribir();
+                return;
+            }
         }
     }
-    
+
     @Override
     public void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva, String carreraNueva, String facultadNueva, int cicloNuevo) {
-        List<Usuario> usuarios = obtenerUsuarios();
-        boolean encontrado = false;
         for (Usuario u : usuarios) {
             if (u.getIdentificacion().equalsIgnoreCase(identificacionBuscar)) {
                 u.setNombre(nombreNuevo);
                 u.setCorreo(correoNuevo);
                 u.setContrasena(contrasenaNueva);
-                if (u instanceof Estudiante) {
-                    Estudiante e = (Estudiante) u;
+                if (u instanceof Estudiante e) {
                     e.setFacultad(facultadNueva);
                     e.setCarrera(carreraNueva);
                     e.setCiclo(cicloNuevo);
                 }
-                encontrado = true;
-                break;
+                reescribir();
+                return;
             }
-        }
-        if (encontrado) {
-            reescribir(usuarios);
         }
     }
     
     @Override
     public void eliminarUsuario(String identificacion) {
-        List<Usuario> usuarios = obtenerUsuarios();
         boolean eliminado = false;
         for (int i = 0; i < usuarios.size(); i++) {
             if (usuarios.get(i).getIdentificacion().equalsIgnoreCase(identificacion)) {
@@ -161,7 +166,7 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
             }
         }
         if (eliminado) {
-            reescribir(usuarios);
+            reescribir();
         }
     }
 
@@ -170,7 +175,6 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
         if (correo == null || correo.isBlank()) {
             return null;
         }
-        List<Usuario> usuarios = obtenerUsuarios();
         for (Usuario u : usuarios) {
             if (u != null && u.getCorreo() != null) {
                 if (u.getCorreo().equalsIgnoreCase(correo.trim())) {
@@ -179,6 +183,25 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
             }
         }
         return null;
+    }
+
+    public void reescribir() {
+        reescribir(this.usuarios);
+    }
+
+    public void reescribir(List<Usuario> lista_nueva) {
+        List<String> lineas = new ArrayList<>();
+        lineas.add(CABECERA);
+        if (lista_nueva != null) {
+            for (Usuario u : lista_nueva) {
+                lineas.add(u.toTxt());
+            }
+        }
+        try {
+            Files.write(RUTA_ARCHIVO, lineas, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo reescribir en el archivo: " + e.getMessage(), e); 
+        }
     }
 
 }

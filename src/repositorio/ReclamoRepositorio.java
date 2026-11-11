@@ -23,8 +23,12 @@ public interface ReclamoRepositorio {
 
     void actualizar(String id, String estado, String observacion, String codigoRevisor);
 
+    void actualizar(Reclamo reclamo);
+
     List<Reclamo> buscarPorReclamante(String identificacionReclamante);
 
     List<Reclamo> buscarPorObjeto(int idObjeto);
+
+    String generarSiguienteId();
 
 }
