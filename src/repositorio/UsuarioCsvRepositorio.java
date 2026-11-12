@@ -11,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import modelo.Estudiante;
@@ -22,10 +21,17 @@ import modelo.Estudiante;
  */
 public class UsuarioCsvRepositorio implements UsuarioRepositorio {
 
+    private static final String CABECERA = "identificacion|nombre|correo|contrasena|facultad|carrera|ciclo|mensajes";
     private final Path RUTA_ARCHIVO;
+    private List<Usuario> usuarios;
 
     public UsuarioCsvRepositorio() {
-        this.RUTA_ARCHIVO = Paths.get("data/usuarios.csv");
+        this(Paths.get("data/usuarios.csv"));
+    }
+
+    public UsuarioCsvRepositorio(Path rutaArchivo) {
+        this.RUTA_ARCHIVO = rutaArchivo;
+        this.usuarios = new ArrayList<>();
         inicializar();
     }
 
@@ -35,133 +41,167 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
                 Files.createDirectories(RUTA_ARCHIVO.getParent());
             }
             if (Files.notExists(RUTA_ARCHIVO) || Files.readAllLines(RUTA_ARCHIVO, StandardCharsets.UTF_8).isEmpty()) {
-                Files.write(RUTA_ARCHIVO, List.of("identificacion|nombre|correo|contrasena|mensajes|facultad|carrera|ciclo"), StandardCharsets.UTF_8);
+                Files.write(RUTA_ARCHIVO, List.of(CABECERA), StandardCharsets.UTF_8);
             }
         } catch (IOException e) {
             throw new RuntimeException("No se pudo crear el archivo", e);
         }
+        this.usuarios = cargarUsuarios();
     }
-    
-    @Override
-    public void guardar(Usuario usuario) {
-        try {
-            Files.write(RUTA_ARCHIVO, List.of(usuario.toTxt()), StandardCharsets.UTF_8, StandardOpenOption.APPEND);
-        } catch (IOException e) {
-            System.out.println("Error al guardar en estudiantes.csv: " + e.getMessage());
+
+    private List<Usuario> cargarUsuarios() {
+        List<Usuario> lista = new ArrayList<>();
+        if (Files.notExists(RUTA_ARCHIVO)) {
+            return lista;
         }
-    }
-
-
-    @Override
-    public List<Usuario> obtenerUsuarios() {
-        List<Usuario> usuarios = new ArrayList<>();
         try {
             List<String> lineas = Files.readAllLines(RUTA_ARCHIVO, StandardCharsets.UTF_8);
-            for (String linea : lineas) {
-
+            for (int i = 1; i < lineas.size(); i++) {
+                String linea = lineas.get(i);
                 if (linea.trim().isEmpty()) {
                     continue;
                 }
 
-                String[] atributos = linea.split("\\|");
+                String[] atributos = linea.split("\\|", -1);
+                if (atributos.length < 7) {
+                    continue;
+                }
 
                 String identificacion = atributos[0];
                 String nombre = atributos[1];
                 String correo = atributos[2];
                 String contrasena = atributos[3];
 
-                String[] mensajes_estatico = atributos[4].isEmpty() ? new String[0] : atributos[4].split(";");
+                String facultad = atributos[4];
+                String carrera = atributos[5];
+                int ciclo = Integer.parseInt(atributos[6]);
 
-                String facultad = atributos[5];
-                String carrerar = atributos[6];
-                int ciclo = Integer.parseInt(atributos[7]);
+                String[] mensajes_estatico = (atributos.length > 7 && !atributos[7].isEmpty() && !atributos[7].equals("SIN_MENSAJES"))
+                        ? atributos[7].split(";")
+                        : new String[0];
 
-                ArrayList<String> mensajes;
-                mensajes = new ArrayList<>(List.of(mensajes_estatico));
+                ArrayList<String> mensajes = new ArrayList<>(List.of(mensajes_estatico));
 
-                Estudiante estudiante = new Estudiante(facultad, carrerar, ciclo, identificacion, nombre, correo, contrasena);
+                Estudiante estudiante = new Estudiante(facultad, carrera, ciclo, identificacion, nombre, correo, contrasena);
                 estudiante.setMensajes(mensajes);
-                usuarios.add(estudiante);
+                lista.add(estudiante);
             }
         } catch (IOException e) {
             throw new RuntimeException("Error al leer el CSV", e);
         } catch (NumberFormatException e) {
             throw new RuntimeException("Error al parsear el ciclo del estudiante. Verifica que sea un número.", e);
         }
+        return lista;
+    }
+    
+    @Override
+    public void guardar(Usuario usuario) {
+        if (usuario == null) {
+            throw new IllegalArgumentException("El usuario no puede ser nulo.");
+        }
+        usuarios.add(usuario);
+        reescribir();
+    }
+
+    @Override
+    public List<Usuario> obtenerUsuarios() {
         return usuarios;
     }
     
     @Override
     public Usuario obtenerUsuarioPorIdentificacion(String identificacion) {
-        List<Usuario> usuarios = obtenerUsuarios();
+        if (identificacion == null || identificacion.isBlank()) {
+            return null;
+        }
         for (Usuario u : usuarios) {
             if (u != null && u.getIdentificacion() != null) {
-                if (u.getIdentificacion().equalsIgnoreCase(identificacion)) {
-                    return u; // Retorna el usuario encontrado (sea Estudiante o cualquier otro tipo de Usuario)
-                }
-            }
-        }
-        throw new RuntimeException("No se encontró ningún usuario con la identificación: " + identificacion);
-    }
-    public void reescribir (List<Usuario> lista_nueva) {
-        List <String> lineas = new ArrayList<>();
-        lineas.add("identificacion|nombre|correo|contrasena|mensajes|facultad|carrera|ciclo");
-        for (Usuario u: lista_nueva){
-            lineas.add(u.toTxt());
-        }
-        try {
-            Files.write(RUTA_ARCHIVO, lineas, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException ("No se pudo reescribir en el archivo" + e); 
-        }
-            
-    }
-    
-    @Override
-    public void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva, String carreraNueva, String facultadNueva, int cicloNuevo) {
-        List<Usuario> usuarios = obtenerUsuarios();
-        for (Usuario u: usuarios) {
-            if (u.getIdentificacion().equals(identificacionBuscar)) {
-                u.setNombre(nombreNuevo);
-                u.setCorreo(correoNuevo);
-                u.setContrasena(contrasenaNueva);
-                if (u instanceof Estudiante){
-                    Estudiante e = (Estudiante) u;
-                    ((Estudiante) u).setFacultad(facultadNueva);
-                    ((Estudiante) u).setCarrera(carreraNueva);
-                    ((Estudiante) u).setCiclo(cicloNuevo);
-                }
-                break;
-                
-            }
-        }
-        reescribir(usuarios);
-        
-    }
-    
-    @Override
-    public void eliminarUsuario(String identificacion) {
-        List <Usuario> usuarios = obtenerUsuarios();
-        for (int i = 0; i<usuarios.size(); i++) {
-            if (usuarios.get(i).getIdentificacion().equalsIgnoreCase(identificacion)){
-                usuarios.remove(i);
-                break;
-            }
-            
-        }
-    }
-    @Override
-    
-    public Usuario buscarPorCorreo(String correo) {
-        List<Usuario> usuarios = obtenerUsuarios();
-        for (Usuario u : usuarios) {
-            if (u != null && u.getCorreo() != null) {
-                if (u.getCorreo().equalsIgnoreCase(correo)) {
+                if (u.getIdentificacion().equalsIgnoreCase(identificacion.trim())) {
                     return u;
                 }
             }
         }
-        throw new RuntimeException("No se encontró ningún usuario con la identificación: " + correo);
+        return null;
+    }
+
+    @Override
+    public void actualizar(Usuario usuarioActualizado) {
+        if (usuarioActualizado == null) {
+            return;
+        }
+        for (int i = 0; i < usuarios.size(); i++) {
+            if (usuarios.get(i).getIdentificacion().equalsIgnoreCase(usuarioActualizado.getIdentificacion())) {
+                usuarios.set(i, usuarioActualizado);
+                reescribir();
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva, String carreraNueva, String facultadNueva, int cicloNuevo) {
+        for (Usuario u : usuarios) {
+            if (u.getIdentificacion().equalsIgnoreCase(identificacionBuscar)) {
+                u.setNombre(nombreNuevo);
+                u.setCorreo(correoNuevo);
+                u.setContrasena(contrasenaNueva);
+                if (u instanceof Estudiante e) {
+                    e.setFacultad(facultadNueva);
+                    e.setCarrera(carreraNueva);
+                    e.setCiclo(cicloNuevo);
+                }
+                reescribir();
+                return;
+            }
+        }
+    }
+    
+    @Override
+    public void eliminarUsuario(String identificacion) {
+        boolean eliminado = false;
+        for (int i = 0; i < usuarios.size(); i++) {
+            if (usuarios.get(i).getIdentificacion().equalsIgnoreCase(identificacion)) {
+                usuarios.remove(i);
+                eliminado = true;
+                break;
+            }
+        }
+        if (eliminado) {
+            reescribir();
+        }
+    }
+
+    @Override
+    public Usuario buscarPorCorreo(String correo) {
+        if (correo == null || correo.isBlank()) {
+            return null;
+        }
+        for (Usuario u : usuarios) {
+            if (u != null && u.getCorreo() != null) {
+                if (u.getCorreo().equalsIgnoreCase(correo.trim())) {
+                    return u;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void reescribir() {
+        reescribir(this.usuarios);
+    }
+
+    public void reescribir(List<Usuario> lista_nueva) {
+        List<String> lineas = new ArrayList<>();
+        lineas.add(CABECERA);
+        if (lista_nueva != null) {
+            for (Usuario u : lista_nueva) {
+                lineas.add(u.toTxt());
+            }
+        }
+        try {
+            Files.write(RUTA_ARCHIVO, lineas, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo reescribir en el archivo: " + e.getMessage(), e); 
+        }
     }
 
 }

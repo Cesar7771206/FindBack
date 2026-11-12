@@ -22,6 +22,10 @@ public abstract class ObjetoReportado implements Buscable {
 
     public ObjetoReportado(int id, String nombre, String descripcion, String categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
         setId(id);
+        setAtributosObjetoReportado(nombre, descripcion, categoria, color, fecha, ubicacion, estado, reportadoPor);
+    }
+
+    protected void setAtributosObjetoReportado(String nombre, String descripcion, String categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
         setNombre(nombre);
         setDescripcion(descripcion);
         setCategoria(categoria);
@@ -30,7 +34,8 @@ public abstract class ObjetoReportado implements Buscable {
         setUbicacion(ubicacion);
         setEstado(estado);
         setReportadoPor(reportadoPor);
-    }
+    }    
+    
 
     public int getId() {
         return id;
@@ -93,7 +98,7 @@ public abstract class ObjetoReportado implements Buscable {
 
     public void setFecha(String fecha) {
         String patronFecha = "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$";
-        if (!fecha.matches(patronFecha) || fecha == null || fecha.isBlank()) {
+        if (fecha == null || fecha.isBlank() || !fecha.matches(patronFecha)) {
             throw new IllegalArgumentException("La fecha debe tener el formato correcto (YYYY-MM-DD), no puede ser nula, estar vacía ni contener solo espacios");
         }
         this.fecha = fecha.trim();
@@ -135,7 +140,7 @@ public abstract class ObjetoReportado implements Buscable {
     @Override
     public boolean coincideCon(String criterio) {
         if (criterio == null || criterio.isBlank()) {
-            throw new IllegalArgumentException("El criterior no puede estar vacío ni contener solo espacios");
+            throw new IllegalArgumentException("El criterio no puede estar vacío ni contener solo espacios");
         }
         String crit = criterio.toLowerCase().trim();
         return (nombre.toLowerCase().contains(crit))

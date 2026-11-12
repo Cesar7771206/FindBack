@@ -11,9 +11,9 @@ public class Estudiante extends Usuario{
 
     public Estudiante(String facultad, String carrera, int ciclo, String identificacion, String nombre, String correo, String contrasena) {
         super(identificacion, nombre, correo, contrasena);
-        this.facultad = facultad;
-        this.carrera = carrera;
-        this.ciclo = ciclo;
+        setFacultad(facultad);
+        setCarrera(carrera);
+        setCiclo(ciclo);
     }
 
     public String getFacultad() {
@@ -35,7 +35,7 @@ public class Estudiante extends Usuario{
         if (carrera == null || carrera.isBlank()){
             throw new IllegalArgumentException("El campo carrera no puede estar vacío ni contener solo espacios"); 
         }
-        this.carrera = carrera;
+        this.carrera = carrera.trim().toUpperCase();
     }
 
     public int getCiclo() {

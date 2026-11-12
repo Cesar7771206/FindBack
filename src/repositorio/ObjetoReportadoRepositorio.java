@@ -19,5 +19,10 @@ public interface ObjetoReportadoRepositorio {
 
     ObjetoReportado obtenerObjetoPorId(int id);
 
+    void actualizar(ObjetoReportado objeto);
+
     void eliminarObjeto(int id);
+
+    int generarSiguienteId();
+
 }
