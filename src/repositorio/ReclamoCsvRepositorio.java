@@ -16,6 +16,8 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
 
     private final UsuarioRepositorio usuarioRepo;
     private final ObjetoReportadoRepositorio objetoRepo;
+    private List<Reclamo> reclamos;
+    private int ultimoId;
 
     public ReclamoCsvRepositorio() {
         this(Paths.get("data/reclamos.csv"), new UsuarioCsvRepositorio(), new ObjetoReportadoCsvRepositorio());
@@ -29,6 +31,7 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
         this.RUTA_ARCHIVO = rutaArchivo;
         this.usuarioRepo = usuarioRepo != null ? usuarioRepo : new UsuarioCsvRepositorio();
         this.objetoRepo = objetoRepo != null ? objetoRepo : new ObjetoReportadoCsvRepositorio();
+        this.reclamos = new ArrayList<>();
         inicializar();
     }
 
@@ -43,23 +46,27 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
         } catch (IOException e) {
             throw new RuntimeException("No se pudo crear el CSV", e);
         }
+        this.reclamos = cargarReclamos();
+        int max = 0;
+        for (Reclamo r : this.reclamos) {
+            try {
+                String numStr = r.getId().replaceAll("[^0-9]", "");
+                if (!numStr.isEmpty()) {
+                    int num = Integer.parseInt(numStr);
+                    if (num > max) {
+                        max = num;
+                    }
+                }
+            } catch (NumberFormatException ignored) {}
+        }
+        this.ultimoId = max;
     }
 
-    @Override
-    public void guardar(Reclamo reclamo) {
-        if (reclamo == null) {
-            throw new IllegalArgumentException("El reclamo no puede ser nulo.");
+    private List<Reclamo> cargarReclamos() {
+        List<Reclamo> lista = new ArrayList<>();
+        if (Files.notExists(RUTA_ARCHIVO)) {
+            return lista;
         }
-        try {
-            Files.write(RUTA_ARCHIVO, List.of(reclamo.toTxt()), StandardCharsets.UTF_8, StandardOpenOption.APPEND);
-        } catch (IOException e) {
-            throw new RuntimeException("Error escribiendo en el CSV: " + e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public List<Reclamo> obtenerReclamos() {
-        List<Reclamo> reclamos = new ArrayList<>();
         try {
             List<String> lineas = Files.readAllLines(RUTA_ARCHIVO, StandardCharsets.UTF_8);
             for (int i = 1; i < lineas.size(); i++) {
@@ -103,11 +110,28 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
                 String codigoRevisor = atributos[6];
 
                 Reclamo reclamo = new Reclamo(id, objeto, reclamante, respuestas, estado, observacion, codigoRevisor);
-                reclamos.add(reclamo);
+                lista.add(reclamo);
             }
         } catch (IOException e) {
             throw new RuntimeException("Error leyendo el CSV: " + e.getMessage(), e);
         }
+        return lista;
+    }
+
+    @Override
+    public void guardar(Reclamo reclamo) {
+        if (reclamo == null) {
+            throw new IllegalArgumentException("El reclamo no puede ser nulo.");
+        }
+        if (reclamo.getId() == null || reclamo.getId().isBlank() || buscarPorId(reclamo.getId()) != null) {
+            reclamo.setId(generarSiguienteId());
+        }
+        reclamos.add(reclamo);
+        reescribir();
+    }
+
+    @Override
+    public List<Reclamo> obtenerReclamos() {
         return reclamos;
     }
 
@@ -116,7 +140,6 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
         if (id == null || id.isBlank()) {
             return null;
         }
-        List<Reclamo> reclamos = obtenerReclamos();
         for (Reclamo r : reclamos) {
             if (r.getId().equalsIgnoreCase(id.trim())) {
                 return r;
@@ -125,25 +148,11 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
         return null;
     }
 
-    private void reescribir(List<Reclamo> reclamos) {
-        List<String> lineas = new ArrayList<>();
-        lineas.add(CABECERA);
-        for (Reclamo r : reclamos) {
-            lineas.add(r.toTxt());
-        }
-        try {
-            Files.write(RUTA_ARCHIVO, lineas, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException("Error reescribiendo el CSV: " + e.getMessage(), e);
-        }
-    }
-
     @Override
     public void eliminar(String id) {
         if (id == null || id.isBlank()) {
             return;
         }
-        List<Reclamo> reclamos = obtenerReclamos();
         boolean eliminado = false;
         for (int i = 0; i < reclamos.size(); i++) {
             if (reclamos.get(i).getId().equalsIgnoreCase(id.trim())) {
@@ -153,7 +162,7 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
             }
         }
         if (eliminado) {
-            reescribir(reclamos);
+            reescribir();
         }
     }
 
@@ -162,19 +171,28 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
         if (id == null || id.isBlank()) {
             return;
         }
-        List<Reclamo> reclamos = obtenerReclamos();
-        boolean actualizado = false;
         for (Reclamo r : reclamos) {
             if (r.getId().equalsIgnoreCase(id.trim())) {
                 r.setEstado(estado);
                 r.setObservacion(observacion);
                 r.setCodigoRevisor(codigoRevisor);
-                actualizado = true;
-                break;
+                reescribir();
+                return;
             }
         }
-        if (actualizado) {
-            reescribir(reclamos);
+    }
+
+    @Override
+    public void actualizar(Reclamo reclamoActualizado) {
+        if (reclamoActualizado == null) {
+            return;
+        }
+        for (int i = 0; i < reclamos.size(); i++) {
+            if (reclamos.get(i).getId().equalsIgnoreCase(reclamoActualizado.getId())) {
+                reclamos.set(i, reclamoActualizado);
+                reescribir();
+                return;
+            }
         }
     }
 
@@ -184,7 +202,7 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
             return new ArrayList<>();
         }
         List<Reclamo> resultado = new ArrayList<>();
-        for (Reclamo r : obtenerReclamos()) {
+        for (Reclamo r : reclamos) {
             if (r.getReclamante() != null && r.getReclamante().getIdentificacion().equalsIgnoreCase(identificacionReclamante.trim())) {
                 resultado.add(r);
             }
@@ -195,12 +213,36 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
     @Override
     public List<Reclamo> buscarPorObjeto(int idObjeto) {
         List<Reclamo> resultado = new ArrayList<>();
-        for (Reclamo r : obtenerReclamos()) {
+        for (Reclamo r : reclamos) {
             if (r.getObjeto() != null && r.getObjeto().getId() == idObjeto) {
                 resultado.add(r);
             }
         }
         return resultado;
+    }
+
+    @Override
+    public String generarSiguienteId() {
+        return "REC-" + String.format("%03d", ++this.ultimoId);
+    }
+
+    public void reescribir() {
+        reescribir(this.reclamos);
+    }
+
+    public void reescribir(List<Reclamo> lista) {
+        List<String> lineas = new ArrayList<>();
+        lineas.add(CABECERA);
+        if (lista != null) {
+            for (Reclamo r : lista) {
+                lineas.add(r.toTxt());
+            }
+        }
+        try {
+            Files.write(RUTA_ARCHIVO, lineas, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException("Error reescribiendo el CSV: " + e.getMessage(), e);
+        }
     }
 
 }
