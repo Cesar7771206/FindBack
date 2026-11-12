@@ -52,9 +52,36 @@ public class Reclamoservicio {
         }
         
         String nuevoId = reclamoRepo.generarSiguienteId();
-        Reclamo nuevo = new Reclamo(nuevoId, objeto, reclamante, respuestas, "PENDIENTE", ",");
+        Reclamo nuevo = new Reclamo(nuevoId, objeto, reclamante, respuestas, "PENDIENTE", ", ");
         reclamoRepo.guardar(nuevo);
         return true;
+    }
+    
+    public List<Reclamo> listarReclamos() {
+        return reclamoRepo.obtenerReclamos();
+    }
+ 
+    public Reclamo buscarPorId(String idReclamo) {
+        return reclamoRepo.buscarPorId(idReclamo);
+    }
+ 
+    public List<Reclamo> listarPorReclamante(String idReclamante) {
+        return reclamoRepo.buscarPorReclamante(idReclamante);
+    }
+ 
+    public List<Reclamo> listarPorObjeto(int idObjeto) {
+        return reclamoRepo.buscarPorObjeto(idObjeto);
+    }
+ 
+    // Lista solo los reclamos que todavía no se han revisado
+    public List<Reclamo> listarPendientes() {
+        List<Reclamo> pendientes = new ArrayList<>();
+        for (Reclamo r : reclamoRepo.obtenerReclamos()) {
+            if (r.getEstado().equals("PENDIENTE")) {
+                pendientes.add(r);
+            }
+        }
+        return pendientes;
     }
     
 }
