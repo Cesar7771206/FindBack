@@ -1,15 +1,12 @@
 
 package servicio;
 
+import modelo.*;
+import repositorio.ObjetoReportadoRepositorio;
 import java.util.ArrayList;
 
-import modelo.ObjetoReportado;
-
-import repositorio.ObjetoReportadoRepositorio;
-
-
 public class ObjetoServicio {
-    
+
     private final ObjetoReportadoRepositorio objetoRepo;
 
     public ObjetoServicio(ObjetoReportadoRepositorio objetoRepo) {
