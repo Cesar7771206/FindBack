@@ -46,3 +46,4 @@ public class ObjetoServicio {
         return objetoRepo.generarSiguienteId();
     }
 }
+
