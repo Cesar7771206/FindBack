@@ -151,4 +151,10 @@ public class Reclamoservicio {
         reclamoRepo.eliminar(idReclamo);
         return true;
     }
+    
+    private void notificarReclamante(Reclamo reclamo, String mensaje) {
+        Estudiante estudiante = reclamo.getReclamante();
+        estudiante.recibirMensaje(mensaje);
+        usuarioRepo.actualizar(estudiante); 
+    }
 }
