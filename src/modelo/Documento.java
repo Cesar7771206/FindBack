@@ -18,6 +18,12 @@ public class Documento extends ObjetoReportado {
         setTipoDocumento(tipoDocumento);
         setNombreTitular(nombreTitular);
     }
+    
+    public void setAtributosDocumento(String tipoDocumento, String nombreTitular, String nombre, String descripcion, String categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
+        setAtributosObjetoReportado(nombre, descripcion, categoria, color, fecha, ubicacion, estado, reportadoPor);
+        setTipoDocumento(tipoDocumento);
+        setNombreTitular(nombreTitular);
+    }
 
     public String getTipoDocumento() {
         return tipoDocumento;

@@ -2,42 +2,44 @@ package servicio;
 
 import modelo.Estudiante;
 import modelo.Usuario;
-import repositorio.UsuarioCsvRepositorio;
+import repositorio.UsuarioRepositorio;
 
 public class AutenticacionServicio {
-    private UsuarioCsvRepositorio usuarioRepo;
+    private final UsuarioRepositorio usuarioRepo;
     
-    public AutenticacionServicio (UsuarioCsvRepositorio usuarioRepo) {
+    public AutenticacionServicio(UsuarioRepositorio usuarioRepo) {
         this.usuarioRepo = usuarioRepo;
     }
     
     public boolean registrarUsuario(String identificacion, String nombre, String correo, String contrasena, String mensajes, String facultad, String carrera, int ciclo) {
-        
-        try {
-            if (usuarioRepo.obtenerUsuarioPorIdentificacion(identificacion)!= null || usuarioRepo.buscarPorCorreo(correo) != null) {
-                return false;
-            }
-        } catch (RuntimeException e) {
-            //ya que el usuario no fue encontrado
+        if (identificacion == null || identificacion.isBlank() || correo == null || correo.isBlank()) {
+            return false;
         }
-        Estudiante nuevo = new Estudiante(facultad,carrera, ciclo, identificacion, nombre, correo, contrasena);
+        
+        if (usuarioRepo.obtenerUsuarioPorIdentificacion(identificacion) != null || usuarioRepo.buscarPorCorreo(correo) != null) {
+            return false;
+        }
+
+        Estudiante nuevo = new Estudiante(facultad, carrera, ciclo, identificacion, nombre, correo, contrasena);
+        if (mensajes != null && !mensajes.isBlank() && !mensajes.equals("SIN_MENSAJES")) {
+            String[] msgs = mensajes.split(";");
+            for (String m : msgs) {
+                nuevo.recibirMensaje(m);
+            }
+        }
 
         usuarioRepo.guardar(nuevo);
         return true;
     }
     
     public Estudiante login(String correoOCodigo, String contrasena) {
+        if (correoOCodigo == null || contrasena == null) {
+            return null;
+        }
 
-        Usuario usuario = null;
-
-        try {
-            usuario = usuarioRepo.buscarPorCorreo(correoOCodigo);
-        } catch (RuntimeException e) {
-            try {
-                usuario = usuarioRepo.obtenerUsuarioPorIdentificacion(correoOCodigo);
-            } catch (RuntimeException ex) {
-                return null;
-            }
+        Usuario usuario = usuarioRepo.buscarPorCorreo(correoOCodigo);
+        if (usuario == null) {
+            usuario = usuarioRepo.obtenerUsuarioPorIdentificacion(correoOCodigo);
         }
 
         if (usuario instanceof Estudiante &&
