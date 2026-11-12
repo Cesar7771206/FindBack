@@ -29,36 +29,9 @@ public class ObjetoServicio {
         
         ObjetoReportado obj= objetoRepo.obtenerObjetoPorId(idObjeto);
         
-        
-        if (obj != null) {
-
-            Estudiante estudiante = obj.getReportadoPor();
-
-            if (obj instanceof Prenda) {
-                Prenda prenda = (Prenda) obj;
-
-                objetoRepo.actualizarObjetoPrenda(idObjeto, obj.getNombre(), obj.getDescripcion(), obj.getCategoria(), obj.getColor(), obj.getFecha(),
-                        obj.getUbicacion(), nuevoEstado, estudiante, prenda.getTalla(), prenda.getMarca());
-
-            } else if (obj instanceof Documento) {
-                Documento documento = (Documento) obj;
-
-                objetoRepo.actualizarObjetoDocumento(idObjeto, obj.getNombre(), obj.getDescripcion(), obj.getCategoria(), obj.getColor(), obj.getFecha(),
-                        obj.getUbicacion(), nuevoEstado, estudiante, documento.getTipoDocumento(), documento.getNombreTitular());
-
-            } else if (obj instanceof DispositivoElectronico) {
-                DispositivoElectronico dispositivo = (DispositivoElectronico) obj;
-
-                objetoRepo.actualizarObjetoDispositivoElectronico(
-                        idObjeto, obj.getNombre(), obj.getDescripcion(), obj.getCategoria(), obj.getColor(), obj.getFecha(), obj.getUbicacion(), nuevoEstado, estudiante,
-                        dispositivo.getMarca(), dispositivo.getModelo(), dispositivo.getNumeroSerie());
-
-            } else if (obj instanceof ObjetoGenerico) {
-                ObjetoGenerico generico = (ObjetoGenerico) obj;
-
-                objetoRepo.actualizarObjetoGenerico(idObjeto, obj.getNombre(), obj.getDescripcion(),obj.getCategoria(), obj.getColor(), obj.getFecha(),
-                        obj.getUbicacion(), nuevoEstado, estudiante,generico.getDetalleExtra());
-            }
+        if (obj !=  null) {
+            obj.setEstado(nuevoEstado);
+            objetoRepo.actualizar(obj);
         }
     }
     
@@ -82,16 +55,7 @@ public class ObjetoServicio {
     
     public int generarNuevoId() {
 
-        int mayor = 0;
-
-        for (ObjetoReportado objeto : objetoRepo.obtenerObjetos()) {
-            if (objeto.getId() > mayor) {
-                mayor = objeto.getId();
-            }
-        }
-
-        return mayor + 1;
+        return objetoRepo.generarSiguienteId();
     }
  
-    
 }
