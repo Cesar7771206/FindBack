@@ -102,5 +102,44 @@ public class Reclamoservicio {
         return coincidencias;
     }
     
-    
+    public boolean aprobarReclamo(String idReclamo, String codigoRevisor, String observacion) {
+        Reclamo reclamo = reclamoRepo.buscarPorId(idReclamo);
+        if (reclamo == null) {
+            return false;
+        }
+        
+        if (!reclamo.getEstado().equals("PENDIENTE")) {
+            return false;
+        }
+ 
+        reclamo.setEstado("APROBADO");
+        reclamo.setCodigoRevisor(codigoRevisor);
+        reclamo.setObservacion(observacion);
+        reclamoRepo.actualizar(reclamo);
+ 
+        ObjetoReportado objeto = reclamo.getObjeto();
+        objeto.setEstado("ENTREGADO");
+        objetoRepo.actualizar(objeto);
+ 
+        notificarReclamante(reclamo, "Tu reclamo " + reclamo.getId() + " fue APROBADO.");
+        return true;
+    }
+ 
+    public boolean rechazarReclamo(String idReclamo, String codigoRevisor, String observacion) {
+        Reclamo reclamo = reclamoRepo.buscarPorId(idReclamo);
+        if (reclamo == null) {
+            return false;
+        }
+        if (!reclamo.getEstado().equals("PENDIENTE")) {
+            return false;
+        }
+ 
+        reclamo.setEstado("RECHAZADO");
+        reclamo.setCodigoRevisor(codigoRevisor);
+        reclamo.setObservacion(observacion);
+        reclamoRepo.actualizar(reclamo);
+ 
+        notificarReclamante(reclamo, "Tu reclamo " + reclamo.getId() + " fue RECHAZADO.");
+        return true;
+    }
 }
