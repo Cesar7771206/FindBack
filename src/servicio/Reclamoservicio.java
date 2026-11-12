@@ -142,4 +142,13 @@ public class Reclamoservicio {
         notificarReclamante(reclamo, "Tu reclamo " + reclamo.getId() + " fue RECHAZADO.");
         return true;
     }
+    
+    public boolean eliminarReclamo(String idReclamo) {
+        Reclamo reclamo = reclamoRepo.buscarPorId(idReclamo);
+        if (reclamo == null) {
+            return false;
+        }
+        reclamoRepo.eliminar(idReclamo);
+        return true;
+    }
 }
