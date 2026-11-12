@@ -14,7 +14,8 @@ import repositorio.ObjetoReportadoRepositorio;
  */
 public class ObjetoServicio {
     
-    private final ObjetoReportadoRepositorio objetoRepo;
+    private  ObjetoReportadoRepositorio objetoRepo;
+
 
     public ObjetoServicio(ObjetoReportadoRepositorio objetoRepo) {
         this.objetoRepo= objetoRepo;
