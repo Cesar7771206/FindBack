@@ -22,6 +22,10 @@ public class Reclamo {
         setObjeto(objeto);
     }
 
+    public Reclamo(String id, ObjetoReportado objeto, Estudiante reclamante, ArrayList<String> respuestas) {
+        this(id, objeto, reclamante, respuestas, "PENDIENTE", "", "");
+    }
+
     public String getId() {
         return id;
     }
