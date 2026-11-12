@@ -123,7 +123,7 @@ public class PanelLogin extends javax.swing.JPanel {
         jLabel4.setBackground(new java.awt.Color(51, 153, 255));
         jLabel4.setFont(new java.awt.Font("SansSerif", 2, 13)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(0, 153, 255));
-        jLabel4.setText("Crear cuenta");
+        jLabel4.setText("Regístrate aquí");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
