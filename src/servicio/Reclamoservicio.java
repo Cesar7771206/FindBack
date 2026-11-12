@@ -73,7 +73,7 @@ public class Reclamoservicio {
         return reclamoRepo.buscarPorObjeto(idObjeto);
     }
  
-    // Lista solo los reclamos que todavía no se han revisado
+    
     public List<Reclamo> listarPendientes() {
         List<Reclamo> pendientes = new ArrayList<>();
         for (Reclamo r : reclamoRepo.obtenerReclamos()) {
@@ -83,5 +83,24 @@ public class Reclamoservicio {
         }
         return pendientes;
     }
+    
+    public int contarCoincidencias(String idReclamo) {
+        Reclamo reclamo = reclamoRepo.buscarPorId(idReclamo);
+        if (reclamo == null) {
+            return -1;
+        }
+ 
+        String[] datosReales = reclamo.getObjeto().datosVerificables();
+        ArrayList<String> respuestas = reclamo.getRespuestas();
+ 
+        int coincidencias = 0;
+        for (int i = 0; i < datosReales.length && i < respuestas.size(); i++) {
+            if (datosReales[i].trim().equalsIgnoreCase(respuestas.get(i).trim())) {
+                coincidencias++;
+            }
+        }
+        return coincidencias;
+    }
+    
     
 }
