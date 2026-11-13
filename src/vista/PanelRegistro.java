@@ -244,6 +244,15 @@ public class PanelRegistro extends javax.swing.JPanel {
             autenticacionServicio = new AutenticacionServicio();
         }
 
+        modelo.Facultad facEnum = modelo.Facultad.fromString(facultad);
+        modelo.Carrera carEnum = modelo.Carrera.fromString(carrera);
+        if (!facultad.isEmpty()) {
+            facultad = facEnum.getNombre();
+        }
+        if (!carrera.isEmpty()) {
+            carrera = carEnum.getNombre();
+        }
+
         boolean ok = autenticacionServicio.registrarUsuario(dni, nombre, correo, pass, "SIN_MENSAJES", facultad, carrera, ciclo);
         if (ok) {
             JOptionPane.showMessageDialog(this,

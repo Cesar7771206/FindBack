@@ -31,6 +31,29 @@ public class PanelReclamar extends javax.swing.JPanel {
         this.reclamoServicio = new ReclamoServicio();
         this.coincidenciaServicio = new CoincidenciaServicio();
         this.txtFecha.setText(LocalDate.now().toString());
+        cargarUbicaciones();
+        cbxCategoria.addActionListener(evt -> actualizarGuiaVerificacion());
+        actualizarGuiaVerificacion();
+    }
+
+    private void cargarUbicaciones() {
+        cbxLugar.removeAllItems();
+        for (modelo.Ubicacion u : modelo.Ubicacion.values()) {
+            cbxLugar.addItem(u.getNombre());
+        }
+    }
+
+    private void actualizarGuiaVerificacion() {
+        String cat = (String) cbxCategoria.getSelectedItem();
+        if (cat == null) {
+            cat = "Documento";
+        }
+        switch (cat) {
+            case "Prenda" -> lblDatoPrivado.setText("Dato privado: Talla y Marca exacta de la prenda *");
+            case "Dispositivo Electronico" -> lblDatoPrivado.setText("Dato privado: Marca, Modelo y Número de Serie *");
+            case "Documento" -> lblDatoPrivado.setText("Dato privado: Tipo de documento y Titular exacto *");
+            default -> lblDatoPrivado.setText("Dato privado o detalle que solo el dueño conoce *");
+        }
     }
 
     public PanelReclamar(frmPrincipal ventana, PanelApp panelApp) {
@@ -121,19 +144,17 @@ public class PanelReclamar extends javax.swing.JPanel {
         panelContenedor.setBorder(javax.swing.BorderFactory.createEmptyBorder(24, 28, 24, 28));
         panelContenedor.setLayout(new javax.swing.BoxLayout(panelContenedor, javax.swing.BoxLayout.Y_AXIS));
 
-        panelHeader.setAlignmentX(0.0f);
+        panelHeader.setAlignmentX(0.0F);
         panelHeader.setBackground(new java.awt.Color(255, 255, 255));
         panelHeader.setMaximumSize(new java.awt.Dimension(32767, 50));
         panelHeader.setPreferredSize(new java.awt.Dimension(440, 50));
         panelHeader.setLayout(new javax.swing.BoxLayout(panelHeader, javax.swing.BoxLayout.Y_AXIS));
 
-        lblTitulo.setAlignmentX(0.0f);
         lblTitulo.setFont(new java.awt.Font("SansSerif", 1, 22)); // NOI18N
-        lblTitulo.setForeground(new java.awt.Color(33, 37, 41));
+        lblTitulo.setForeground(new java.awt.Color(51, 37, 33));
         lblTitulo.setText("Reclamar Objeto");
         panelHeader.add(lblTitulo);
 
-        lblSubtitulo.setAlignmentX(0.0f);
         lblSubtitulo.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         lblSubtitulo.setForeground(new java.awt.Color(102, 102, 102));
         lblSubtitulo.setText("Registro de datos del objeto perdido o reclamo de hallazgo");
@@ -141,73 +162,68 @@ public class PanelReclamar extends javax.swing.JPanel {
 
         panelContenedor.add(panelHeader);
 
-        espacio1.setAlignmentX(0.0f);
+        espacio1.setAlignmentX(0.0F);
         espacio1.setBackground(new java.awt.Color(255, 255, 255));
         espacio1.setMaximumSize(new java.awt.Dimension(32767, 16));
         espacio1.setPreferredSize(new java.awt.Dimension(440, 16));
         panelContenedor.add(espacio1);
 
-        lblNombre.setAlignmentX(0.0f);
         lblNombre.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         lblNombre.setForeground(new java.awt.Color(75, 85, 99));
         lblNombre.setText("Nombre del Objeto *");
         panelContenedor.add(lblNombre);
 
-        txtNombre.setAlignmentX(0.0f);
+        txtNombre.setAlignmentX(0.0F);
         txtNombre.setBackground(new java.awt.Color(249, 250, 251));
         txtNombre.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
-        txtNombre.setBorder(javax.swing.BorderFactory.createCompoundBorder(new javax.swing.border.LineBorder(new java.awt.Color(209, 213, 219), 1, true), javax.swing.BorderFactory.createEmptyBorder(6, 10, 6, 10)));
+        txtNombre.setBorder(javax.swing.BorderFactory.createCompoundBorder());
         txtNombre.setMaximumSize(new java.awt.Dimension(32767, 36));
         txtNombre.setPreferredSize(new java.awt.Dimension(440, 36));
         panelContenedor.add(txtNombre);
 
-        espacio2.setAlignmentX(0.0f);
+        espacio2.setAlignmentX(0.0F);
         espacio2.setBackground(new java.awt.Color(255, 255, 255));
         espacio2.setMaximumSize(new java.awt.Dimension(32767, 12));
         espacio2.setPreferredSize(new java.awt.Dimension(440, 12));
         panelContenedor.add(espacio2);
 
-        lblCategoria.setAlignmentX(0.0f);
         lblCategoria.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         lblCategoria.setForeground(new java.awt.Color(75, 85, 99));
         lblCategoria.setText("Categoría *");
         panelContenedor.add(lblCategoria);
 
-        cbxCategoria.setAlignmentX(0.0f);
+        cbxCategoria.setAlignmentX(0.0F);
         cbxCategoria.setBackground(new java.awt.Color(255, 255, 255));
         cbxCategoria.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
-        cbxCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Documento", "Prenda", "Dispositivo Electronico", "Objeto Generico" }));
         cbxCategoria.setMaximumSize(new java.awt.Dimension(32767, 36));
         cbxCategoria.setPreferredSize(new java.awt.Dimension(440, 36));
         panelContenedor.add(cbxCategoria);
 
-        espacio3.setAlignmentX(0.0f);
+        espacio3.setAlignmentX(0.0F);
         espacio3.setBackground(new java.awt.Color(255, 255, 255));
         espacio3.setMaximumSize(new java.awt.Dimension(32767, 12));
         espacio3.setPreferredSize(new java.awt.Dimension(440, 12));
         panelContenedor.add(espacio3);
 
-        lblLugar.setAlignmentX(0.0f);
         lblLugar.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         lblLugar.setForeground(new java.awt.Color(75, 85, 99));
         lblLugar.setText("Lugar donde se perdió o halló *");
         panelContenedor.add(lblLugar);
 
-        cbxLugar.setAlignmentX(0.0f);
+        cbxLugar.setAlignmentX(0.0F);
         cbxLugar.setBackground(new java.awt.Color(255, 255, 255));
         cbxLugar.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
-        cbxLugar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Biblioteca Central", "Edificio Principal", "Edificio 80", "Cafetería Central / Comedor", "Edificio B", "Edificio E", "CA 101", "CA 102", "CA 103", "Facultad de Educacion", "Derecho", "Polideportivo", "Fcom", "Hidraulica" }));
         cbxLugar.setMaximumSize(new java.awt.Dimension(32767, 36));
         cbxLugar.setPreferredSize(new java.awt.Dimension(440, 36));
         panelContenedor.add(cbxLugar);
 
-        espacio4.setAlignmentX(0.0f);
+        espacio4.setAlignmentX(0.0F);
         espacio4.setBackground(new java.awt.Color(255, 255, 255));
         espacio4.setMaximumSize(new java.awt.Dimension(32767, 12));
         espacio4.setPreferredSize(new java.awt.Dimension(440, 12));
         panelContenedor.add(espacio4);
 
-        panelFilaFechaColor.setAlignmentX(0.0f);
+        panelFilaFechaColor.setAlignmentX(0.0F);
         panelFilaFechaColor.setBackground(new java.awt.Color(255, 255, 255));
         panelFilaFechaColor.setMaximumSize(new java.awt.Dimension(32767, 60));
         panelFilaFechaColor.setPreferredSize(new java.awt.Dimension(440, 60));
@@ -216,16 +232,14 @@ public class PanelReclamar extends javax.swing.JPanel {
         panelColFecha.setBackground(new java.awt.Color(255, 255, 255));
         panelColFecha.setLayout(new javax.swing.BoxLayout(panelColFecha, javax.swing.BoxLayout.Y_AXIS));
 
-        lblFecha.setAlignmentX(0.0f);
         lblFecha.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         lblFecha.setForeground(new java.awt.Color(75, 85, 99));
         lblFecha.setText("Fecha (YYYY-MM-DD) *");
         panelColFecha.add(lblFecha);
 
-        txtFecha.setAlignmentX(0.0f);
         txtFecha.setBackground(new java.awt.Color(249, 250, 251));
         txtFecha.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
-        txtFecha.setBorder(javax.swing.BorderFactory.createCompoundBorder(new javax.swing.border.LineBorder(new java.awt.Color(209, 213, 219), 1, true), javax.swing.BorderFactory.createEmptyBorder(6, 10, 6, 10)));
+        txtFecha.setBorder(javax.swing.BorderFactory.createCompoundBorder());
         txtFecha.setMaximumSize(new java.awt.Dimension(32767, 36));
         txtFecha.setPreferredSize(new java.awt.Dimension(210, 36));
         panelColFecha.add(txtFecha);
@@ -235,16 +249,14 @@ public class PanelReclamar extends javax.swing.JPanel {
         panelColColor.setBackground(new java.awt.Color(255, 255, 255));
         panelColColor.setLayout(new javax.swing.BoxLayout(panelColColor, javax.swing.BoxLayout.Y_AXIS));
 
-        lblColor.setAlignmentX(0.0f);
         lblColor.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         lblColor.setForeground(new java.awt.Color(75, 85, 99));
         lblColor.setText("Color Principal *");
         panelColColor.add(lblColor);
 
-        txtColor.setAlignmentX(0.0f);
         txtColor.setBackground(new java.awt.Color(249, 250, 251));
         txtColor.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
-        txtColor.setBorder(javax.swing.BorderFactory.createCompoundBorder(new javax.swing.border.LineBorder(new java.awt.Color(209, 213, 219), 1, true), javax.swing.BorderFactory.createEmptyBorder(6, 10, 6, 10)));
+        txtColor.setBorder(javax.swing.BorderFactory.createCompoundBorder());
         txtColor.setMaximumSize(new java.awt.Dimension(32767, 36));
         txtColor.setPreferredSize(new java.awt.Dimension(210, 36));
         panelColColor.add(txtColor);
@@ -253,65 +265,62 @@ public class PanelReclamar extends javax.swing.JPanel {
 
         panelContenedor.add(panelFilaFechaColor);
 
-        espacio5.setAlignmentX(0.0f);
+        espacio5.setAlignmentX(0.0F);
         espacio5.setBackground(new java.awt.Color(255, 255, 255));
         espacio5.setMaximumSize(new java.awt.Dimension(32767, 12));
         espacio5.setPreferredSize(new java.awt.Dimension(440, 12));
         panelContenedor.add(espacio5);
 
-        lblDescripcion.setAlignmentX(0.0f);
         lblDescripcion.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         lblDescripcion.setForeground(new java.awt.Color(75, 85, 99));
         lblDescripcion.setText("Descripción y detalles");
         panelContenedor.add(lblDescripcion);
 
-        txtDescripcion.setAlignmentX(0.0f);
+        txtDescripcion.setAlignmentX(0.0F);
         txtDescripcion.setBackground(new java.awt.Color(249, 250, 251));
         txtDescripcion.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
-        txtDescripcion.setBorder(javax.swing.BorderFactory.createCompoundBorder(new javax.swing.border.LineBorder(new java.awt.Color(209, 213, 219), 1, true), javax.swing.BorderFactory.createEmptyBorder(6, 10, 6, 10)));
+        txtDescripcion.setBorder(javax.swing.BorderFactory.createCompoundBorder());
         txtDescripcion.setMaximumSize(new java.awt.Dimension(32767, 36));
         txtDescripcion.setPreferredSize(new java.awt.Dimension(440, 36));
         panelContenedor.add(txtDescripcion);
 
-        espacio6.setAlignmentX(0.0f);
+        espacio6.setAlignmentX(0.0F);
         espacio6.setBackground(new java.awt.Color(255, 255, 255));
         espacio6.setMaximumSize(new java.awt.Dimension(32767, 12));
         espacio6.setPreferredSize(new java.awt.Dimension(440, 12));
         panelContenedor.add(espacio6);
 
-        lblDatoPrivado.setAlignmentX(0.0f);
         lblDatoPrivado.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         lblDatoPrivado.setForeground(new java.awt.Color(75, 85, 99));
         lblDatoPrivado.setText("Dato privado de comprobación (prueba de dueño) *");
         panelContenedor.add(lblDatoPrivado);
 
-        txtDatoPrivado.setAlignmentX(0.0f);
+        txtDatoPrivado.setAlignmentX(0.0F);
         txtDatoPrivado.setBackground(new java.awt.Color(249, 250, 251));
         txtDatoPrivado.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
-        txtDatoPrivado.setBorder(javax.swing.BorderFactory.createCompoundBorder(new javax.swing.border.LineBorder(new java.awt.Color(209, 213, 219), 1, true), javax.swing.BorderFactory.createEmptyBorder(6, 10, 6, 10)));
+        txtDatoPrivado.setBorder(javax.swing.BorderFactory.createCompoundBorder());
         txtDatoPrivado.setMaximumSize(new java.awt.Dimension(32767, 36));
         txtDatoPrivado.setPreferredSize(new java.awt.Dimension(440, 36));
         panelContenedor.add(txtDatoPrivado);
 
-        espacio7.setAlignmentX(0.0f);
+        espacio7.setAlignmentX(0.0F);
         espacio7.setBackground(new java.awt.Color(255, 255, 255));
         espacio7.setMaximumSize(new java.awt.Dimension(32767, 20));
         espacio7.setPreferredSize(new java.awt.Dimension(440, 20));
         panelContenedor.add(espacio7);
 
-        btnReclamar.setAlignmentX(0.0f);
         btnReclamar.setBackground(new java.awt.Color(51, 153, 255));
         btnReclamar.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
         btnReclamar.setForeground(new java.awt.Color(255, 255, 255));
         btnReclamar.setText("Confirmar Reclamo");
         btnReclamar.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(51, 153, 255), 1, true));
-        btnReclamar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnReclamar.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         btnReclamar.setMaximumSize(new java.awt.Dimension(32767, 42));
         btnReclamar.setPreferredSize(new java.awt.Dimension(440, 42));
         btnReclamar.addActionListener(this::btnReclamarActionPerformed);
         panelContenedor.add(btnReclamar);
 
-        espacio8.setAlignmentX(0.0f);
+        espacio8.setAlignmentX(0.0F);
         espacio8.setBackground(new java.awt.Color(255, 255, 255));
         espacio8.setMaximumSize(new java.awt.Dimension(32767, 24));
         espacio8.setPreferredSize(new java.awt.Dimension(440, 24));
@@ -356,17 +365,11 @@ public class PanelReclamar extends javax.swing.JPanel {
         }
 
         if (usuarioActual == null) {
-            UsuarioCsvRepositorio uRepo = new UsuarioCsvRepositorio();
-            for (modelo.Usuario u : uRepo.obtenerUsuarios()) {
-                if (u instanceof Estudiante) {
-                    usuarioActual = (Estudiante) u;
-                    break;
-                }
-            }
-            if (usuarioActual == null) {
-                usuarioActual = new Estudiante("Ingenieria", "Sistemas", 5, "74238591", "Cesar Villegas", "cesar@campus.pe", "123456");
-                uRepo.guardar(usuarioActual);
-            }
+            JOptionPane.showMessageDialog(this,
+                "Debes iniciar sesión para registrar un reclamo o reporte de pérdida.",
+                "Sesión Requerida",
+                JOptionPane.WARNING_MESSAGE);
+            return;
         }
 
         if (objetoServicio == null) {

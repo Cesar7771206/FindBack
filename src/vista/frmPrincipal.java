@@ -42,6 +42,9 @@ public class frmPrincipal extends javax.swing.JFrame {
     }
 
     public void cerrarSesion() {
+        if (panelApp != null) {
+            panelApp.setUsuarioActual(null);
+        }
         mostrar("login");
     }
 

@@ -56,7 +56,30 @@ public class PanelInicio extends javax.swing.JPanel {
 
     public void setUsuarioActual(Estudiante estudiante) {
         this.usuarioActual = estudiante;
+        actualizarBienvenida();
         cargarObjetos();
+    }
+
+    private void actualizarBienvenida() {
+        if (lblSaludo == null) {
+            return;
+        }
+        if (usuarioActual != null && usuarioActual.getNombre() != null && !usuarioActual.getNombre().isBlank()) {
+            String nombreCompleto = usuarioActual.getNombre().trim();
+            String[] partes = nombreCompleto.split("\\s+");
+            String primerNombre = partes[0];
+            primerNombre = primerNombre.substring(0, 1).toUpperCase() + primerNombre.substring(1).toLowerCase();
+            lblSaludo.setText("¡Hola, " + primerNombre + "!");
+            String car = usuarioActual.getCarrera();
+            if (car != null && !car.isBlank()) {
+                lblSubSaludo.setText("Estudiante de " + car);
+            } else {
+                lblSubSaludo.setText("Estudiante de Campus UDEP");
+            }
+        } else {
+            lblSaludo.setText("¡Bienvenido a FindBack!");
+            lblSubSaludo.setText("Portal de Objetos Perdidos del Campus");
+        }
     }
 
     public void cargarObjetos() {
@@ -165,6 +188,13 @@ public class PanelInicio extends javax.swing.JPanel {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         panelContenedor = new javax.swing.JPanel();
+        panelBienvenida = new javax.swing.JPanel();
+        panelInfoUsuario = new javax.swing.JPanel();
+        lblSaludo = new javax.swing.JLabel();
+        lblSubSaludo = new javax.swing.JLabel();
+        panelAccionesUsuario = new javax.swing.JPanel();
+        btnCerrarSesion = new javax.swing.JButton();
+        espacioBienvenida = new javax.swing.JPanel();
         panelHeaderOpciones = new javax.swing.JPanel();
         lblOpciones = new javax.swing.JLabel();
         espacio1 = new javax.swing.JPanel();
@@ -199,6 +229,47 @@ public class PanelInicio extends javax.swing.JPanel {
         panelContenedor.setBackground(new java.awt.Color(255, 255, 255));
         panelContenedor.setBorder(javax.swing.BorderFactory.createEmptyBorder(24, 28, 24, 28));
         panelContenedor.setLayout(new javax.swing.BoxLayout(panelContenedor, javax.swing.BoxLayout.Y_AXIS));
+
+        panelBienvenida.setBackground(new java.awt.Color(255, 255, 255));
+        panelBienvenida.setMaximumSize(new java.awt.Dimension(32767, 48));
+        panelBienvenida.setPreferredSize(new java.awt.Dimension(440, 48));
+        panelBienvenida.setLayout(new java.awt.BorderLayout());
+
+        panelInfoUsuario.setBackground(new java.awt.Color(255, 255, 255));
+        panelInfoUsuario.setLayout(new javax.swing.BoxLayout(panelInfoUsuario, javax.swing.BoxLayout.Y_AXIS));
+
+        lblSaludo.setFont(new java.awt.Font("SansSerif", 1, 20)); // NOI18N
+        lblSaludo.setForeground(new java.awt.Color(17, 24, 39));
+        lblSaludo.setText("¡Hola, Estudiante!");
+        panelInfoUsuario.add(lblSaludo);
+
+        lblSubSaludo.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        lblSubSaludo.setForeground(new java.awt.Color(107, 114, 128));
+        lblSubSaludo.setText("Portal de Objetos Perdidos del Campus");
+        panelInfoUsuario.add(lblSubSaludo);
+
+        panelBienvenida.add(panelInfoUsuario, java.awt.BorderLayout.CENTER);
+
+        panelAccionesUsuario.setBackground(new java.awt.Color(255, 255, 255));
+        panelAccionesUsuario.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 0, 4));
+
+        btnCerrarSesion.setBackground(new java.awt.Color(254, 226, 226));
+        btnCerrarSesion.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
+        btnCerrarSesion.setForeground(new java.awt.Color(220, 38, 38));
+        btnCerrarSesion.setText("Cerrar sesión");
+        btnCerrarSesion.setBorder(javax.swing.BorderFactory.createCompoundBorder(new javax.swing.border.LineBorder(new java.awt.Color(254, 202, 202), 1, true), javax.swing.BorderFactory.createEmptyBorder(6, 12, 6, 12)));
+        btnCerrarSesion.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnCerrarSesion.addActionListener(this::btnCerrarSesionActionPerformed);
+        panelAccionesUsuario.add(btnCerrarSesion);
+
+        panelBienvenida.add(panelAccionesUsuario, java.awt.BorderLayout.EAST);
+
+        panelContenedor.add(panelBienvenida);
+
+        espacioBienvenida.setBackground(new java.awt.Color(255, 255, 255));
+        espacioBienvenida.setMaximumSize(new java.awt.Dimension(32767, 16));
+        espacioBienvenida.setPreferredSize(new java.awt.Dimension(440, 16));
+        panelContenedor.add(espacioBienvenida);
 
         panelHeaderOpciones.setBackground(new java.awt.Color(255, 255, 255));
         panelHeaderOpciones.setMaximumSize(new java.awt.Dimension(32767, 24));
@@ -361,9 +432,16 @@ public class PanelInicio extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnBuscarTodosActionPerformed
 
+    private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
+        if (ventana != null) {
+            ventana.cerrarSesion();
+        }
+    }//GEN-LAST:event_btnCerrarSesionActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBuscarTodos;
+    private javax.swing.JButton btnCerrarSesion;
     private javax.swing.JButton btnNotificar;
     private javax.swing.JButton btnReclamar;
     private javax.swing.JPanel cardNotificar;
@@ -372,13 +450,18 @@ public class PanelInicio extends javax.swing.JPanel {
     private javax.swing.JPanel espacio2;
     private javax.swing.JPanel espacio3;
     private javax.swing.JPanel espacio4;
+    private javax.swing.JPanel espacioBienvenida;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblDescNotificar;
     private javax.swing.JLabel lblDescReclamar;
     private javax.swing.JLabel lblObjetosCampus;
     private javax.swing.JLabel lblOpciones;
+    private javax.swing.JLabel lblSaludo;
+    private javax.swing.JLabel lblSubSaludo;
     private javax.swing.JLabel lblTitNotificar;
     private javax.swing.JLabel lblTitReclamar;
+    private javax.swing.JPanel panelAccionesUsuario;
+    private javax.swing.JPanel panelBienvenida;
     private javax.swing.JPanel panelBtnNotificar;
     private javax.swing.JPanel panelBtnReclamar;
     private javax.swing.JPanel panelContenedor;
@@ -386,6 +469,7 @@ public class PanelInicio extends javax.swing.JPanel {
     private javax.swing.JPanel panelHeaderOpciones;
     private javax.swing.JPanel panelInfoNotificar;
     private javax.swing.JPanel panelInfoReclamar;
+    private javax.swing.JPanel panelInfoUsuario;
     private javax.swing.JPanel panelListaObjetos;
     // End of variables declaration//GEN-END:variables
 }

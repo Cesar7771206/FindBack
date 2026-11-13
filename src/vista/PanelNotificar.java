@@ -2,14 +2,14 @@ package vista;
 
 import java.time.LocalDate;
 import java.util.List;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import modelo.DispositivoElectronico;
 import modelo.Documento;
 import modelo.Estudiante;
 import modelo.ObjetoGenerico;
 import modelo.ObjetoReportado;
 import modelo.Prenda;
-import repositorio.UsuarioCsvRepositorio;
+import modelo.Ubicacion;
 import servicio.CoincidenciaServicio;
 import servicio.ObjetoServicio;
 
@@ -21,6 +21,14 @@ public class PanelNotificar extends javax.swing.JPanel {
     private ObjetoServicio objetoServicio;
     private CoincidenciaServicio coincidenciaServicio;
 
+    private javax.swing.JTextField txtTalla;
+    private javax.swing.JTextField txtMarca;
+    private javax.swing.JTextField txtModelo;
+    private javax.swing.JTextField txtSerie;
+    private javax.swing.JTextField txtTipoDoc;
+    private javax.swing.JTextField txtTitular;
+    private javax.swing.JTextField txtDetalleExtra;
+
     public PanelNotificar() {
         initComponents();
         if (jScrollPane1 != null && jScrollPane1.getVerticalScrollBar() != null) {
@@ -29,6 +37,11 @@ public class PanelNotificar extends javax.swing.JPanel {
         this.objetoServicio = new ObjetoServicio();
         this.coincidenciaServicio = new CoincidenciaServicio();
         this.txtFecha.setText(LocalDate.now().toString());
+
+        cargarUbicaciones();
+        inicializarCamposDinamicos();
+        actualizarCamposDinamicos();
+        cbxCategoria.addActionListener(evt -> actualizarCamposDinamicos());
     }
 
     public PanelNotificar(frmPrincipal ventana, PanelApp panelApp) {
@@ -41,14 +54,121 @@ public class PanelNotificar extends javax.swing.JPanel {
         this.usuarioActual = estudiante;
     }
 
+    private void cargarUbicaciones() {
+        cbxLugar.removeAllItems();
+        for (Ubicacion u : Ubicacion.values()) {
+            cbxLugar.addItem(u.getNombre());
+        }
+    }
+
+    private JTextField crearTextField() {
+        JTextField txt = new JTextField();
+        txt.setAlignmentX(0.0f);
+        txt.setBackground(new java.awt.Color(249, 250, 251));
+        txt.setFont(new java.awt.Font("SansSerif", 0, 13));
+        txt.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            new javax.swing.border.LineBorder(new java.awt.Color(209, 213, 219), 1, true),
+            javax.swing.BorderFactory.createEmptyBorder(6, 10, 6, 10)
+        ));
+        txt.setMaximumSize(new java.awt.Dimension(32767, 36));
+        txt.setPreferredSize(new java.awt.Dimension(440, 36));
+        return txt;
+    }
+
+    private JLabel crearEtiquetaCampo(String texto) {
+        JLabel lbl = new JLabel(texto);
+        lbl.setAlignmentX(0.0f);
+        lbl.setFont(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 12));
+        lbl.setForeground(new java.awt.Color(75, 85, 99));
+        return lbl;
+    }
+
+    private JPanel crearEspacio(int h) {
+        JPanel p = new JPanel();
+        p.setAlignmentX(0.0f);
+        p.setBackground(new java.awt.Color(255, 255, 255));
+        p.setMaximumSize(new java.awt.Dimension(32767, h));
+        p.setPreferredSize(new java.awt.Dimension(440, h));
+        return p;
+    }
+
+    private void inicializarCamposDinamicos() {
+        txtTalla = crearTextField();
+        txtMarca = crearTextField();
+        txtModelo = crearTextField();
+        txtSerie = crearTextField();
+        txtTipoDoc = crearTextField();
+        txtTitular = crearTextField();
+        txtDetalleExtra = crearTextField();
+    }
+
+    private void actualizarCamposDinamicos() {
+        if (pnlCamposDinamicos == null) {
+            return;
+        }
+        pnlCamposDinamicos.removeAll();
+
+        String cat = (String) cbxCategoria.getSelectedItem();
+        if (cat == null) {
+            cat = "Documento";
+        }
+
+        switch (cat) {
+            case "Prenda" -> {
+                pnlCamposDinamicos.add(crearEtiquetaCampo("Talla de la prenda (S, M, L, XL, etc.) *"));
+                pnlCamposDinamicos.add(txtTalla);
+                pnlCamposDinamicos.add(crearEspacio(12));
+                pnlCamposDinamicos.add(crearEtiquetaCampo("Marca de la prenda *"));
+                pnlCamposDinamicos.add(txtMarca);
+                pnlCamposDinamicos.add(crearEspacio(12));
+            }
+            case "Dispositivo Electronico" -> {
+                pnlCamposDinamicos.add(crearEtiquetaCampo("Marca del dispositivo *"));
+                pnlCamposDinamicos.add(txtMarca);
+                pnlCamposDinamicos.add(crearEspacio(12));
+                pnlCamposDinamicos.add(crearEtiquetaCampo("Modelo exacto del dispositivo *"));
+                pnlCamposDinamicos.add(txtModelo);
+                pnlCamposDinamicos.add(crearEspacio(12));
+                pnlCamposDinamicos.add(crearEtiquetaCampo("Número de serie / Código o detalle único *"));
+                pnlCamposDinamicos.add(txtSerie);
+                pnlCamposDinamicos.add(crearEspacio(12));
+            }
+            case "Documento" -> {
+                pnlCamposDinamicos.add(crearEtiquetaCampo("Tipo de documento (DNI, Carné, etc.) *"));
+                pnlCamposDinamicos.add(txtTipoDoc);
+                pnlCamposDinamicos.add(crearEspacio(12));
+                pnlCamposDinamicos.add(crearEtiquetaCampo("Nombre completo del titular en el documento *"));
+                pnlCamposDinamicos.add(txtTitular);
+                pnlCamposDinamicos.add(crearEspacio(12));
+            }
+            default -> {
+                pnlCamposDinamicos.add(crearEtiquetaCampo("Característica o detalle distintivo *"));
+                pnlCamposDinamicos.add(txtDetalleExtra);
+                pnlCamposDinamicos.add(crearEspacio(12));
+            }
+        }
+
+        pnlCamposDinamicos.revalidate();
+        pnlCamposDinamicos.repaint();
+        panelContenedor.revalidate();
+        panelContenedor.repaint();
+    }
+
     public void limpiarFormulario() {
         txtObjeto.setText("");
         cbxCategoria.setSelectedIndex(0);
         cbxLugar.setSelectedIndex(0);
         txtFecha.setText(LocalDate.now().toString());
         txtColor.setText("");
-        cbxCustodia.setSelectedIndex(0);
         txtDescripcion.setText("");
+        if (txtTalla != null) txtTalla.setText("");
+        if (txtMarca != null) txtMarca.setText("");
+        if (txtModelo != null) txtModelo.setText("");
+        if (txtSerie != null) txtSerie.setText("");
+        if (txtTipoDoc != null) txtTipoDoc.setText("");
+        if (txtTitular != null) txtTitular.setText("");
+        if (txtDetalleExtra != null) txtDetalleExtra.setText("");
+        actualizarCamposDinamicos();
     }
 
     @SuppressWarnings("unchecked")
@@ -67,6 +187,7 @@ public class PanelNotificar extends javax.swing.JPanel {
         lblCategoria = new javax.swing.JLabel();
         cbxCategoria = new javax.swing.JComboBox<>();
         espacio3 = new javax.swing.JPanel();
+        pnlCamposDinamicos = new javax.swing.JPanel();
         lblLugar = new javax.swing.JLabel();
         cbxLugar = new javax.swing.JComboBox<>();
         espacio4 = new javax.swing.JPanel();
@@ -78,9 +199,6 @@ public class PanelNotificar extends javax.swing.JPanel {
         lblColor = new javax.swing.JLabel();
         txtColor = new javax.swing.JTextField();
         espacio5 = new javax.swing.JPanel();
-        lblCustodia = new javax.swing.JLabel();
-        cbxCustodia = new javax.swing.JComboBox<>();
-        espacio6 = new javax.swing.JPanel();
         lblDescripcion = new javax.swing.JLabel();
         txtDescripcion = new javax.swing.JTextField();
         espacio7 = new javax.swing.JPanel();
@@ -165,6 +283,11 @@ public class PanelNotificar extends javax.swing.JPanel {
         espacio3.setPreferredSize(new java.awt.Dimension(440, 12));
         panelContenedor.add(espacio3);
 
+        pnlCamposDinamicos.setAlignmentX(0.0f);
+        pnlCamposDinamicos.setBackground(new java.awt.Color(255, 255, 255));
+        pnlCamposDinamicos.setLayout(new javax.swing.BoxLayout(pnlCamposDinamicos, javax.swing.BoxLayout.Y_AXIS));
+        panelContenedor.add(pnlCamposDinamicos);
+
         lblLugar.setAlignmentX(0.0f);
         lblLugar.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         lblLugar.setForeground(new java.awt.Color(75, 85, 99));
@@ -174,7 +297,7 @@ public class PanelNotificar extends javax.swing.JPanel {
         cbxLugar.setAlignmentX(0.0f);
         cbxLugar.setBackground(new java.awt.Color(255, 255, 255));
         cbxLugar.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
-        cbxLugar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Biblioteca Central", "Edificio Principal", "Edificio 80", "Cafetería Central / Comedor", "Edificio B", "Edificio E", "CA 101", "CA 102", "CA 103", "Facultad de Educacion", "Derecho", "Polideportivo", "Fcom", "Hidraulica" }));
+        cbxLugar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Biblioteca Central", "Edificio Principal", "Edificio 80", "Cafetería Central / Comedor", "Edificio B", "Edificio E", "CA 101", "CA 102", "CA 103", "Facultad de Educacion", "Derecho", "Polideportivo", "Fcom", "Hidraulica", "Otro lugar del campus" }));
         cbxLugar.setMaximumSize(new java.awt.Dimension(32767, 36));
         cbxLugar.setPreferredSize(new java.awt.Dimension(440, 36));
         panelContenedor.add(cbxLugar);
@@ -237,26 +360,6 @@ public class PanelNotificar extends javax.swing.JPanel {
         espacio5.setPreferredSize(new java.awt.Dimension(440, 12));
         panelContenedor.add(espacio5);
 
-        lblCustodia.setAlignmentX(0.0f);
-        lblCustodia.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
-        lblCustodia.setForeground(new java.awt.Color(75, 85, 99));
-        lblCustodia.setText("Estado de custodia *");
-        panelContenedor.add(lblCustodia);
-
-        cbxCustodia.setAlignmentX(0.0f);
-        cbxCustodia.setBackground(new java.awt.Color(255, 255, 255));
-        cbxCustodia.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
-        cbxCustodia.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Bajo mi custodia (contacto directo con el dueño)", "Entregado a seguridad / recepción del campus" }));
-        cbxCustodia.setMaximumSize(new java.awt.Dimension(32767, 36));
-        cbxCustodia.setPreferredSize(new java.awt.Dimension(440, 36));
-        panelContenedor.add(cbxCustodia);
-
-        espacio6.setAlignmentX(0.0f);
-        espacio6.setBackground(new java.awt.Color(255, 255, 255));
-        espacio6.setMaximumSize(new java.awt.Dimension(32767, 12));
-        espacio6.setPreferredSize(new java.awt.Dimension(440, 12));
-        panelContenedor.add(espacio6);
-
         lblDescripcion.setAlignmentX(0.0f);
         lblDescripcion.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         lblDescripcion.setForeground(new java.awt.Color(75, 85, 99));
@@ -301,12 +404,19 @@ public class PanelNotificar extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnNotificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotificarActionPerformed
+        if (usuarioActual == null) {
+            JOptionPane.showMessageDialog(this,
+                "Debes iniciar sesión con tu cuenta estudiantil para notificar un objeto hallado.",
+                "Sesión Requerida",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         String nombre = txtObjeto.getText().trim();
         String categoria = (String) cbxCategoria.getSelectedItem();
         String lugar = (String) cbxLugar.getSelectedItem();
         String fecha = txtFecha.getText().trim();
         String color = txtColor.getText().trim();
-        String custodia = (String) cbxCustodia.getSelectedItem();
         String desc = txtDescripcion.getText().trim();
 
         if (nombre.isEmpty()) {
@@ -325,18 +435,8 @@ public class PanelNotificar extends javax.swing.JPanel {
             color = "No especificado";
         }
 
-        if (usuarioActual == null) {
-            UsuarioCsvRepositorio uRepo = new UsuarioCsvRepositorio();
-            for (modelo.Usuario u : uRepo.obtenerUsuarios()) {
-                if (u instanceof Estudiante) {
-                    usuarioActual = (Estudiante) u;
-                    break;
-                }
-            }
-            if (usuarioActual == null) {
-                usuarioActual = new Estudiante("Ingenieria", "Sistemas", 5, "74238591", "Cesar Villegas", "cesar@campus.pe", "123456");
-                uRepo.guardar(usuarioActual);
-            }
+        if (desc.isEmpty()) {
+            desc = "Objeto hallado en campus";
         }
 
         if (objetoServicio == null) {
@@ -347,17 +447,48 @@ public class PanelNotificar extends javax.swing.JPanel {
         }
 
         int nuevoId = objetoServicio.generarNuevoId();
-        String detalleFinal = desc.isEmpty() ? custodia : (custodia + ". " + desc);
-
         ObjetoReportado nuevoObj;
-        if ("Documento".equalsIgnoreCase(categoria)) {
-            nuevoObj = new Documento("Documento", detalleFinal, nuevoId, nombre, detalleFinal, "Documento", color, fecha, lugar, "ENCONTRADO", usuarioActual);
-        } else if ("Prenda".equalsIgnoreCase(categoria)) {
-            nuevoObj = new Prenda("Estandar", detalleFinal, nuevoId, nombre, detalleFinal, "Prenda", color, fecha, lugar, "ENCONTRADO", usuarioActual);
+
+        if ("Prenda".equalsIgnoreCase(categoria)) {
+            String talla = txtTalla.getText().trim();
+            String marca = txtMarca.getText().trim();
+            if (talla.isEmpty()) {
+                talla = "Estándar";
+            }
+            if (marca.isEmpty()) {
+                marca = "Sin marca";
+            }
+            nuevoObj = new Prenda(talla, marca, nuevoId, nombre, desc, "PRENDA", color, fecha, lugar, "ENCONTRADO", usuarioActual);
         } else if ("Dispositivo Electronico".equalsIgnoreCase(categoria)) {
-            nuevoObj = new DispositivoElectronico(detalleFinal, detalleFinal, "", nuevoId, nombre, detalleFinal, "Dispositivo Electronico", color, fecha, lugar, "ENCONTRADO", usuarioActual);
+            String marca = txtMarca.getText().trim();
+            String modelo = txtModelo.getText().trim();
+            String serie = txtSerie.getText().trim();
+            if (marca.isEmpty()) {
+                marca = "Genérico";
+            }
+            if (modelo.isEmpty()) {
+                modelo = "No especificado";
+            }
+            if (serie.isEmpty()) {
+                serie = "No registrado";
+            }
+            nuevoObj = new DispositivoElectronico(marca, modelo, serie, nuevoId, nombre, desc, "DISPOSITIVO ELECTRONICO", color, fecha, lugar, "ENCONTRADO", usuarioActual);
+        } else if ("Documento".equalsIgnoreCase(categoria)) {
+            String tipoDoc = txtTipoDoc.getText().trim();
+            String titular = txtTitular.getText().trim();
+            if (tipoDoc.isEmpty()) {
+                tipoDoc = "Documento";
+            }
+            if (titular.isEmpty()) {
+                titular = "No especificado";
+            }
+            nuevoObj = new Documento(tipoDoc, titular, nuevoId, nombre, desc, "DOCUMENTO", color, fecha, lugar, "ENCONTRADO", usuarioActual);
         } else {
-            nuevoObj = new ObjetoGenerico(detalleFinal, nuevoId, nombre, detalleFinal, "Objeto Generico", color, fecha, lugar, "ENCONTRADO", usuarioActual);
+            String det = txtDetalleExtra.getText().trim();
+            if (det.isEmpty()) {
+                det = desc;
+            }
+            nuevoObj = new ObjetoGenerico(det, nuevoId, nombre, desc, "OBJETO GENERICO", color, fecha, lugar, "ENCONTRADO", usuarioActual);
         }
 
         boolean ok = objetoServicio.registrarObjeto(nuevoObj);
@@ -384,30 +515,26 @@ public class PanelNotificar extends javax.swing.JPanel {
             }
         } else {
             JOptionPane.showMessageDialog(this,
-                "No se pudo registrar el objeto. Revisa que los datos tengan el formato correcto.",
+                "No se pudo registrar el objeto. Revisa los datos ingresados.",
                 "Error al notificar",
                 JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnNotificarActionPerformed
 
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnNotificar;
     private javax.swing.JComboBox<String> cbxCategoria;
-    private javax.swing.JComboBox<String> cbxCustodia;
     private javax.swing.JComboBox<String> cbxLugar;
     private javax.swing.JPanel espacio1;
     private javax.swing.JPanel espacio2;
     private javax.swing.JPanel espacio3;
     private javax.swing.JPanel espacio4;
     private javax.swing.JPanel espacio5;
-    private javax.swing.JPanel espacio6;
     private javax.swing.JPanel espacio7;
     private javax.swing.JPanel espacio8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblCategoria;
     private javax.swing.JLabel lblColor;
-    private javax.swing.JLabel lblCustodia;
     private javax.swing.JLabel lblDescripcion;
     private javax.swing.JLabel lblFecha;
     private javax.swing.JLabel lblLugar;
@@ -419,6 +546,7 @@ public class PanelNotificar extends javax.swing.JPanel {
     private javax.swing.JPanel panelContenedor;
     private javax.swing.JPanel panelFilaFechaColor;
     private javax.swing.JPanel panelHeader;
+    private javax.swing.JPanel pnlCamposDinamicos;
     private javax.swing.JTextField txtColor;
     private javax.swing.JTextField txtDescripcion;
     private javax.swing.JTextField txtFecha;

@@ -26,6 +26,7 @@ public class PanelApp extends javax.swing.JPanel {
         contenido.add(panelReclamar, "reclamar");
         contenido.add(panelNotificar, "notificar");
         contenido.add(panelAvisos, "avisos");
+        actualizarEstiloBotones("inicio");
     }
 
     public PanelApp(frmPrincipal ventana) {
@@ -43,6 +44,7 @@ public class PanelApp extends javax.swing.JPanel {
         contenido.add(panelReclamar, "reclamar");
         contenido.add(panelNotificar, "notificar");
         contenido.add(panelAvisos, "avisos");
+        actualizarEstiloBotones("inicio");
     }
     
     public void setUsuarioActual(Estudiante estudiante) {
@@ -77,8 +79,38 @@ public class PanelApp extends javax.swing.JPanel {
         return panelNotificar;
     }
     
-    public void mostrar(String nombre){
+    public void mostrar(String nombre) {
         cardLayout.show(contenido, nombre);
+        actualizarEstiloBotones(nombre);
+    }
+
+    private void actualizarEstiloBotones(String tabActiva) {
+        configurarBotonTab(btnPanelInicio, "inicio".equalsIgnoreCase(tabActiva));
+        configurarBotonTab(btnPanelReclamar, "reclamar".equalsIgnoreCase(tabActiva));
+        configurarBotonTab(btnPanelNotificar, "notificar".equalsIgnoreCase(tabActiva));
+        configurarBotonTab(btnPanelAvisos, "avisos".equalsIgnoreCase(tabActiva));
+    }
+
+    private void configurarBotonTab(javax.swing.JButton btn, boolean activo) {
+        if (btn == null) {
+            return;
+        }
+        btn.setFocusPainted(false);
+        btn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        if (activo) {
+            btn.setBackground(new java.awt.Color(239, 246, 255));
+            btn.setForeground(new java.awt.Color(37, 99, 235));
+            btn.setFont(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 12));
+            btn.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                javax.swing.BorderFactory.createMatteBorder(2, 0, 0, 0, new java.awt.Color(37, 99, 235)),
+                javax.swing.BorderFactory.createEmptyBorder(6, 8, 8, 8)
+            ));
+        } else {
+            btn.setBackground(new java.awt.Color(255, 255, 255));
+            btn.setForeground(new java.awt.Color(100, 116, 139));
+            btn.setFont(new java.awt.Font("SansSerif", java.awt.Font.PLAIN, 12));
+            btn.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -95,33 +127,45 @@ public class PanelApp extends javax.swing.JPanel {
         setLayout(new java.awt.BorderLayout());
 
         barraNav.setBackground(new java.awt.Color(255, 255, 255));
-        barraNav.setMaximumSize(new java.awt.Dimension(32767, 100));
-        barraNav.setMinimumSize(new java.awt.Dimension(356, 100));
-        barraNav.setPreferredSize(new java.awt.Dimension(500, 50));
+        barraNav.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(226, 232, 240)));
+        barraNav.setMaximumSize(new java.awt.Dimension(32767, 54));
+        barraNav.setMinimumSize(new java.awt.Dimension(356, 54));
+        barraNav.setPreferredSize(new java.awt.Dimension(500, 54));
         barraNav.setLayout(new java.awt.GridLayout(1, 0));
 
-        btnPanelInicio.setBackground(new java.awt.Color(204, 204, 204));
-        btnPanelInicio.setForeground(new java.awt.Color(102, 102, 102));
+        btnPanelInicio.setBackground(new java.awt.Color(239, 246, 255));
+        btnPanelInicio.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
+        btnPanelInicio.setForeground(new java.awt.Color(37, 99, 235));
         btnPanelInicio.setText("Inicio");
+        btnPanelInicio.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnPanelInicio.setFocusPainted(false);
         btnPanelInicio.addActionListener(this::btnPanelInicioActionPerformed);
         barraNav.add(btnPanelInicio);
 
-        btnPanelReclamar.setBackground(new java.awt.Color(204, 204, 204));
-        btnPanelReclamar.setForeground(new java.awt.Color(102, 102, 102));
+        btnPanelReclamar.setBackground(new java.awt.Color(255, 255, 255));
+        btnPanelReclamar.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        btnPanelReclamar.setForeground(new java.awt.Color(100, 116, 139));
         btnPanelReclamar.setText("Reclamar");
+        btnPanelReclamar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnPanelReclamar.setFocusPainted(false);
         btnPanelReclamar.addActionListener(this::btnPanelReclamarActionPerformed);
         barraNav.add(btnPanelReclamar);
 
-        btnPanelNotificar.setBackground(new java.awt.Color(204, 204, 204));
-        btnPanelNotificar.setForeground(new java.awt.Color(102, 102, 102));
+        btnPanelNotificar.setBackground(new java.awt.Color(255, 255, 255));
+        btnPanelNotificar.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        btnPanelNotificar.setForeground(new java.awt.Color(100, 116, 139));
         btnPanelNotificar.setText("Notificar");
+        btnPanelNotificar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnPanelNotificar.setFocusPainted(false);
         btnPanelNotificar.addActionListener(this::btnPanelNotificarActionPerformed);
         barraNav.add(btnPanelNotificar);
 
-        btnPanelAvisos.setBackground(new java.awt.Color(204, 204, 204));
-        btnPanelAvisos.setForeground(new java.awt.Color(102, 102, 102));
+        btnPanelAvisos.setBackground(new java.awt.Color(255, 255, 255));
+        btnPanelAvisos.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        btnPanelAvisos.setForeground(new java.awt.Color(100, 116, 139));
         btnPanelAvisos.setText("Avisos");
-        btnPanelAvisos.setMargin(new java.awt.Insets(2, 16, 4, 16));
+        btnPanelAvisos.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnPanelAvisos.setFocusPainted(false);
         btnPanelAvisos.addActionListener(this::btnPanelAvisosActionPerformed);
         barraNav.add(btnPanelAvisos);
 

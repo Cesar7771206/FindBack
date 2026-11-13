@@ -200,16 +200,19 @@ public class PanelLogin extends javax.swing.JPanel {
         String correo = jTextField1.getText().trim();
         String pass = new String(jPasswordField1.getPassword());
 
-        if (correo.isEmpty() && pass.isEmpty()) {
-            if (ventana != null) {
-                ventana.mostrar("app");
-            }
+        if (correo.isEmpty() || pass.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                "Por favor ingrese su correo institucional / DNI y contraseña.",
+                "Campos requeridos",
+                JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         if (autenticacionServicio != null) {
             Estudiante est = autenticacionServicio.login(correo, pass);
             if (est != null) {
+                jTextField1.setText("");
+                jPasswordField1.setText("");
                 if (ventana != null) {
                     ventana.iniciarSesion(est);
                 }
@@ -219,8 +222,6 @@ public class PanelLogin extends javax.swing.JPanel {
                     "Error de inicio de sesión",
                     JOptionPane.ERROR_MESSAGE);
             }
-        } else if (ventana != null) {
-            ventana.mostrar("app");
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
