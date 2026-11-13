@@ -7,11 +7,6 @@ import modelo.ObjetoReportado;
 import repositorio.ObjetoReportadoCsvRepositorio;
 import repositorio.ObjetoReportadoRepositorio;
 
-/**
- * Servicio encargado de buscar coincidencias entre objetos perdidos y encontrados.
- * 
- * @author david
- */
 public class CoincidenciaServicio {
     
     private final ObjetoReportadoRepositorio objetoRepo;

@@ -9,10 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import modelo.*;
 
-/**
- *
- * @author david
- */
 public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio {
 
     private static final String CABECERA = "id|nombre|descripcion|categoria|color|fecha|ubicacion|estado|reportado|caracteristicasPropias";
@@ -88,7 +84,7 @@ public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio
 
                 Usuario usuario = usuarioRepo.obtenerUsuarioPorIdentificacion(reportadoPor);
                 if (!(usuario instanceof Estudiante)) {
-                    continue; // Omitir objeto huérfano si el estudiante no existe
+                    continue;
                 }
                 Estudiante estudiante = (Estudiante) usuario;
 

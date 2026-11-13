@@ -12,6 +12,9 @@ public class frmPrincipal extends javax.swing.JFrame {
 
     public frmPrincipal() {
         initComponents();
+        setSize(500, 800);
+        setPreferredSize(new java.awt.Dimension(500, 800));
+        setResizable(false);
         this.cardLayout = new CardLayout();
         contenedor.setLayout(this.cardLayout);
 
@@ -75,10 +78,6 @@ public class frmPrincipal extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(() -> new frmPrincipal().setVisible(true));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel contenedor;

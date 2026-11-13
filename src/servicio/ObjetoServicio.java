@@ -7,12 +7,6 @@ import modelo.ObjetoReportado;
 import repositorio.ObjetoReportadoCsvRepositorio;
 import repositorio.ObjetoReportadoRepositorio;
 
-/**
- * Servicio encargado de la lógica de negocio para la gestión de objetos reportados.
- * Provee operaciones para registrar, consultar, actualizar, buscar y filtrar objetos.
- * 
- * @author david
- */
 public class ObjetoServicio {
     
     private final ObjetoReportadoRepositorio objetoRepo;

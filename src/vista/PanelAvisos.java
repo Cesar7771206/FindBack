@@ -186,19 +186,6 @@ public class PanelAvisos extends javax.swing.JPanel {
         panelContenedor.repaint();
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("FindBack - Avisos");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(500, 750);
-            frame.setLocationRelativeTo(null);
-
-            PanelAvisos panel = new PanelAvisos();
-            frame.add(panel);
-            frame.setVisible(true);
-        });
-    }
-
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

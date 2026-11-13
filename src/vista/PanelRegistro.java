@@ -172,7 +172,7 @@ public class PanelRegistro extends javax.swing.JPanel {
         jButton5.setBackground(new java.awt.Color(236, 235, 235));
         jButton5.setFont(new java.awt.Font("sansserif", 1, 13)); // NOI18N
         jButton5.setForeground(new java.awt.Color(102, 102, 102));
-        jButton5.setText("IniciarSesion");
+        jButton5.setText("Iniciar Sesion");
         jButton5.addActionListener(this::jButton5ActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);

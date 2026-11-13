@@ -90,13 +90,13 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
 
                 ObjetoReportado objeto = objetoRepo.obtenerObjetoPorId(idObjeto);
                 if (objeto == null) {
-                    continue; // Objeto no encontrado o eliminado
+                    continue;
                 }
 
                 String idReclamante = atributos[2];
                 Usuario usuario = usuarioRepo.obtenerUsuarioPorIdentificacion(idReclamante);
                 if (!(usuario instanceof Estudiante)) {
-                    continue; // Reclamante no encontrado o no es estudiante
+                    continue;
                 }
                 Estudiante reclamante = (Estudiante) usuario;
 

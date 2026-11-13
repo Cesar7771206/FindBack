@@ -14,12 +14,6 @@ import repositorio.ReclamoRepositorio;
 import repositorio.UsuarioCsvRepositorio;
 import repositorio.UsuarioRepositorio;
 
-/**
- * Servicio encargado de la lógica de negocio para la gestión de reclamos de objetos perdidos.
- * Provee métodos para crear reclamos, verificar respuestas, aprobarlos, rechazarlos y listarlos.
- * 
- * @author fabricio
- */
 public class ReclamoServicio {
 
     private final ReclamoRepositorio reclamoRepo;
@@ -61,24 +55,20 @@ public class ReclamoServicio {
             return false;
         }
 
-        // Un objeto ya entregado no puede ser reclamado
         if ("ENTREGADO".equalsIgnoreCase(objeto.getEstado())) {
             return false;
         }
 
-        // El usuario no puede reclamar un objeto que él mismo reportó
         if (objeto.getReportadoPor() != null &&
             objeto.getReportadoPor().getIdentificacion().equalsIgnoreCase(reclamante.getIdentificacion())) {
             return false;
         }
 
-        // La cantidad de respuestas debe coincidir con las preguntas del objeto
         int totalPreguntas = objeto.preguntasVerificacion().length;
         if (respuestas.size() != totalPreguntas) {
             return false;
         }
 
-        // No permitir reclamos duplicados pendientes para el mismo objeto por el mismo estudiante
         if (existeReclamoPendiente(idObjeto, reclamante.getIdentificacion())) {
             return false;
         }
@@ -213,13 +203,11 @@ public class ReclamoServicio {
             objeto.setEstado("ENTREGADO");
             objetoRepo.actualizar(objeto);
 
-            // Notificar al estudiante que lo reportó originalmente
             if (objeto.getReportadoPor() != null) {
                 objeto.getReportadoPor().recibirMensaje("El objeto '" + objeto.getNombre() + "' que reportaste ha sido entregado exitosamente a su dueño.");
                 usuarioRepo.actualizar(objeto.getReportadoPor());
             }
 
-            // Rechazar automáticamente cualquier otro reclamo pendiente para el mismo objeto
             List<Reclamo> otros = reclamoRepo.buscarPorObjeto(objeto.getId());
             for (Reclamo otro : otros) {
                 if (!otro.getId().equalsIgnoreCase(reclamo.getId()) && "PENDIENTE".equalsIgnoreCase(otro.getEstado())) {
