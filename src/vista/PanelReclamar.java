@@ -57,9 +57,9 @@ public class PanelReclamar extends javax.swing.JPanel {
             cat = "Documento";
         }
         switch (cat) {
-            case "Prenda" -> lblDatoPrivado.setText("Dato privado: Talla y Marca exacta de la prenda *");
-            case "Dispositivo Electronico" -> lblDatoPrivado.setText("Dato privado: Marca, Modelo y Número de Serie *");
-            case "Documento" -> lblDatoPrivado.setText("Dato privado: Tipo de documento y Titular exacto *");
+            case "Prenda" -> lblDatoPrivado.setText("Dato privado: Talla y Marca (separados por coma) *");
+            case "Dispositivo Electronico" -> lblDatoPrivado.setText("Dato privado: Marca, Modelo y Serie (separados por coma) *");
+            case "Documento" -> lblDatoPrivado.setText("Dato privado: Tipo de documento y Titular (separados por coma) *");
             default -> lblDatoPrivado.setText("Dato privado o detalle que solo el dueño conoce *");
         }
     }
@@ -401,14 +401,37 @@ public class PanelReclamar extends javax.swing.JPanel {
         }
 
         if (match != null) {
+            if (match.getReportadoPor() != null && usuarioActual != null &&
+                match.getReportadoPor().getIdentificacion().equalsIgnoreCase(usuarioActual.getIdentificacion())) {
+                JOptionPane.showMessageDialog(this,
+                    "No puedes reclamar un objeto que tú mismo reportaste como hallado.\nPara probar el reclamo, inicia sesión con otra cuenta de estudiante.",
+                    "Acción no permitida",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            if (reclamoServicio.existeReclamoPendiente(match.getId(), usuarioActual.getIdentificacion())) {
+                JOptionPane.showMessageDialog(this,
+                    "Ya existe un reclamo pendiente registrado por ti para este objeto.\nPuedes consultar su avance en el panel de Avisos.",
+                    "Reclamo Existente",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             int totalPreguntas = match.preguntasVerificacion().length;
             List<String> respuestas = new ArrayList<>();
-            respuestas.add(datoPrivado);
-            if (totalPreguntas > 1) {
+            String[] partes = datoPrivado.split("[,;]");
+            for (String p : partes) {
+                String pTrim = p.trim();
+                if (!pTrim.isEmpty()) {
+                    respuestas.add(pTrim);
+                }
+            }
+            if (respuestas.size() < totalPreguntas && !color.isEmpty() && !"No especificado".equalsIgnoreCase(color)) {
                 respuestas.add(color);
             }
-            if (totalPreguntas > 2) {
-                respuestas.add(desc.isEmpty() ? "Sin detalles adicionales" : desc);
+            if (respuestas.size() < totalPreguntas && !desc.isEmpty()) {
+                respuestas.add(desc);
             }
             while (respuestas.size() < totalPreguntas) {
                 respuestas.add("N/A");
@@ -422,7 +445,7 @@ public class PanelReclamar extends javax.swing.JPanel {
                     JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this,
-                    "Ya existe un reclamo pendiente para este objeto o no se pudo registrar.",
+                    "No se pudo registrar el reclamo. Verifica que el objeto siga disponible.",
                     "Aviso",
                     JOptionPane.WARNING_MESSAGE);
             }
