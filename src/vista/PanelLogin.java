@@ -61,6 +61,7 @@ public class PanelLogin extends javax.swing.JPanel {
         );
 
         setBackground(new java.awt.Color(255, 255, 255));
+        setPreferredSize(new java.awt.Dimension(500, 800));
 
         jPanel1.setBackground(new java.awt.Color(236, 235, 235));
 

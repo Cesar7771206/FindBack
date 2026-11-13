@@ -46,6 +46,7 @@ public class PanelRegistro extends javax.swing.JPanel {
         jButton5 = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
+        setPreferredSize(new java.awt.Dimension(500, 800));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel2.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
