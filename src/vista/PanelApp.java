@@ -24,7 +24,7 @@ public class PanelApp extends javax.swing.JPanel {
         this.cardLayout = new CardLayout();
         contenido.setLayout(cardLayout);
         
-        this.panelInicio = new PanelInicio(ventana);
+        this.panelInicio = new PanelInicio(ventana, this);
         this.panelAvisos = new PanelAvisos();
         
         contenido.add(panelInicio, "inicio");
@@ -38,13 +38,20 @@ public class PanelApp extends javax.swing.JPanel {
         if (panelAvisos != null) {
             panelAvisos.setUsuarioActual(estudiante);
         }
+        if (panelInicio != null) {
+            panelInicio.setUsuarioActual(estudiante);
+        }
     }
     
     public PanelAvisos getPanelAvisos() {
         return panelAvisos;
     }
     
-    private void mostrar(String nombre){
+    public PanelInicio getPanelInicio() {
+        return panelInicio;
+    }
+    
+    public void mostrar(String nombre){
         cardLayout.show(contenido, nombre);
     }
 
@@ -116,6 +123,9 @@ public class PanelApp extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnPanelInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPanelInicioActionPerformed
+        if (panelInicio != null) {
+            panelInicio.cargarObjetos();
+        }
         mostrar("inicio");
     }//GEN-LAST:event_btnPanelInicioActionPerformed
 
