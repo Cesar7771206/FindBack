@@ -91,12 +91,14 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
         if (usuario == null) {
             throw new IllegalArgumentException("El usuario no puede ser nulo.");
         }
+        this.usuarios = cargarUsuarios();
         usuarios.add(usuario);
         reescribir();
     }
 
     @Override
     public List<Usuario> obtenerUsuarios() {
+        this.usuarios = cargarUsuarios();
         return usuarios;
     }
     
@@ -105,6 +107,7 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
         if (identificacion == null || identificacion.isBlank()) {
             return null;
         }
+        this.usuarios = cargarUsuarios();
         for (Usuario u : usuarios) {
             if (u != null && u.getIdentificacion() != null) {
                 if (u.getIdentificacion().equalsIgnoreCase(identificacion.trim())) {
@@ -120,6 +123,7 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
         if (usuarioActualizado == null) {
             return;
         }
+        this.usuarios = cargarUsuarios();
         for (int i = 0; i < usuarios.size(); i++) {
             if (usuarios.get(i).getIdentificacion().equalsIgnoreCase(usuarioActualizado.getIdentificacion())) {
                 usuarios.set(i, usuarioActualizado);
@@ -131,6 +135,7 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
 
     @Override
     public void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva, String carreraNueva, String facultadNueva, int cicloNuevo) {
+        this.usuarios = cargarUsuarios();
         for (Usuario u : usuarios) {
             if (u.getIdentificacion().equalsIgnoreCase(identificacionBuscar)) {
                 u.setNombre(nombreNuevo);
@@ -149,6 +154,7 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
     
     @Override
     public void eliminarUsuario(String identificacion) {
+        this.usuarios = cargarUsuarios();
         boolean eliminado = false;
         for (int i = 0; i < usuarios.size(); i++) {
             if (usuarios.get(i).getIdentificacion().equalsIgnoreCase(identificacion)) {
@@ -167,6 +173,7 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
         if (correo == null || correo.isBlank()) {
             return null;
         }
+        this.usuarios = cargarUsuarios();
         for (Usuario u : usuarios) {
             if (u != null && u.getCorreo() != null) {
                 if (u.getCorreo().equalsIgnoreCase(correo.trim())) {

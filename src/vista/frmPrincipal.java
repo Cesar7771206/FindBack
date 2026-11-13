@@ -14,9 +14,12 @@ public class frmPrincipal extends javax.swing.JFrame {
         initComponents();
         setSize(500, 800);
         setPreferredSize(new java.awt.Dimension(500, 800));
+        setMinimumSize(new java.awt.Dimension(500, 800));
+        setMaximumSize(new java.awt.Dimension(500, 800));
         setResizable(false);
         this.cardLayout = new CardLayout();
         contenedor.setLayout(this.cardLayout);
+        contenedor.setPreferredSize(new java.awt.Dimension(500, 800));
 
         this.panelApp = new PanelApp(this);
         this.panelLogin = new PanelLogin(this);

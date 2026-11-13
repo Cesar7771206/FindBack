@@ -42,13 +42,16 @@ public class AutenticacionServicio {
             return null;
         }
 
-        Usuario usuario = usuarioRepo.buscarPorCorreo(correoOCodigo);
+        String query = correoOCodigo.trim();
+        String pass = contrasena.trim();
+
+        Usuario usuario = usuarioRepo.buscarPorCorreo(query);
         if (usuario == null) {
-            usuario = usuarioRepo.obtenerUsuarioPorIdentificacion(correoOCodigo);
+            usuario = usuarioRepo.obtenerUsuarioPorIdentificacion(query);
         }
 
         if (usuario instanceof Estudiante &&
-                usuario.getContrasena().equals(contrasena)) {
+                usuario.getContrasena().trim().equals(pass)) {
             return (Estudiante) usuario;
         }
 

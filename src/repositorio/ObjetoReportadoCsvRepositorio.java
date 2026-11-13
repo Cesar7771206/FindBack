@@ -142,6 +142,7 @@ public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio
         if (objeto == null) {
             throw new IllegalArgumentException("El objeto no puede ser nulo.");
         }
+        this.objetos = cargarObjetos();
         if (objeto.getId() <= 0 || obtenerObjetoPorId(objeto.getId()) != null) {
             objeto.setId(generarSiguienteId());
         } else if (objeto.getId() > this.ultimoId) {
@@ -153,11 +154,13 @@ public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio
 
     @Override
     public List<ObjetoReportado> obtenerObjetos() {
+        this.objetos = cargarObjetos();
         return objetos;
     }
 
     @Override
     public ObjetoReportado obtenerObjetoPorId(int id) {
+        this.objetos = cargarObjetos();
         for (ObjetoReportado o : objetos) {
             if (o.getId() == id) {
                 return o;
@@ -171,6 +174,7 @@ public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio
         if (objetoActualizado == null) {
             return;
         }
+        this.objetos = cargarObjetos();
         for (int i = 0; i < objetos.size(); i++) {
             if (objetos.get(i).getId() == objetoActualizado.getId()) {
                 objetos.set(i, objetoActualizado);
@@ -182,6 +186,7 @@ public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio
 
     @Override
     public void eliminarObjeto(int id) {
+        this.objetos = cargarObjetos();
         boolean eliminado = false;
         for (int i = 0; i < objetos.size(); i++) {
             if (objetos.get(i).getId() == id) {
@@ -197,6 +202,14 @@ public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio
 
     @Override
     public int generarSiguienteId() {
+        this.objetos = cargarObjetos();
+        int max = 0;
+        for (ObjetoReportado obj : this.objetos) {
+            if (obj.getId() > max) {
+                max = obj.getId();
+            }
+        }
+        this.ultimoId = max;
         return ++this.ultimoId;
     }
 

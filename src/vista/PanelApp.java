@@ -125,12 +125,13 @@ public class PanelApp extends javax.swing.JPanel {
         contenido = new javax.swing.JPanel();
 
         setLayout(new java.awt.BorderLayout());
+        setPreferredSize(new java.awt.Dimension(500, 800));
 
         barraNav.setBackground(new java.awt.Color(255, 255, 255));
         barraNav.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(226, 232, 240)));
-        barraNav.setMaximumSize(new java.awt.Dimension(32767, 54));
-        barraNav.setMinimumSize(new java.awt.Dimension(356, 54));
-        barraNav.setPreferredSize(new java.awt.Dimension(500, 54));
+        barraNav.setMaximumSize(new java.awt.Dimension(32767, 50));
+        barraNav.setMinimumSize(new java.awt.Dimension(356, 50));
+        barraNav.setPreferredSize(new java.awt.Dimension(500, 50));
         barraNav.setLayout(new java.awt.GridLayout(1, 0));
 
         btnPanelInicio.setBackground(new java.awt.Color(239, 246, 255));

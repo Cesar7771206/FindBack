@@ -123,6 +123,7 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
         if (reclamo == null) {
             throw new IllegalArgumentException("El reclamo no puede ser nulo.");
         }
+        this.reclamos = cargarReclamos();
         if (reclamo.getId() == null || reclamo.getId().isBlank() || buscarPorId(reclamo.getId()) != null) {
             reclamo.setId(generarSiguienteId());
         } else {
@@ -142,6 +143,7 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
 
     @Override
     public List<Reclamo> obtenerReclamos() {
+        this.reclamos = cargarReclamos();
         return new ArrayList<>(reclamos);
     }
 
@@ -150,6 +152,7 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
         if (id == null || id.isBlank()) {
             return null;
         }
+        this.reclamos = cargarReclamos();
         for (Reclamo r : reclamos) {
             if (r.getId().equalsIgnoreCase(id.trim())) {
                 return r;
@@ -163,6 +166,7 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
         if (id == null || id.isBlank()) {
             return;
         }
+        this.reclamos = cargarReclamos();
         boolean eliminado = false;
         for (int i = 0; i < reclamos.size(); i++) {
             if (reclamos.get(i).getId().equalsIgnoreCase(id.trim())) {
@@ -181,6 +185,7 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
         if (id == null || id.isBlank()) {
             return;
         }
+        this.reclamos = cargarReclamos();
         for (Reclamo r : reclamos) {
             if (r.getId().equalsIgnoreCase(id.trim())) {
                 if (estado != null && !estado.isBlank()) {
@@ -199,6 +204,7 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
         if (reclamoActualizado == null) {
             return;
         }
+        this.reclamos = cargarReclamos();
         for (int i = 0; i < reclamos.size(); i++) {
             if (reclamos.get(i).getId().equalsIgnoreCase(reclamoActualizado.getId())) {
                 reclamos.set(i, reclamoActualizado);
@@ -213,6 +219,7 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
         if (identificacionReclamante == null || identificacionReclamante.isBlank()) {
             return new ArrayList<>();
         }
+        this.reclamos = cargarReclamos();
         List<Reclamo> resultado = new ArrayList<>();
         for (Reclamo r : reclamos) {
             if (r.getReclamante() != null && r.getReclamante().getIdentificacion().equalsIgnoreCase(identificacionReclamante.trim())) {
@@ -224,6 +231,7 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
 
     @Override
     public List<Reclamo> buscarPorObjeto(int idObjeto) {
+        this.reclamos = cargarReclamos();
         List<Reclamo> resultado = new ArrayList<>();
         for (Reclamo r : reclamos) {
             if (r.getObjeto() != null && r.getObjeto().getId() == idObjeto) {
@@ -235,6 +243,20 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
 
     @Override
     public String generarSiguienteId() {
+        this.reclamos = cargarReclamos();
+        int max = 0;
+        for (Reclamo r : this.reclamos) {
+            try {
+                String numStr = r.getId().replaceAll("[^0-9]", "");
+                if (!numStr.isEmpty()) {
+                    int num = Integer.parseInt(numStr);
+                    if (num > max) {
+                        max = num;
+                    }
+                }
+            } catch (NumberFormatException ignored) {}
+        }
+        this.ultimoId = max;
         return "REC-" + String.format("%03d", ++this.ultimoId);
     }
 

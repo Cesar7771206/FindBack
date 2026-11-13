@@ -175,7 +175,7 @@ public class PanelLogin extends javax.swing.JPanel {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         String correo = jTextField1.getText().trim();
-        String pass = new String(jPasswordField1.getPassword());
+        String pass = new String(jPasswordField1.getPassword()).trim();
 
         if (correo.isEmpty() || pass.isEmpty()) {
             JOptionPane.showMessageDialog(this,
@@ -185,20 +185,19 @@ public class PanelLogin extends javax.swing.JPanel {
             return;
         }
 
-        if (autenticacionServicio != null) {
-            Estudiante est = autenticacionServicio.login(correo, pass);
-            if (est != null) {
-                jTextField1.setText("");
-                jPasswordField1.setText("");
-                if (ventana != null) {
-                    ventana.iniciarSesion(est);
-                }
-            } else {
-                JOptionPane.showMessageDialog(this,
-                    "Correo institucional / DNI o contraseña incorrectos.",
-                    "Error de inicio de sesión",
-                    JOptionPane.ERROR_MESSAGE);
+        this.autenticacionServicio = new AutenticacionServicio();
+        Estudiante est = autenticacionServicio.login(correo, pass);
+        if (est != null) {
+            jTextField1.setText("");
+            jPasswordField1.setText("");
+            if (ventana != null) {
+                ventana.iniciarSesion(est);
             }
+        } else {
+            JOptionPane.showMessageDialog(this,
+                "Correo institucional / DNI o contraseña incorrectos.",
+                "Error de inicio de sesión",
+                JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
