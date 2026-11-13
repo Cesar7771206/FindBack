@@ -129,7 +129,7 @@ public class PanelApp extends javax.swing.JPanel {
 
     private void btnPanelAvisosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPanelAvisosActionPerformed
         if (panelAvisos != null) {
-            panelAvisos.actualizarAvisos();
+            panelAvisos.cargarAvisos();
         }
         mostrar("avisos");
     }//GEN-LAST:event_btnPanelAvisosActionPerformed
