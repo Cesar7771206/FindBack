@@ -206,6 +206,7 @@ public class PanelInicio extends javax.swing.JPanel {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         panelContenedor = new javax.swing.JPanel();
+        panelHeaderOpciones = new javax.swing.JPanel();
         lblOpciones = new javax.swing.JLabel();
         espacio1 = new javax.swing.JPanel();
         cardReclamar = new javax.swing.JPanel();
@@ -237,13 +238,20 @@ public class PanelInicio extends javax.swing.JPanel {
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         panelContenedor.setBackground(new java.awt.Color(255, 255, 255));
-        panelContenedor.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 24, 24, 24));
+        panelContenedor.setBorder(javax.swing.BorderFactory.createEmptyBorder(24, 28, 24, 28));
         panelContenedor.setLayout(new javax.swing.BoxLayout(panelContenedor, javax.swing.BoxLayout.Y_AXIS));
+
+        panelHeaderOpciones.setBackground(new java.awt.Color(255, 255, 255));
+        panelHeaderOpciones.setMaximumSize(new java.awt.Dimension(32767, 24));
+        panelHeaderOpciones.setPreferredSize(new java.awt.Dimension(440, 24));
+        panelHeaderOpciones.setLayout(new java.awt.BorderLayout());
 
         lblOpciones.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         lblOpciones.setForeground(new java.awt.Color(102, 112, 128));
         lblOpciones.setText("OPCIONES PRINCIPALES");
-        panelContenedor.add(lblOpciones);
+        panelHeaderOpciones.add(lblOpciones, java.awt.BorderLayout.WEST);
+
+        panelContenedor.add(panelHeaderOpciones);
 
         espacio1.setBackground(new java.awt.Color(255, 255, 255));
         espacio1.setMaximumSize(new java.awt.Dimension(32767, 10));
@@ -411,6 +419,7 @@ public class PanelInicio extends javax.swing.JPanel {
     private javax.swing.JPanel panelBtnReclamar;
     private javax.swing.JPanel panelContenedor;
     private javax.swing.JPanel panelHeaderObjetos;
+    private javax.swing.JPanel panelHeaderOpciones;
     private javax.swing.JPanel panelInfoNotificar;
     private javax.swing.JPanel panelInfoReclamar;
     private javax.swing.JPanel panelListaObjetos;
