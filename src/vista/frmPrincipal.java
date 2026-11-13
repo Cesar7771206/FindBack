@@ -25,7 +25,7 @@ public class frmPrincipal extends javax.swing.JFrame {
 
         this.panelApp = new PanelApp(this);
 
-        contenedor.add(new PanelLogin(), "login");
+        contenedor.add(new PanelLogin(this), "login");
         contenedor.add(new PanelRegistro(), "registro");
         contenedor.add(panelApp, "app");
         

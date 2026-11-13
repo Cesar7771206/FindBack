@@ -10,12 +10,18 @@ package vista;
  */
 public class PanelLogin extends javax.swing.JPanel {
 
+    private frmPrincipal ventana;
+
     /**
      * Creates new form PanelLogin
      */
     public PanelLogin() {
         initComponents();
+    }
 
+    public PanelLogin(frmPrincipal ventana) {
+        this();
+        this.ventana = ventana;
     }
 
     /**
@@ -173,11 +179,15 @@ public class PanelLogin extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
+        if (ventana != null) {
+            ventana.mostrar("registro");
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        if (ventana != null) {
+            ventana.mostrar("app");
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
 

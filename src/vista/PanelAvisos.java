@@ -15,13 +15,17 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 import modelo.Estudiante;
 import modelo.ObjetoReportado;
+import modelo.Reclamo;
 import servicio.CoincidenciaServicio;
 import servicio.ObjetoServicio;
+import servicio.ReclamoServicio;
 
 /**
  * Panel de Avisos con diseño minimalista para NetBeans GUI Builder.
@@ -34,6 +38,7 @@ public class PanelAvisos extends javax.swing.JPanel {
     private Estudiante usuarioActual;
     private ObjetoServicio objetoServicio;
     private CoincidenciaServicio coincidenciaServicio;
+    private ReclamoServicio reclamoServicio;
 
     /**
      * Creates new form PanelAvisos
@@ -45,6 +50,7 @@ public class PanelAvisos extends javax.swing.JPanel {
         }
         this.objetoServicio = new ObjetoServicio();
         this.coincidenciaServicio = new CoincidenciaServicio();
+        this.reclamoServicio = new ReclamoServicio();
         cargarAvisos();
     }
 
@@ -63,8 +69,8 @@ public class PanelAvisos extends javax.swing.JPanel {
     }
 
     /**
-     * Recarga dinámicamente los avisos mediante un for que genera subpaneles.
-     * Muestra datos de prueba para visualizar el diseño mientras no haya datos reales cargados.
+     * Recarga dinámicamente los avisos mediante un for que genera subpaneles
+     * usando los datos reales de la arquitectura (Modelo / Repositorio / Servicio).
      */
     public void cargarAvisos() {
         if (panelContenedor == null) {
@@ -75,36 +81,63 @@ public class PanelAvisos extends javax.swing.JPanel {
 
         List<String[]> listaParaMostrar = new ArrayList<>();
 
-        // 1. Si hay un usuario en sesión, buscamos sus coincidencias y mensajes reales
+        // Si hay un usuario en sesión, consultamos sus datos reales en los servicios
         if (usuarioActual != null) {
-            // Coincidencias de objetos reportados
+            String miId = usuarioActual.getIdentificacion();
+
+            // 1. Coincidencias y reportes de objetos del usuario
             try {
                 if (objetoServicio != null && coincidenciaServicio != null) {
-                    List<ObjetoReportado> misObjetos = objetoServicio.listarPorEstudiante(usuarioActual.getIdentificacion());
+                    List<ObjetoReportado> misObjetos = objetoServicio.listarPorEstudiante(miId);
                     for (ObjetoReportado obj : misObjetos) {
+                        // Aviso de objeto reportado exitosamente
+                        String fechaObj = (obj.getFecha() != null && !obj.getFecha().isBlank()) ? obj.getFecha() : "Reciente";
+                        listaParaMostrar.add(new String[]{
+                            "Objeto Notificado",
+                            "Tu reporte de '" + obj.getNombre() + "' (" + obj.getCategoria() + ") se encuentra registrado.",
+                            fechaObj
+                        });
+
+                        // Buscar coincidencias detectadas con objetos reportados en el campus
                         List<ObjetoReportado> matches = coincidenciaServicio.buscarCoincidencias(obj);
                         for (ObjetoReportado match : matches) {
-                            String detalle = "Coincidencia con " + match.getNombre() + " (" + match.getCategoria() + ") en " + match.getUbicacion() + ".";
-                            String fecha = (match.getFecha() != null) ? match.getFecha() : "Reciente";
-                            listaParaMostrar.add(new String[]{"¡Coincidencia Detectada!", detalle, fecha});
+                            String fechaMatch = (match.getFecha() != null && !match.getFecha().isBlank()) ? match.getFecha() : "Reciente";
+                            String desc = "Se detectó coincidencia con: " + match.getNombre() + " (" + match.getCategoria() + ") en " + match.getUbicacion() + ".";
+                            listaParaMostrar.add(new String[]{
+                                "¡Coincidencia Detectada!",
+                                desc,
+                                fechaMatch
+                            });
                         }
                     }
                 }
             } catch (Exception ignored) {
             }
 
-            // Mensajes recibidos en el buzón del estudiante
+            // 2. Estado de reclamos realizados por el estudiante
+            try {
+                if (reclamoServicio != null) {
+                    List<Reclamo> misReclamos = reclamoServicio.listarPorReclamante(miId);
+                    for (Reclamo r : misReclamos) {
+                        String nomObj = (r.getObjeto() != null) ? r.getObjeto().getNombre() : "Objeto";
+                        String estado = (r.getEstado() != null) ? r.getEstado() : "PENDIENTE";
+                        String desc = "Tu reclamo " + r.getId() + " para '" + nomObj + "' está en estado: " + estado + ".";
+                        listaParaMostrar.add(new String[]{"Estado de Reclamo", desc, "Reciente"});
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+
+            // 3. Notificaciones del buzón del estudiante (mensajes recibidos de ReclamoServicio / Notificable)
             ArrayList<String> mensajes = usuarioActual.getMensajes();
             if (mensajes != null && !mensajes.isEmpty()) {
                 for (int i = mensajes.size() - 1; i >= 0; i--) {
                     String msg = mensajes.get(i);
                     if (msg != null && !msg.isBlank() && !msg.equalsIgnoreCase("SIN_MENSAJES")) {
-                        String titulo = "Notificación de Reclamo";
-                        if (msg.contains("APROBADO")) {
+                        String titulo = "Aviso del Sistema";
+                        if (msg.contains("APROBADO") || msg.contains("RECHAZADO") || msg.contains("reclamo")) {
                             titulo = "Estado de Reclamo Actualizado";
-                        } else if (msg.contains("RECHAZADO")) {
-                            titulo = "Estado de Reclamo Actualizado";
-                        } else if (msg.contains("entregado")) {
+                        } else if (msg.contains("entregado") || msg.contains("devuelto")) {
                             titulo = "Objeto Entregado";
                         }
                         listaParaMostrar.add(new String[]{titulo, msg, "Reciente"});
@@ -113,65 +146,20 @@ public class PanelAvisos extends javax.swing.JPanel {
             }
         }
 
-        // 2. Si aún no hay datos reales cargados, colocamos avisos de ejemplo para ver cómo queda el diseño
+        // Bucle for que genera dinámicamente los subpaneles dentro del contenedor con scroll
         if (listaParaMostrar.isEmpty()) {
-            listaParaMostrar.add(new String[]{
-                "¡Coincidencia Detectada!",
-                "Se encontró un objeto que coincide con tu reporte de Mochila en Pabellón B.",
-                "Hace 10 min"
-            });
-            listaParaMostrar.add(new String[]{
-                "Objeto Notificado",
-                "Tu reporte de Audífonos Sony fue publicado en la base de datos del campus.",
-                "Hace 2 horas"
-            });
-            listaParaMostrar.add(new String[]{
-                "Estado de Reclamo",
-                "Tu reclamo REC-001 para DNI Azul cambió automáticamente a: APROBADO.",
-                "Hace 5 horas"
-            });
-            listaParaMostrar.add(new String[]{
-                "Objeto Entregado",
-                "El termo metálico que reportaste ha sido devuelto exitosamente a su dueño.",
-                "Ayer"
-            });
-            listaParaMostrar.add(new String[]{
-                "¡Coincidencia Detectada!",
-                "Se encontró una Calculadora Científica Casio en Biblioteca Piso 2 que coincide con tu reporte.",
-                "Ayer"
-            });
-            listaParaMostrar.add(new String[]{
-                "Aviso del Campus",
-                "Se registraron nuevos objetos perdidos en la zona de Cafetería Central.",
-                "Hace 2 días"
-            });
-            listaParaMostrar.add(new String[]{
-                "Estado de Reclamo",
-                "Tu reclamo REC-003 para Casaca Jean Azul fue registrado y está en revisión.",
-                "Hace 3 días"
-            });
-            listaParaMostrar.add(new String[]{
-                "Objeto Notificado",
-                "Tu reporte de Llaves con llavero fue publicado con éxito en la plataforma.",
-                "Hace 4 días"
-            });
-            listaParaMostrar.add(new String[]{
-                "Estado de Reclamo",
-                "Tu reclamo REC-002 para Cargador USB-C fue RECHAZADO: faltan detalles únicos.",
-                "Hace 5 días"
-            });
-            listaParaMostrar.add(new String[]{
-                "Objeto Entregado",
-                "Tu reporte de Carnet Universitario fue cerrado: el titular ya lo retiró.",
-                "La semana pasada"
-            });
-        }
-
-        // 3. Bucle for para generar y agregar los subpaneles dentro del panel con scroll
-        for (String[] aviso : listaParaMostrar) {
-            JPanel tarjeta = crearSubpanelAviso(aviso[0], aviso[1], aviso[2]);
-            panelContenedor.add(tarjeta);
-            panelContenedor.add(Box.createVerticalStrut(12));
+            JLabel lblVacio = new JLabel("No hay avisos pendientes por el momento.");
+            lblVacio.setFont(new Font("SansSerif", Font.PLAIN, 13));
+            lblVacio.setForeground(new Color(153, 153, 153));
+            lblVacio.setAlignmentX(Component.CENTER_ALIGNMENT);
+            panelContenedor.add(Box.createVerticalStrut(40));
+            panelContenedor.add(lblVacio);
+        } else {
+            for (String[] aviso : listaParaMostrar) {
+                JPanel tarjeta = crearSubpanelAviso(aviso[0], aviso[1], aviso[2]);
+                panelContenedor.add(tarjeta);
+                panelContenedor.add(Box.createVerticalStrut(12));
+            }
         }
 
         panelContenedor.revalidate();
@@ -250,6 +238,22 @@ public class PanelAvisos extends javax.swing.JPanel {
     }
 
     /**
+     * Método main para poder ejecutar y probar este panel directamente desde NetBeans (Shift + F6).
+     */
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("FindBack - Avisos");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(500, 750);
+            frame.setLocationRelativeTo(null);
+
+            PanelAvisos panel = new PanelAvisos();
+            frame.add(panel);
+            frame.setVisible(true);
+        });
+    }
+
+    /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
@@ -263,21 +267,6 @@ public class PanelAvisos extends javax.swing.JPanel {
         lblSubtitulo = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         panelContenedor = new javax.swing.JPanel();
-        card1 = new javax.swing.JPanel();
-        panelIcono1 = new javax.swing.JPanel();
-        lblIcono1 = new javax.swing.JLabel();
-        panelInfo1 = new javax.swing.JPanel();
-        lblTit1 = new javax.swing.JLabel();
-        lblDesc1 = new javax.swing.JLabel();
-        lblHora1 = new javax.swing.JLabel();
-        espacio1 = new javax.swing.JPanel();
-        card2 = new javax.swing.JPanel();
-        panelIcono2 = new javax.swing.JPanel();
-        lblIcono2 = new javax.swing.JLabel();
-        panelInfo2 = new javax.swing.JPanel();
-        lblTit2 = new javax.swing.JLabel();
-        lblDesc2 = new javax.swing.JLabel();
-        lblHora2 = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setPreferredSize(new java.awt.Dimension(500, 750));
@@ -306,92 +295,6 @@ public class PanelAvisos extends javax.swing.JPanel {
         panelContenedor.setBackground(new java.awt.Color(255, 255, 255));
         panelContenedor.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 28, 20, 28));
         panelContenedor.setLayout(new javax.swing.BoxLayout(panelContenedor, javax.swing.BoxLayout.Y_AXIS));
-
-        card1.setBackground(new java.awt.Color(255, 255, 255));
-        card1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(220, 220, 220), 1, true));
-        card1.setMaximumSize(new java.awt.Dimension(32767, 85));
-        card1.setPreferredSize(new java.awt.Dimension(440, 85));
-        card1.setLayout(new java.awt.BorderLayout(12, 0));
-
-        panelIcono1.setBackground(new java.awt.Color(242, 242, 242));
-        panelIcono1.setPreferredSize(new java.awt.Dimension(38, 38));
-        panelIcono1.setLayout(new java.awt.GridBagLayout());
-
-        lblIcono1.setFont(new java.awt.Font("SansSerif", 0, 16)); // NOI18N
-        lblIcono1.setForeground(new java.awt.Color(102, 102, 102));
-        lblIcono1.setText("🔔");
-        panelIcono1.add(lblIcono1, new java.awt.GridBagConstraints());
-
-        card1.add(panelIcono1, java.awt.BorderLayout.WEST);
-
-        panelInfo1.setBackground(new java.awt.Color(255, 255, 255));
-        panelInfo1.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 2, 4, 4));
-        panelInfo1.setLayout(new javax.swing.BoxLayout(panelInfo1, javax.swing.BoxLayout.Y_AXIS));
-
-        lblTit1.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
-        lblTit1.setForeground(new java.awt.Color(51, 51, 51));
-        lblTit1.setText("¡Coincidencia Detectada!");
-        panelInfo1.add(lblTit1);
-
-        lblDesc1.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        lblDesc1.setForeground(new java.awt.Color(102, 102, 102));
-        lblDesc1.setText("Se encontró un objeto que coincide con tu reporte de Mochila en Pabellón B.");
-        panelInfo1.add(lblDesc1);
-
-        lblHora1.setFont(new java.awt.Font("SansSerif", 0, 11)); // NOI18N
-        lblHora1.setForeground(new java.awt.Color(153, 153, 153));
-        lblHora1.setText("Hace 10 min");
-        panelInfo1.add(lblHora1);
-
-        card1.add(panelInfo1, java.awt.BorderLayout.CENTER);
-
-        panelContenedor.add(card1);
-
-        espacio1.setBackground(new java.awt.Color(255, 255, 255));
-        espacio1.setMaximumSize(new java.awt.Dimension(32767, 12));
-        espacio1.setPreferredSize(new java.awt.Dimension(440, 12));
-        panelContenedor.add(espacio1);
-
-        card2.setBackground(new java.awt.Color(255, 255, 255));
-        card2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(220, 220, 220), 1, true));
-        card2.setMaximumSize(new java.awt.Dimension(32767, 85));
-        card2.setPreferredSize(new java.awt.Dimension(440, 85));
-        card2.setLayout(new java.awt.BorderLayout(12, 0));
-
-        panelIcono2.setBackground(new java.awt.Color(242, 242, 242));
-        panelIcono2.setPreferredSize(new java.awt.Dimension(38, 38));
-        panelIcono2.setLayout(new java.awt.GridBagLayout());
-
-        lblIcono2.setFont(new java.awt.Font("SansSerif", 0, 16)); // NOI18N
-        lblIcono2.setForeground(new java.awt.Color(102, 102, 102));
-        lblIcono2.setText("🔔");
-        panelIcono2.add(lblIcono2, new java.awt.GridBagConstraints());
-
-        card2.add(panelIcono2, java.awt.BorderLayout.WEST);
-
-        panelInfo2.setBackground(new java.awt.Color(255, 255, 255));
-        panelInfo2.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 2, 4, 4));
-        panelInfo2.setLayout(new javax.swing.BoxLayout(panelInfo2, javax.swing.BoxLayout.Y_AXIS));
-
-        lblTit2.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
-        lblTit2.setForeground(new java.awt.Color(51, 51, 51));
-        lblTit2.setText("Objeto Notificado");
-        panelInfo2.add(lblTit2);
-
-        lblDesc2.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        lblDesc2.setForeground(new java.awt.Color(102, 102, 102));
-        lblDesc2.setText("Tu reporte de Audífonos Sony fue publicado en la base de datos.");
-        panelInfo2.add(lblDesc2);
-
-        lblHora2.setFont(new java.awt.Font("SansSerif", 0, 11)); // NOI18N
-        lblHora2.setForeground(new java.awt.Color(153, 153, 153));
-        lblHora2.setText("Hace 2 horas");
-        panelInfo2.add(lblHora2);
-
-        card2.add(panelInfo2, java.awt.BorderLayout.CENTER);
-
-        panelContenedor.add(card2);
-
         jScrollPane1.setViewportView(panelContenedor);
 
         add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -399,25 +302,10 @@ public class PanelAvisos extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel card1;
-    private javax.swing.JPanel card2;
-    private javax.swing.JPanel espacio1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JLabel lblDesc1;
-    private javax.swing.JLabel lblDesc2;
-    private javax.swing.JLabel lblHora1;
-    private javax.swing.JLabel lblHora2;
-    private javax.swing.JLabel lblIcono1;
-    private javax.swing.JLabel lblIcono2;
     private javax.swing.JLabel lblSubtitulo;
-    private javax.swing.JLabel lblTit1;
-    private javax.swing.JLabel lblTit2;
     private javax.swing.JLabel lblTitulo;
     private javax.swing.JPanel panelContenedor;
-    private javax.swing.JPanel panelIcono1;
-    private javax.swing.JPanel panelIcono2;
-    private javax.swing.JPanel panelInfo1;
-    private javax.swing.JPanel panelInfo2;
     private javax.swing.JPanel panelSuperior;
     // End of variables declaration//GEN-END:variables
 }
