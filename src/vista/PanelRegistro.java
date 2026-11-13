@@ -11,6 +11,27 @@ public class PanelRegistro extends javax.swing.JPanel {
     public PanelRegistro() {
         initComponents();
         this.autenticacionServicio = new AutenticacionServicio();
+        cargarFacultadesYCarreras();
+        cbxFacultad.addActionListener(evt -> actualizarCarreras());
+    }
+
+    private void cargarFacultadesYCarreras() {
+        cbxFacultad.removeAllItems();
+        for (modelo.Facultad f : modelo.Facultad.values()) {
+            cbxFacultad.addItem(f.getNombre());
+        }
+        actualizarCarreras();
+    }
+
+    private void actualizarCarreras() {
+        cbxCarrera.removeAllItems();
+        String facNom = (String) cbxFacultad.getSelectedItem();
+        modelo.Facultad fac = modelo.Facultad.fromString(facNom);
+        for (modelo.Carrera c : modelo.Carrera.values()) {
+            if (c.getFacultad() == fac) {
+                cbxCarrera.addItem(c.getNombre());
+            }
+        }
     }
 
     public PanelRegistro(frmPrincipal ventana) {
@@ -36,8 +57,8 @@ public class PanelRegistro extends javax.swing.JPanel {
         jTextField7 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
         jTextField3 = new javax.swing.JTextField();
-        jTextField8 = new javax.swing.JTextField();
-        jTextField9 = new javax.swing.JTextField();
+        cbxFacultad = new javax.swing.JComboBox<>();
+        cbxCarrera = new javax.swing.JComboBox<>();
         jPasswordField2 = new javax.swing.JPasswordField();
         jPasswordField3 = new javax.swing.JPasswordField();
         jLabel10 = new javax.swing.JLabel();
@@ -131,19 +152,17 @@ public class PanelRegistro extends javax.swing.JPanel {
         jTextField3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 440, 400, 30));
 
-        jTextField8.setBackground(new java.awt.Color(236, 235, 235));
-        jTextField8.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
-        jTextField8.setForeground(new java.awt.Color(102, 102, 102));
-        jTextField8.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        jTextField8.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        add(jTextField8, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 300, 400, 30));
+        cbxFacultad.setBackground(new java.awt.Color(236, 235, 235));
+        cbxFacultad.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        cbxFacultad.setForeground(new java.awt.Color(102, 102, 102));
+        cbxFacultad.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ingeniería", "Ciencias Económicas y Empresariales", "Comunicación", "Derecho", "Humanidades", "Educación", "Medicina" }));
+        add(cbxFacultad, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 300, 400, 30));
 
-        jTextField9.setBackground(new java.awt.Color(236, 235, 235));
-        jTextField9.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
-        jTextField9.setForeground(new java.awt.Color(102, 102, 102));
-        jTextField9.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        jTextField9.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        add(jTextField9, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 370, 180, 30));
+        cbxCarrera.setBackground(new java.awt.Color(236, 235, 235));
+        cbxCarrera.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        cbxCarrera.setForeground(new java.awt.Color(102, 102, 102));
+        cbxCarrera.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ingeniería de Sistemas (ISIA)", "Ingeniería Industrial y de Sistemas", "Ingeniería Civil", "Ingeniería Mecánico-Eléctrica" }));
+        add(cbxCarrera, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 370, 190, 30));
 
         jPasswordField2.setBackground(new java.awt.Color(236, 235, 235));
         jPasswordField2.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
@@ -208,8 +227,14 @@ public class PanelRegistro extends javax.swing.JPanel {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         String dni = jTextField7.getText().trim();
         String nombre = jTextField2.getText().trim();
-        String facultad = jTextField8.getText().trim();
-        String carrera = jTextField9.getText().trim();
+        String facultad = (String) cbxFacultad.getSelectedItem();
+        String carrera = (String) cbxCarrera.getSelectedItem();
+        if (facultad == null) {
+            facultad = "";
+        }
+        if (carrera == null) {
+            carrera = "";
+        }
         String cicloStr = jTextField1.getText().trim();
         String correo = jTextField3.getText().trim();
         String pass = new String(jPasswordField2.getPassword());
@@ -284,6 +309,8 @@ public class PanelRegistro extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> cbxCarrera;
+    private javax.swing.JComboBox<String> cbxFacultad;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -304,7 +331,5 @@ public class PanelRegistro extends javax.swing.JPanel {
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField7;
-    private javax.swing.JTextField jTextField8;
-    private javax.swing.JTextField jTextField9;
     // End of variables declaration//GEN-END:variables
 }

@@ -3,6 +3,7 @@ package vista;
 import java.time.LocalDate;
 import java.util.List;
 import javax.swing.*;
+import modelo.Categoria;
 import modelo.DispositivoElectronico;
 import modelo.Documento;
 import modelo.Estudiante;
@@ -38,6 +39,7 @@ public class PanelNotificar extends javax.swing.JPanel {
         this.coincidenciaServicio = new CoincidenciaServicio();
         this.txtFecha.setText(LocalDate.now().toString());
 
+        cargarCategorias();
         cargarUbicaciones();
         inicializarCamposDinamicos();
         actualizarCamposDinamicos();
@@ -52,6 +54,13 @@ public class PanelNotificar extends javax.swing.JPanel {
 
     public void setUsuarioActual(Estudiante estudiante) {
         this.usuarioActual = estudiante;
+    }
+
+    private void cargarCategorias() {
+        cbxCategoria.removeAllItems();
+        for (Categoria c : Categoria.values()) {
+            cbxCategoria.addItem(c.getNombre());
+        }
     }
 
     private void cargarUbicaciones() {

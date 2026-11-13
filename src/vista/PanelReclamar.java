@@ -31,9 +31,17 @@ public class PanelReclamar extends javax.swing.JPanel {
         this.reclamoServicio = new ReclamoServicio();
         this.coincidenciaServicio = new CoincidenciaServicio();
         this.txtFecha.setText(LocalDate.now().toString());
+        cargarCategorias();
         cargarUbicaciones();
         cbxCategoria.addActionListener(evt -> actualizarGuiaVerificacion());
         actualizarGuiaVerificacion();
+    }
+
+    private void cargarCategorias() {
+        cbxCategoria.removeAllItems();
+        for (modelo.Categoria c : modelo.Categoria.values()) {
+            cbxCategoria.addItem(c.getNombre());
+        }
     }
 
     private void cargarUbicaciones() {
