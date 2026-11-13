@@ -40,6 +40,9 @@ public class PanelAvisos extends javax.swing.JPanel {
      */
     public PanelAvisos() {
         initComponents();
+        if (jScrollPane1 != null && jScrollPane1.getVerticalScrollBar() != null) {
+            jScrollPane1.getVerticalScrollBar().setUnitIncrement(16);
+        }
         this.objetoServicio = new ObjetoServicio();
         this.coincidenciaServicio = new CoincidenciaServicio();
         cargarAvisos();
@@ -131,6 +134,36 @@ public class PanelAvisos extends javax.swing.JPanel {
                 "Objeto Entregado",
                 "El termo metálico que reportaste ha sido devuelto exitosamente a su dueño.",
                 "Ayer"
+            });
+            listaParaMostrar.add(new String[]{
+                "¡Coincidencia Detectada!",
+                "Se encontró una Calculadora Científica Casio en Biblioteca Piso 2 que coincide con tu reporte.",
+                "Ayer"
+            });
+            listaParaMostrar.add(new String[]{
+                "Aviso del Campus",
+                "Se registraron nuevos objetos perdidos en la zona de Cafetería Central.",
+                "Hace 2 días"
+            });
+            listaParaMostrar.add(new String[]{
+                "Estado de Reclamo",
+                "Tu reclamo REC-003 para Casaca Jean Azul fue registrado y está en revisión.",
+                "Hace 3 días"
+            });
+            listaParaMostrar.add(new String[]{
+                "Objeto Notificado",
+                "Tu reporte de Llaves con llavero fue publicado con éxito en la plataforma.",
+                "Hace 4 días"
+            });
+            listaParaMostrar.add(new String[]{
+                "Estado de Reclamo",
+                "Tu reclamo REC-002 para Cargador USB-C fue RECHAZADO: faltan detalles únicos.",
+                "Hace 5 días"
+            });
+            listaParaMostrar.add(new String[]{
+                "Objeto Entregado",
+                "Tu reporte de Carnet Universitario fue cerrado: el titular ya lo retiró.",
+                "La semana pasada"
             });
         }
 
