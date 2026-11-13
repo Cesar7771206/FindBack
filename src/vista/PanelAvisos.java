@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package vista;
 
 import java.awt.BorderLayout;
@@ -9,7 +5,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagLayout;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -27,12 +22,6 @@ import servicio.CoincidenciaServicio;
 import servicio.ObjetoServicio;
 import servicio.ReclamoServicio;
 
-/**
- * Panel de Avisos con diseño minimalista para NetBeans GUI Builder.
- * Genera tarjetas de avisos dinámicamente con un bucle for dentro de un panel con scroll.
- * 
- * @author cesar
- */
 public class PanelAvisos extends javax.swing.JPanel {
 
     private Estudiante usuarioActual;
@@ -40,9 +29,6 @@ public class PanelAvisos extends javax.swing.JPanel {
     private CoincidenciaServicio coincidenciaServicio;
     private ReclamoServicio reclamoServicio;
 
-    /**
-     * Creates new form PanelAvisos
-     */
     public PanelAvisos() {
         initComponents();
         if (jScrollPane1 != null && jScrollPane1.getVerticalScrollBar() != null) {
@@ -68,10 +54,6 @@ public class PanelAvisos extends javax.swing.JPanel {
         return usuarioActual;
     }
 
-    /**
-     * Recarga dinámicamente los avisos mediante un for que genera subpaneles
-     * usando los datos reales de la arquitectura (Modelo / Repositorio / Servicio).
-     */
     public void cargarAvisos() {
         if (panelContenedor == null) {
             return;
@@ -81,16 +63,13 @@ public class PanelAvisos extends javax.swing.JPanel {
 
         List<String[]> listaParaMostrar = new ArrayList<>();
 
-        // Si hay un usuario en sesión, consultamos sus datos reales en los servicios
         if (usuarioActual != null) {
             String miId = usuarioActual.getIdentificacion();
 
-            // 1. Coincidencias y reportes de objetos del usuario
             try {
                 if (objetoServicio != null && coincidenciaServicio != null) {
                     List<ObjetoReportado> misObjetos = objetoServicio.listarPorEstudiante(miId);
                     for (ObjetoReportado obj : misObjetos) {
-                        // Aviso de objeto reportado exitosamente
                         String fechaObj = (obj.getFecha() != null && !obj.getFecha().isBlank()) ? obj.getFecha() : "Reciente";
                         listaParaMostrar.add(new String[]{
                             "Objeto Notificado",
@@ -98,7 +77,6 @@ public class PanelAvisos extends javax.swing.JPanel {
                             fechaObj
                         });
 
-                        // Buscar coincidencias detectadas con objetos reportados en el campus
                         List<ObjetoReportado> matches = coincidenciaServicio.buscarCoincidencias(obj);
                         for (ObjetoReportado match : matches) {
                             String fechaMatch = (match.getFecha() != null && !match.getFecha().isBlank()) ? match.getFecha() : "Reciente";
@@ -114,7 +92,6 @@ public class PanelAvisos extends javax.swing.JPanel {
             } catch (Exception ignored) {
             }
 
-            // 2. Estado de reclamos realizados por el estudiante
             try {
                 if (reclamoServicio != null) {
                     List<Reclamo> misReclamos = reclamoServicio.listarPorReclamante(miId);
@@ -128,7 +105,6 @@ public class PanelAvisos extends javax.swing.JPanel {
             } catch (Exception ignored) {
             }
 
-            // 3. Notificaciones del buzón del estudiante (mensajes recibidos de ReclamoServicio / Notificable)
             ArrayList<String> mensajes = usuarioActual.getMensajes();
             if (mensajes != null && !mensajes.isEmpty()) {
                 for (int i = mensajes.size() - 1; i >= 0; i--) {
@@ -146,7 +122,6 @@ public class PanelAvisos extends javax.swing.JPanel {
             }
         }
 
-        // Bucle for que genera dinámicamente los subpaneles dentro del contenedor con scroll
         if (listaParaMostrar.isEmpty()) {
             JLabel lblVacio = new JLabel("No hay avisos pendientes por el momento.");
             lblVacio.setFont(new Font("SansSerif", Font.PLAIN, 13));
@@ -166,9 +141,6 @@ public class PanelAvisos extends javax.swing.JPanel {
         panelContenedor.repaint();
     }
 
-    /**
-     * Crea un subpanel minimalista con componentes básicos estándar de Swing (sin HTML ni iconos).
-     */
     private JPanel crearSubpanelAviso(String titulo, String descripcion, String tiempo) {
         JPanel subpanel = new JPanel();
         subpanel.setBackground(Color.WHITE);
@@ -204,9 +176,6 @@ public class PanelAvisos extends javax.swing.JPanel {
         return subpanel;
     }
 
-    /**
-     * Permite agregar un aviso dinámico en caliente a la lista.
-     */
     public void agregarAviso(String titulo, String descripcion, String tiempo) {
         if (panelContenedor == null) {
             return;
@@ -217,9 +186,6 @@ public class PanelAvisos extends javax.swing.JPanel {
         panelContenedor.repaint();
     }
 
-    /**
-     * Método main para poder ejecutar y probar este panel directamente desde NetBeans (Shift + F6).
-     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("FindBack - Avisos");
@@ -233,11 +199,6 @@ public class PanelAvisos extends javax.swing.JPanel {
         });
     }
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

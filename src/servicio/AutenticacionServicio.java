@@ -2,11 +2,16 @@ package servicio;
 
 import modelo.Estudiante;
 import modelo.Usuario;
+import repositorio.UsuarioCsvRepositorio;
 import repositorio.UsuarioRepositorio;
 
 public class AutenticacionServicio {
     private final UsuarioRepositorio usuarioRepo;
     
+    public AutenticacionServicio() {
+        this(new UsuarioCsvRepositorio());
+    }
+
     public AutenticacionServicio(UsuarioRepositorio usuarioRepo) {
         this.usuarioRepo = usuarioRepo;
     }
@@ -50,4 +55,5 @@ public class AutenticacionServicio {
         return null;
     }
 }
+
 
