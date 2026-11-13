@@ -66,11 +66,19 @@ public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio
                 if (linea.trim().isEmpty()) {
                     continue;
                 }
-                String[] atributos = linea.split("\\|");
-                int id = Integer.parseInt(atributos[0]);
+                String[] atributos = linea.split("\\|", -1);
+                if (atributos.length < 9) {
+                    continue;
+                }
+                int id;
+                try {
+                    id = Integer.parseInt(atributos[0]);
+                } catch (NumberFormatException e) {
+                    continue;
+                }
                 String nombre = atributos[1];
                 String descripcion = atributos[2];
-                String categoria = atributos[3];
+                String categoria = atributos[3] != null ? atributos[3].trim().toUpperCase() : "";
                 String color = atributos[4];
                 String fecha = atributos[5];
                 String ubicacion = atributos[6];
@@ -78,43 +86,53 @@ public class ObjetoReportadoCsvRepositorio implements ObjetoReportadoRepositorio
                 String reportadoPor = atributos[8];
                 String caracteristicasPropias = atributos.length > 9 ? atributos[9] : "";
 
+                Usuario usuario = usuarioRepo.obtenerUsuarioPorIdentificacion(reportadoPor);
+                if (!(usuario instanceof Estudiante)) {
+                    continue; // Omitir objeto huérfano si el estudiante no existe
+                }
+                Estudiante estudiante = (Estudiante) usuario;
+
                 switch (categoria) {
                     case "DOCUMENTO" -> {
                         String[] atributos_documento = caracteristicasPropias.split(";");
-                        String tipoDoc = atributos_documento.length > 0 ? atributos_documento[0] : "NO ESPECIFICADO";
-                        String titular = atributos_documento.length > 1 ? atributos_documento[1] : "NO ESPECIFICADO";
+                        String tipoDoc = atributos_documento.length > 0 && !atributos_documento[0].isBlank() ? atributos_documento[0] : "NO ESPECIFICADO";
+                        String titular = atributos_documento.length > 1 && !atributos_documento[1].isBlank() ? atributos_documento[1] : "NO ESPECIFICADO";
                         Documento documento = new Documento(tipoDoc, titular,
-                                id, nombre, descripcion, categoria, color, fecha, ubicacion, estado, (Estudiante) usuarioRepo.obtenerUsuarioPorIdentificacion(reportadoPor));
+                                id, nombre, descripcion, categoria, color, fecha, ubicacion, estado, estudiante);
                         lista.add(documento);
                     }
                     case "PRENDA" -> {
                         String[] atributos_prenda = caracteristicasPropias.split(";");
-                        String talla = atributos_prenda.length > 0 ? atributos_prenda[0] : "NO ESPECIFICADO";
-                        String marca = atributos_prenda.length > 1 ? atributos_prenda[1] : "NO ESPECIFICADO";
+                        String talla = atributos_prenda.length > 0 && !atributos_prenda[0].isBlank() ? atributos_prenda[0] : "NO ESPECIFICADO";
+                        String marca = atributos_prenda.length > 1 && !atributos_prenda[1].isBlank() ? atributos_prenda[1] : "NO ESPECIFICADO";
                         Prenda prenda = new Prenda(talla, marca, id, nombre, descripcion, categoria, color, fecha, ubicacion, estado,
-                                (Estudiante) usuarioRepo.obtenerUsuarioPorIdentificacion(reportadoPor));
+                                estudiante);
                         lista.add(prenda);
                     }
                     
                     case "DISPOSITIVO ELECTRONICO", "DISPOSITIVOELECTRONICO" -> {
                         String[] atributos_dispositivo = caracteristicasPropias.split(";");
-                        String marca = atributos_dispositivo.length > 0 ? atributos_dispositivo[0] : "NO REGISTRADO";
-                        String modelo = atributos_dispositivo.length > 1 ? atributos_dispositivo[1] : "NO REGISTRADO";
-                        String numeroSerie = atributos_dispositivo.length > 2 ? atributos_dispositivo[2] : "NO REGISTRADO";
+                        String marca = atributos_dispositivo.length > 0 && !atributos_dispositivo[0].isBlank() ? atributos_dispositivo[0] : "NO REGISTRADO";
+                        String modelo = atributos_dispositivo.length > 1 && !atributos_dispositivo[1].isBlank() ? atributos_dispositivo[1] : "NO REGISTRADO";
+                        String numeroSerie = atributos_dispositivo.length > 2 && !atributos_dispositivo[2].isBlank() ? atributos_dispositivo[2] : "NO REGISTRADO";
                         DispositivoElectronico dispositivo = new DispositivoElectronico(marca, modelo, numeroSerie,
-                                id, nombre, descripcion, categoria, color, fecha, ubicacion, estado, (Estudiante) usuarioRepo.obtenerUsuarioPorIdentificacion(reportadoPor));
+                                id, nombre, descripcion, categoria, color, fecha, ubicacion, estado, estudiante);
                         lista.add(dispositivo);
                     }
                     
                     case "OBJETO GENERICO", "OBJETOGENERICO" -> {
                         String[] atributos_ObjetoGenerico = caracteristicasPropias.split(";");
-                        String detalle = atributos_ObjetoGenerico.length > 0 ? atributos_ObjetoGenerico[0] : "NO REGISTRADO";
+                        String detalle = atributos_ObjetoGenerico.length > 0 && !atributos_ObjetoGenerico[0].isBlank() ? atributos_ObjetoGenerico[0] : "NO REGISTRADO";
                         ObjetoGenerico generico = new ObjetoGenerico(detalle, 
-                                id, nombre, descripcion, categoria, color, fecha, ubicacion, estado, (Estudiante) usuarioRepo.obtenerUsuarioPorIdentificacion(reportadoPor));
+                                id, nombre, descripcion, categoria, color, fecha, ubicacion, estado, estudiante);
                         lista.add(generico);
                     }
                         
-                    default -> throw new IllegalArgumentException("Categoría de objeto no reconocida o no soportada: " + categoria);
+                    default -> {
+                        ObjetoGenerico generico = new ObjetoGenerico(caracteristicasPropias, 
+                                id, nombre, descripcion, "OBJETO GENERICO", color, fecha, ubicacion, estado, estudiante);
+                        lista.add(generico);
+                    }
                 }
             }
         } catch (IOException e) {

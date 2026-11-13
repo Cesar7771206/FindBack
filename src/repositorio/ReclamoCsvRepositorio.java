@@ -125,6 +125,16 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
         }
         if (reclamo.getId() == null || reclamo.getId().isBlank() || buscarPorId(reclamo.getId()) != null) {
             reclamo.setId(generarSiguienteId());
+        } else {
+            try {
+                String numStr = reclamo.getId().replaceAll("[^0-9]", "");
+                if (!numStr.isEmpty()) {
+                    int num = Integer.parseInt(numStr);
+                    if (num > this.ultimoId) {
+                        this.ultimoId = num;
+                    }
+                }
+            } catch (NumberFormatException ignored) {}
         }
         reclamos.add(reclamo);
         reescribir();
@@ -132,7 +142,7 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
 
     @Override
     public List<Reclamo> obtenerReclamos() {
-        return reclamos;
+        return new ArrayList<>(reclamos);
     }
 
     @Override
@@ -173,7 +183,9 @@ public class ReclamoCsvRepositorio implements ReclamoRepositorio {
         }
         for (Reclamo r : reclamos) {
             if (r.getId().equalsIgnoreCase(id.trim())) {
-                r.setEstado(estado);
+                if (estado != null && !estado.isBlank()) {
+                    r.setEstado(estado);
+                }
                 r.setObservacion(observacion);
                 r.setCodigoRevisor(codigoRevisor);
                 reescribir();
