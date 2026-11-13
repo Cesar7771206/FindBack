@@ -167,35 +167,18 @@ public class PanelAvisos extends javax.swing.JPanel {
     }
 
     /**
-     * Crea un subpanel minimalista con componentes básicos estándar de Swing (sin HTML).
+     * Crea un subpanel minimalista con componentes básicos estándar de Swing (sin HTML ni iconos).
      */
     private JPanel crearSubpanelAviso(String titulo, String descripcion, String tiempo) {
         JPanel subpanel = new JPanel();
         subpanel.setBackground(Color.WHITE);
         subpanel.setBorder(BorderFactory.createCompoundBorder(
             new LineBorder(new Color(220, 220, 220), 1, true),
-            BorderFactory.createEmptyBorder(12, 14, 12, 14)
+            BorderFactory.createEmptyBorder(12, 16, 12, 16)
         ));
-        subpanel.setLayout(new BorderLayout(12, 0));
-        subpanel.setMaximumSize(new Dimension(32767, 85));
-        subpanel.setPreferredSize(new Dimension(440, 85));
-
-        // Cuadro de icono a la izquierda
-        JPanel pnlIcono = new JPanel();
-        pnlIcono.setBackground(new Color(242, 242, 242));
-        pnlIcono.setPreferredSize(new Dimension(38, 38));
-        pnlIcono.setMaximumSize(new Dimension(38, 38));
-        pnlIcono.setLayout(new GridBagLayout());
-
-        JLabel lblIcono = new JLabel("🔔");
-        lblIcono.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        lblIcono.setForeground(new Color(102, 102, 102));
-        pnlIcono.add(lblIcono);
-
-        // Textos al centro (JLabels estándar sin HTML)
-        JPanel pnlInfo = new JPanel();
-        pnlInfo.setBackground(Color.WHITE);
-        pnlInfo.setLayout(new BoxLayout(pnlInfo, BoxLayout.Y_AXIS));
+        subpanel.setLayout(new BoxLayout(subpanel, BoxLayout.Y_AXIS));
+        subpanel.setMaximumSize(new Dimension(32767, 80));
+        subpanel.setPreferredSize(new Dimension(440, 80));
 
         JLabel lblTit = new JLabel(titulo);
         lblTit.setFont(new Font("SansSerif", Font.BOLD, 13));
@@ -212,14 +195,11 @@ public class PanelAvisos extends javax.swing.JPanel {
         lblHora.setForeground(new Color(153, 153, 153));
         lblHora.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        pnlInfo.add(lblTit);
-        pnlInfo.add(Box.createVerticalStrut(4));
-        pnlInfo.add(lblDesc);
-        pnlInfo.add(Box.createVerticalStrut(4));
-        pnlInfo.add(lblHora);
-
-        subpanel.add(pnlIcono, BorderLayout.WEST);
-        subpanel.add(pnlInfo, BorderLayout.CENTER);
+        subpanel.add(lblTit);
+        subpanel.add(Box.createVerticalStrut(4));
+        subpanel.add(lblDesc);
+        subpanel.add(Box.createVerticalStrut(4));
+        subpanel.add(lblHora);
 
         return subpanel;
     }

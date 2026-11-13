@@ -10,7 +10,6 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -29,7 +28,7 @@ import servicio.ObjetoServicio;
 /**
  * Panel de Inicio minimalista compatible con NetBeans GUI Builder.
  * Ofrece accesos directos a Reclamar y Notificar, y lista dinámicamente los
- * objetos reportados en el campus mediante un bucle for.
+ * objetos reportados en el campus mediante un bucle for (sin iconos/emojis de IA).
  * 
  * @author cesar
  */
@@ -117,53 +116,21 @@ public class PanelInicio extends javax.swing.JPanel {
 
     /**
      * Construye una tarjeta minimalista para cada objeto reportado usando componentes
-     * básicos estándar de Swing (sin HTML).
+     * básicos estándar de Swing (sin HTML ni emojis).
      */
     private JPanel crearTarjetaObjeto(ObjetoReportado obj) {
         JPanel subpanel = new JPanel();
         subpanel.setBackground(Color.WHITE);
         subpanel.setBorder(BorderFactory.createCompoundBorder(
             new LineBorder(new Color(225, 230, 235), 1, true),
-            BorderFactory.createEmptyBorder(10, 12, 10, 12)
+            BorderFactory.createEmptyBorder(10, 16, 10, 16)
         ));
-        subpanel.setLayout(new BorderLayout(12, 0));
-        subpanel.setMaximumSize(new Dimension(32767, 78));
-        subpanel.setPreferredSize(new Dimension(440, 78));
+        subpanel.setLayout(new BorderLayout(14, 0));
+        subpanel.setMaximumSize(new Dimension(32767, 82));
+        subpanel.setPreferredSize(new Dimension(440, 82));
         subpanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        // Determinar icono y color de fondo según categoría/nombre
-        String cat = (obj.getCategoria() != null) ? obj.getCategoria().toUpperCase() : "";
-        String nom = (obj.getNombre() != null) ? obj.getNombre().toUpperCase() : "";
-
-        String icono = "📦";
-        Color fondoIcono = new Color(243, 244, 246);
-        if (cat.contains("DISPOSITIVO") || cat.contains("ELECTRONICO") || nom.contains("AUDIFON") || nom.contains("CELULAR")) {
-            icono = "🎧";
-            fondoIcono = new Color(254, 243, 199);
-        } else if (cat.contains("PRENDA") || cat.contains("ROPA") || nom.contains("MOCHILA") || nom.contains("CASACA")) {
-            icono = "📦";
-            fondoIcono = new Color(241, 245, 249);
-        } else if (nom.contains("LLAVE") || nom.contains("LLAVERO")) {
-            icono = "🗝";
-            fondoIcono = new Color(243, 244, 246);
-        } else if (cat.contains("DOCUMENTO") || nom.contains("DNI") || nom.contains("CARNET")) {
-            icono = "📋";
-            fondoIcono = new Color(224, 242, 254);
-        }
-
-        // Cuadro de icono a la izquierda
-        JPanel pnlIcono = new JPanel();
-        pnlIcono.setBackground(fondoIcono);
-        pnlIcono.setPreferredSize(new Dimension(42, 42));
-        pnlIcono.setMaximumSize(new Dimension(42, 42));
-        pnlIcono.setBorder(new LineBorder(new Color(220, 225, 230), 1, true));
-        pnlIcono.setLayout(new GridBagLayout());
-
-        JLabel lblIcono = new JLabel(icono);
-        lblIcono.setFont(new Font("SansSerif", Font.PLAIN, 18));
-        pnlIcono.add(lblIcono);
-
-        // Textos al centro (JLabels estándar sin HTML)
+        // Textos al centro (JLabels estándar sin HTML ni emojis)
         JPanel pnlInfo = new JPanel();
         pnlInfo.setBackground(Color.WHITE);
         pnlInfo.setLayout(new BoxLayout(pnlInfo, BoxLayout.Y_AXIS));
@@ -174,13 +141,13 @@ public class PanelInicio extends javax.swing.JPanel {
         lblNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         String ubicacion = (obj.getUbicacion() != null && !obj.getUbicacion().isBlank()) ? obj.getUbicacion() : "Campus";
-        JLabel lblUbicacion = new JLabel("📍 " + ubicacion);
+        JLabel lblUbicacion = new JLabel("Ubicación: " + ubicacion);
         lblUbicacion.setFont(new Font("SansSerif", Font.PLAIN, 11));
         lblUbicacion.setForeground(new Color(110, 120, 135));
         lblUbicacion.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         String fecha = (obj.getFecha() != null && !obj.getFecha().isBlank()) ? obj.getFecha() : "Reciente";
-        JLabel lblFecha = new JLabel("🕒 " + fecha);
+        JLabel lblFecha = new JLabel("Fecha: " + fecha);
         lblFecha.setFont(new Font("SansSerif", Font.PLAIN, 11));
         lblFecha.setForeground(new Color(140, 150, 160));
         lblFecha.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -196,7 +163,6 @@ public class PanelInicio extends javax.swing.JPanel {
         lblFlecha.setFont(new Font("SansSerif", Font.BOLD, 18));
         lblFlecha.setForeground(new Color(180, 190, 200));
 
-        subpanel.add(pnlIcono, BorderLayout.WEST);
         subpanel.add(pnlInfo, BorderLayout.CENTER);
         subpanel.add(lblFlecha, BorderLayout.EAST);
 
@@ -243,16 +209,12 @@ public class PanelInicio extends javax.swing.JPanel {
         lblOpciones = new javax.swing.JLabel();
         espacio1 = new javax.swing.JPanel();
         cardReclamar = new javax.swing.JPanel();
-        panelIconoReclamar = new javax.swing.JPanel();
-        lblIconoReclamar = new javax.swing.JLabel();
         panelInfoReclamar = new javax.swing.JPanel();
         lblTitReclamar = new javax.swing.JLabel();
         lblDescReclamar = new javax.swing.JLabel();
         lblFlechaReclamar = new javax.swing.JLabel();
         espacio2 = new javax.swing.JPanel();
         cardNotificar = new javax.swing.JPanel();
-        panelIconoNotificar = new javax.swing.JPanel();
-        lblIconoNotificar = new javax.swing.JLabel();
         panelInfoNotificar = new javax.swing.JPanel();
         lblTitNotificar = new javax.swing.JLabel();
         lblDescNotificar = new javax.swing.JLabel();
@@ -298,22 +260,11 @@ public class PanelInicio extends javax.swing.JPanel {
         });
         cardReclamar.setLayout(new java.awt.BorderLayout(14, 0));
 
-        panelIconoReclamar.setBackground(new java.awt.Color(225, 239, 255));
-        panelIconoReclamar.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(210, 230, 255), 1, true));
-        panelIconoReclamar.setPreferredSize(new java.awt.Dimension(42, 42));
-        panelIconoReclamar.setLayout(new java.awt.GridBagLayout());
-
-        lblIconoReclamar.setFont(new java.awt.Font("SansSerif", 0, 16)); // NOI18N
-        lblIconoReclamar.setText("🔍");
-        panelIconoReclamar.add(lblIconoReclamar, new java.awt.GridBagConstraints());
-
-        cardReclamar.add(panelIconoReclamar, java.awt.BorderLayout.WEST);
-
         panelInfoReclamar.setBackground(new java.awt.Color(255, 255, 255));
-        panelInfoReclamar.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 0, 4, 0));
+        panelInfoReclamar.setBorder(javax.swing.BorderFactory.createEmptyBorder(6, 16, 6, 0));
         panelInfoReclamar.setLayout(new javax.swing.BoxLayout(panelInfoReclamar, javax.swing.BoxLayout.Y_AXIS));
 
-        lblTitReclamar.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
+        lblTitReclamar.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         lblTitReclamar.setForeground(new java.awt.Color(0, 102, 255));
         lblTitReclamar.setText("RECLAMAR");
         panelInfoReclamar.add(lblTitReclamar);
@@ -327,6 +278,7 @@ public class PanelInicio extends javax.swing.JPanel {
 
         lblFlechaReclamar.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         lblFlechaReclamar.setForeground(new java.awt.Color(0, 102, 255));
+        lblFlechaReclamar.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 16));
         lblFlechaReclamar.setText("›");
         cardReclamar.add(lblFlechaReclamar, java.awt.BorderLayout.EAST);
 
@@ -349,23 +301,11 @@ public class PanelInicio extends javax.swing.JPanel {
         });
         cardNotificar.setLayout(new java.awt.BorderLayout(14, 0));
 
-        panelIconoNotificar.setBackground(new java.awt.Color(220, 248, 232));
-        panelIconoNotificar.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(200, 240, 218), 1, true));
-        panelIconoNotificar.setPreferredSize(new java.awt.Dimension(42, 42));
-        panelIconoNotificar.setLayout(new java.awt.GridBagLayout());
-
-        lblIconoNotificar.setFont(new java.awt.Font("SansSerif", 0, 16)); // NOI18N
-        lblIconoNotificar.setForeground(new java.awt.Color(26, 155, 90));
-        lblIconoNotificar.setText("➕");
-        panelIconoNotificar.add(lblIconoNotificar, new java.awt.GridBagConstraints());
-
-        cardNotificar.add(panelIconoNotificar, java.awt.BorderLayout.WEST);
-
         panelInfoNotificar.setBackground(new java.awt.Color(255, 255, 255));
-        panelInfoNotificar.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 0, 4, 0));
+        panelInfoNotificar.setBorder(javax.swing.BorderFactory.createEmptyBorder(6, 16, 6, 0));
         panelInfoNotificar.setLayout(new javax.swing.BoxLayout(panelInfoNotificar, javax.swing.BoxLayout.Y_AXIS));
 
-        lblTitNotificar.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
+        lblTitNotificar.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         lblTitNotificar.setForeground(new java.awt.Color(40, 45, 55));
         lblTitNotificar.setText("NOTIFICAR");
         panelInfoNotificar.add(lblTitNotificar);
@@ -379,6 +319,7 @@ public class PanelInicio extends javax.swing.JPanel {
 
         lblFlechaNotificar.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         lblFlechaNotificar.setForeground(new java.awt.Color(180, 190, 200));
+        lblFlechaNotificar.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 16));
         lblFlechaNotificar.setText("›");
         cardNotificar.add(lblFlechaNotificar, java.awt.BorderLayout.EAST);
 
@@ -458,16 +399,12 @@ public class PanelInicio extends javax.swing.JPanel {
     private javax.swing.JLabel lblDescReclamar;
     private javax.swing.JLabel lblFlechaNotificar;
     private javax.swing.JLabel lblFlechaReclamar;
-    private javax.swing.JLabel lblIconoNotificar;
-    private javax.swing.JLabel lblIconoReclamar;
     private javax.swing.JLabel lblObjetosCampus;
     private javax.swing.JLabel lblOpciones;
     private javax.swing.JLabel lblTitNotificar;
     private javax.swing.JLabel lblTitReclamar;
     private javax.swing.JPanel panelContenedor;
     private javax.swing.JPanel panelHeaderObjetos;
-    private javax.swing.JPanel panelIconoNotificar;
-    private javax.swing.JPanel panelIconoReclamar;
     private javax.swing.JPanel panelInfoNotificar;
     private javax.swing.JPanel panelInfoReclamar;
     private javax.swing.JPanel panelListaObjetos;
