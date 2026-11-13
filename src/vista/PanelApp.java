@@ -14,6 +14,8 @@ public class PanelApp extends javax.swing.JPanel {
 
     private CardLayout cardLayout;
     private PanelInicio panelInicio;
+    private PanelAvisos panelAvisos;
+    private modelo.Estudiante usuarioActual;
     
     
     public PanelApp(frmPrincipal ventana) {
@@ -23,11 +25,23 @@ public class PanelApp extends javax.swing.JPanel {
         contenido.setLayout(cardLayout);
         
         this.panelInicio = new PanelInicio(ventana);
+        this.panelAvisos = new PanelAvisos();
         
         contenido.add(panelInicio, "inicio");
         contenido.add(new PanelReclamar(), "reclamar");
         contenido.add(new PanelNotificar(), "notificar");
-        contenido.add(new PanelAvisos(), "avisos");
+        contenido.add(panelAvisos, "avisos");
+    }
+    
+    public void setUsuarioActual(modelo.Estudiante estudiante) {
+        this.usuarioActual = estudiante;
+        if (panelAvisos != null) {
+            panelAvisos.setUsuarioActual(estudiante);
+        }
+    }
+    
+    public PanelAvisos getPanelAvisos() {
+        return panelAvisos;
     }
     
     private void mostrar(String nombre){
@@ -114,6 +128,9 @@ public class PanelApp extends javax.swing.JPanel {
     }//GEN-LAST:event_btnPanelNotificarActionPerformed
 
     private void btnPanelAvisosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPanelAvisosActionPerformed
+        if (panelAvisos != null) {
+            panelAvisos.actualizarAvisos();
+        }
         mostrar("avisos");
     }//GEN-LAST:event_btnPanelAvisosActionPerformed
 

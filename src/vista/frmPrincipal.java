@@ -37,6 +37,13 @@ public class frmPrincipal extends javax.swing.JFrame {
         cardLayout.show(contenedor, nombrePanel);
     }
 
+    public void iniciarSesion(modelo.Estudiante estudiante) {
+        if (panelApp != null) {
+            panelApp.setUsuarioActual(estudiante);
+        }
+        mostrar("app");
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
