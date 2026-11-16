@@ -30,6 +30,46 @@ public class ReclamoServicio {
         this.reclamoRepo = reclamoRepo;
         this.objetoRepo = objetoRepo;
         this.usuarioRepo = usuarioRepo;
+        sincronizarEstadosObjetosConReclamos();
+    }
+
+    public void sincronizarEstadosObjetosConReclamos() {
+        try {
+            for (Reclamo r : reclamoRepo.obtenerReclamos()) {
+                if (r.getObjeto() != null) {
+                    ObjetoReportado obj = objetoRepo.obtenerObjetoPorId(r.getObjeto().getId());
+                    if (obj != null) {
+                        if ("APROBADO".equalsIgnoreCase(r.getEstado()) && !"ENTREGADO".equalsIgnoreCase(obj.getEstado())) {
+                            obj.setEstado("ENTREGADO");
+                            objetoRepo.actualizar(obj);
+                        } else if ("PENDIENTE".equalsIgnoreCase(r.getEstado())) {
+                            if ("ENCONTRADO".equalsIgnoreCase(obj.getEstado())) {
+                                obj.setEstado("PENDIENTE");
+                                objetoRepo.actualizar(obj);
+                            }
+                            if (obj.getReportadoPor() != null) {
+                                Usuario reportador = usuarioRepo.obtenerUsuarioPorIdentificacion(obj.getReportadoPor().getIdentificacion());
+                                if (reportador instanceof Estudiante) {
+                                    Estudiante estRep = (Estudiante) reportador;
+                                    boolean tieneMsg = false;
+                                    for (String m : estRep.getMensajes()) {
+                                        if (m.contains(r.getId())) {
+                                            tieneMsg = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!tieneMsg) {
+                                        estRep.recibirMensaje("Tu objeto notificado '" + obj.getNombre() + "' tiene un reclamo PENDIENTE (" + r.getId() + ") en proceso de revisión.");
+                                        usuarioRepo.actualizar(estRep);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     public boolean crearReclamo(int idObjeto, String idReclamante, List<String> respuestas) {
@@ -59,6 +99,10 @@ public class ReclamoServicio {
             return false;
         }
 
+        if ("PENDIENTE".equalsIgnoreCase(objeto.getEstado()) || tieneReclamoPendiente(idObjeto)) {
+            return false;
+        }
+
         if (objeto.getReportadoPor() != null &&
             objeto.getReportadoPor().getIdentificacion().equalsIgnoreCase(reclamante.getIdentificacion())) {
             return false;
@@ -78,8 +122,32 @@ public class ReclamoServicio {
         Reclamo nuevo = new Reclamo(nuevoId, objeto, reclamante, listaRespuestas, "PENDIENTE", "", "");
         reclamoRepo.guardar(nuevo);
 
-        notificarReclamante(nuevo, "Se ha registrado tu reclamo " + nuevoId + " para el objeto '" + objeto.getNombre() + "'.");
+        // Actualizar el estado del objeto reportado a PENDIENTE
+        objeto.setEstado("PENDIENTE");
+        objetoRepo.actualizar(objeto);
+
+        // Notificar al estudiante reclamante
+        notificarReclamante(nuevo, "Se ha registrado tu reclamo " + nuevoId + " para el objeto '" + objeto.getNombre() + "'. Estado: PENDIENTE de revisión.");
+
+        // Notificar al estudiante que reportó el objeto
+        if (objeto.getReportadoPor() != null) {
+            Usuario reportador = usuarioRepo.obtenerUsuarioPorIdentificacion(objeto.getReportadoPor().getIdentificacion());
+            if (reportador instanceof Estudiante) {
+                ((Estudiante) reportador).recibirMensaje("Tu objeto notificado '" + objeto.getNombre() + "' tiene un reclamo PENDIENTE (" + nuevoId + ") en proceso de revisión.");
+                usuarioRepo.actualizar(reportador);
+            }
+        }
         return true;
+    }
+
+    public boolean tieneReclamoPendiente(int idObjeto) {
+        List<Reclamo> porObjeto = reclamoRepo.buscarPorObjeto(idObjeto);
+        for (Reclamo r : porObjeto) {
+            if ("PENDIENTE".equalsIgnoreCase(r.getEstado())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean existeReclamoPendiente(int idObjeto, String idReclamante) {
@@ -160,8 +228,12 @@ public class ReclamoServicio {
         for (int i = 0; i < datosReales.length && i < respuestas.size(); i++) {
             String real = datosReales[i];
             String resp = respuestas.get(i);
-            if (real != null && resp != null && real.trim().equalsIgnoreCase(resp.trim())) {
-                coincidencias++;
+            if (real != null && resp != null) {
+                String rClean = real.trim().toLowerCase();
+                String respClean = resp.trim().toLowerCase();
+                if (rClean.equals(respClean) || rClean.contains(respClean) || respClean.contains(rClean)) {
+                    coincidencias++;
+                }
             }
         }
         return coincidencias;
@@ -204,8 +276,11 @@ public class ReclamoServicio {
             objetoRepo.actualizar(objeto);
 
             if (objeto.getReportadoPor() != null) {
-                objeto.getReportadoPor().recibirMensaje("El objeto '" + objeto.getNombre() + "' que reportaste ha sido entregado exitosamente a su dueño.");
-                usuarioRepo.actualizar(objeto.getReportadoPor());
+                Usuario reportador = usuarioRepo.obtenerUsuarioPorIdentificacion(objeto.getReportadoPor().getIdentificacion());
+                if (reportador instanceof Estudiante) {
+                    ((Estudiante) reportador).recibirMensaje("¡El reclamo " + reclamo.getId() + " para tu objeto notificado '" + objeto.getNombre() + "' fue APROBADO y entregado a su dueño!");
+                    usuarioRepo.actualizar(reportador);
+                }
             }
 
             List<Reclamo> otros = reclamoRepo.buscarPorObjeto(objeto.getId());
@@ -215,12 +290,12 @@ public class ReclamoServicio {
                     otro.setCodigoRevisor(codigoRevisor != null ? codigoRevisor.trim() : "");
                     otro.setObservacion("Objeto entregado a otro reclamante verificado.");
                     reclamoRepo.actualizar(otro);
-                    notificarReclamante(otro, "Tu reclamo " + otro.getId() + " fue RECHAZADO porque el objeto fue entregado a otro reclamante.");
+                    notificarReclamante(otro, "Tu reclamo " + otro.getId() + " fue RECHAZADO porque el objeto fue entregado a otro reclamante verificado.");
                 }
             }
         }
 
-        notificarReclamante(reclamo, "Tu reclamo " + reclamo.getId() + " para el objeto '" + (objeto != null ? objeto.getNombre() : "") + "' fue APROBADO.");
+        notificarReclamante(reclamo, "¡Tu reclamo " + reclamo.getId() + " para el objeto '" + (objeto != null ? objeto.getNombre() : "") + "' fue APROBADO! Coordina la entrega con el dueño/hallazgo.");
         return true;
     }
 
@@ -238,6 +313,22 @@ public class ReclamoServicio {
         reclamo.setCodigoRevisor(codigoRevisor != null ? codigoRevisor.trim() : "");
         reclamo.setObservacion(observacion != null ? observacion.trim() : "");
         reclamoRepo.actualizar(reclamo);
+
+        ObjetoReportado objeto = reclamo.getObjeto();
+        if (objeto != null) {
+            if (!tieneReclamoPendiente(objeto.getId())) {
+                objeto.setEstado("ENCONTRADO");
+                objetoRepo.actualizar(objeto);
+            }
+
+            if (objeto.getReportadoPor() != null) {
+                Usuario reportador = usuarioRepo.obtenerUsuarioPorIdentificacion(objeto.getReportadoPor().getIdentificacion());
+                if (reportador instanceof Estudiante) {
+                    ((Estudiante) reportador).recibirMensaje("El reclamo " + reclamo.getId() + " para tu objeto notificado '" + objeto.getNombre() + "' fue RECHAZADO. El objeto vuelve a estar DISPONIBLE.");
+                    usuarioRepo.actualizar(reportador);
+                }
+            }
+        }
 
         String motivo = (observacion != null && !observacion.isBlank()) ? " Motivo: " + observacion.trim() : "";
         notificarReclamante(reclamo, "Tu reclamo " + reclamo.getId() + " fue RECHAZADO." + motivo);

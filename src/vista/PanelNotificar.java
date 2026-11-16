@@ -109,6 +109,33 @@ public class PanelNotificar extends javax.swing.JPanel {
         txtTipoDoc = crearTextField();
         txtTitular = crearTextField();
         txtDetalleExtra = crearTextField();
+
+        JButton btnCancelar = new JButton("Cancelar y Volver al Inicio");
+        btnCancelar.setAlignmentX(0.0f);
+        btnCancelar.setBackground(new java.awt.Color(248, 250, 252));
+        btnCancelar.setFont(new java.awt.Font("SansSerif", java.awt.Font.PLAIN, 12));
+        btnCancelar.setForeground(new java.awt.Color(100, 116, 139));
+        btnCancelar.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            new javax.swing.border.LineBorder(new java.awt.Color(226, 232, 240), 1, true),
+            javax.swing.BorderFactory.createEmptyBorder(8, 12, 8, 12)
+        ));
+        btnCancelar.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
+        btnCancelar.setMaximumSize(new java.awt.Dimension(32767, 36));
+        btnCancelar.setPreferredSize(new java.awt.Dimension(440, 36));
+        btnCancelar.addActionListener(e -> {
+            limpiarFormulario();
+            if (panelApp != null) {
+                panelApp.mostrar("inicio");
+            }
+        });
+
+        int btnIdx = panelContenedor.getComponentZOrder(btnNotificar);
+        if (btnIdx >= 0) {
+            panelContenedor.add(javax.swing.Box.createVerticalStrut(8), btnIdx + 1);
+            panelContenedor.add(btnCancelar, btnIdx + 2);
+        } else {
+            panelContenedor.add(btnCancelar);
+        }
     }
 
     private void actualizarCamposDinamicos() {
@@ -164,12 +191,12 @@ public class PanelNotificar extends javax.swing.JPanel {
     }
 
     public void limpiarFormulario() {
-        txtObjeto.setText("");
-        cbxCategoria.setSelectedIndex(0);
-        cbxLugar.setSelectedIndex(0);
-        txtFecha.setText(LocalDate.now().toString());
-        txtColor.setText("");
-        txtDescripcion.setText("");
+        if (txtObjeto != null) txtObjeto.setText("");
+        if (cbxCategoria != null && cbxCategoria.getItemCount() > 0) cbxCategoria.setSelectedIndex(0);
+        if (cbxLugar != null && cbxLugar.getItemCount() > 0) cbxLugar.setSelectedIndex(0);
+        if (txtFecha != null) txtFecha.setText(LocalDate.now().toString());
+        if (txtColor != null) txtColor.setText("");
+        if (txtDescripcion != null) txtDescripcion.setText("");
         if (txtTalla != null) txtTalla.setText("");
         if (txtMarca != null) txtMarca.setText("");
         if (txtModelo != null) txtModelo.setText("");

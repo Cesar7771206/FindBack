@@ -1,2 +1,25 @@
 id|nombre|descripcion|categoria|color|fecha|ubicacion|estado|reportado|caracteristicasPropias
-1|un polo|Objeto hallado en campus|PRENDA|ROJO|2026-11-12|EDIFICIO PRINCIPAL|ENCONTRADO|61108115|M;Adidas
+1|Polo Deportivo Rojo|Polo deportivo hallado en una banca del primer piso|PRENDA|ROJO|2026-11-12|Edificio Principal|ENCONTRADO|61108115|M;Adidas
+2|Calculadora Científica Casio fx-991LAX|Dejada sobre una mesa del segundo piso de la biblioteca|DISPOSITIVO ELECTRONICO|NEGRO|2026-11-13|Biblioteca Central|ENCONTRADO|61108115|Casio;fx-991LAX;CAS-991823
+3|DNI Azul de Ysela|Encontrado en una de las mesas del cafetín cerca de la caja|DOCUMENTO|AZUL|2026-11-13|Cafetería Central / Comedor|ENCONTRADO|61108115|DNI;YSELA FLORES MARCHENA
+4|Polera Canguro Champion|Olvidada en las graderías de la cancha techada|PRENDA|NEGRO|2026-11-11|Polideportivo|ENCONTRADO|61108115|L;Champion
+5|Termo Metálico One Piece|Termo metálico verde con sticker de Luffy y tapa negra|OBJETO GENERICO|VERDE|2026-11-12|Edificio 80|ENCONTRADO|61108115|Termo de 750ml con sticker de One Piece y abolladura en base
+6|Audífonos Apple AirPods Pro 2|Estuche blanco con audífonos hallado en módulo de estudio individual|DISPOSITIVO ELECTRONICO|BLANCO|2026-11-13|Biblioteca Central|ENCONTRADO|80316377|Apple;AirPods Pro 2;H7GTX910J
+7|Carné Universitario UDEP Cesar|Carné estudiantil extraviado en pasadizo cerca a secretaría|DOCUMENTO|BLANCO|2026-11-12|Edificio Principal|ENCONTRADO|80316377|Carné Universitario;CESAR MIGUEL VILLEGAS FLORES
+8|Casaca Térmica The North Face|Casaca impermeable olvidada en perchero de aula|PRENDA|AZUL MARINO|2026-11-10|Edificio E|ENCONTRADO|80316377|M;The North Face
+9|Mochila Samsonite para Laptop|Mochila negra con compartimento acolchado para laptop de 15 pulgadas|OBJETO GENERICO|NEGRO|2026-11-11|Cafetería Central / Comedor|ENCONTRADO|80316377|Mochila Samsonite con llavero de astronauta y candado numérico
+10|Mouse Inalámbrico Logitech MX Anywhere|Hallado junto a una computadora en cubículo de simulación|DISPOSITIVO ELECTRONICO|GRAFITO|2026-11-12|Laboratorio de Hidráulica|PENDIENTE|80316377|Logitech;MX Anywhere 3;MXA-30918
+11|Billetera de Cuero Renzo Costa|Billetera con documentos entregada al dueño tras verificación exitosa|OBJETO GENERICO|MARRÓN|2026-11-09|Edificio Principal|ENTREGADO|61108115|Billetera con iniciales grabadas RC y compartimento para monedas
+12|Tablet Samsung Galaxy Tab S7|Dejada en mesa de estudio del segundo piso|DISPOSITIVO ELECTRONICO|AZUL|2026-11-13|Biblioteca Central|ENCONTRADO|72154890|Samsung;Galaxy Tab S7;SM-T870-9812
+13|Casaca Denim Levis|Hallada en el respaldo de una silla en aula CA 102|PRENDA|AZUL|2026-11-12|CA 102|ENCONTRADO|73491205|M;Levis
+14|Carné de Biblioteca y DNI|Olvidados en el mostrador de préstamos|DOCUMENTO|AZUL|2026-11-13|Biblioteca Central|ENCONTRADO|74820193|DNI;DAVID ALEJANDRO MENDOZA SILVA
+15|Cargador Apple MagSafe 65W|Olvidado en tomacorriente del módulo de cómputo|DISPOSITIVO ELECTRONICO|BLANCO|2026-11-12|Edificio 80|PENDIENTE|71928374|Apple;MagSafe 65W;A2166-77891
+16|Cuaderno Universitario Espiral A4|Cuaderno de apuntes con stickers de fórmulas|OBJETO GENERICO|NEGRO|2026-11-11|CA 101|ENCONTRADO|75619283|Cuaderno espiral Stanford A4 con apuntes de Cálculo Vectorial
+17|Casaca Rompeviento Nike|Olvidada en las gradas durante el partido de futsal|PRENDA|ROJO|2026-11-14|Polideportivo|PENDIENTE|76182940|S;Nike
+18|Llaves con Llavero UDEP|Juego de 3 llaves con llavero institucional azul|OBJETO GENERICO|PLATEADO|2026-11-13|Cafetería Central / Comedor|ENCONTRADO|77291038|Juego de 3 llaves Yale con llavero UDEP y cinta azul
+19|Laptop Lenovo ThinkPad E14|Hallada en cubículo de estudio grupal|DISPOSITIVO ELECTRONICO|NEGRO|2026-11-10|Edificio Principal|ENTREGADO|78301928|Lenovo;ThinkPad E14;PF-388102
+20|Polerón Hoodie GAP|Dejado en el auditorio después de una conferencia|PRENDA|GRIS|2026-11-12|Facultad de Educación|ENCONTRADO|79412039|XL;GAP
+21|Pasaporte Peruano|Hallado cerca a la entrada principal del campus|DOCUMENTO|VINOTINTO|2026-11-13|Edificio Principal|PENDIENTE|80523140|Pasaporte;ANDREA PAOLA VARGAS NÚÑEZ
+22|Paraguas Plegable Knirps|Olvidado en el paragüero de la entrada|OBJETO GENERICO|AZUL|2026-11-11|Facultad de Comunicación (FCom)|ENCONTRADO|81634251|Paraguas plegable automático Knirps con mango curvo
+23|Smartwatch Garmin Forerunner|Encontrado en el vestuario de varones|DISPOSITIVO ELECTRONICO|NEGRO|2026-11-08|Polideportivo|ENTREGADO|82745362|Garmin;Forerunner 245;GAR-449102
+24|Gorra New Era Yankees|Olvidada en las mesas exteriores del cafetín|PRENDA|AZUL|2026-11-14|Cafetería Central / Comedor|ENCONTRADO|83856473|7 1/4;New Era

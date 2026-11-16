@@ -5,20 +5,30 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import modelo.Estudiante;
 import modelo.ObjetoReportado;
+import modelo.Reclamo;
 import servicio.ObjetoServicio;
+import servicio.ReclamoServicio;
 
 public class PanelInicio extends javax.swing.JPanel {
 
@@ -26,6 +36,15 @@ public class PanelInicio extends javax.swing.JPanel {
     private PanelApp panelApp;
     private Estudiante usuarioActual;
     private ObjetoServicio objetoServicio;
+    private ReclamoServicio reclamoServicio;
+
+    private String filtroActual = "TODOS";
+    private String textoBusqueda = "";
+    private JTextField txtBusqueda;
+    private JButton btnFiltroTodos;
+    private JButton btnFiltroDisponibles;
+    private JButton btnFiltroPendientes;
+    private JPanel pnlBusquedaFiltros;
 
     public PanelInicio() {
         this(null, null);
@@ -43,6 +62,8 @@ public class PanelInicio extends javax.swing.JPanel {
             jScrollPane1.getVerticalScrollBar().setUnitIncrement(16);
         }
         this.objetoServicio = new ObjetoServicio();
+        this.reclamoServicio = new ReclamoServicio();
+        inicializarBusquedaYFiltros();
         cargarObjetos();
     }
 
@@ -58,6 +79,130 @@ public class PanelInicio extends javax.swing.JPanel {
         this.usuarioActual = estudiante;
         actualizarBienvenida();
         cargarObjetos();
+    }
+
+    private void inicializarBusquedaYFiltros() {
+        if (panelContenedor == null) return;
+
+        pnlBusquedaFiltros = new JPanel();
+        pnlBusquedaFiltros.setBackground(Color.WHITE);
+        pnlBusquedaFiltros.setLayout(new BoxLayout(pnlBusquedaFiltros, BoxLayout.Y_AXIS));
+        pnlBusquedaFiltros.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pnlBusquedaFiltros.setMaximumSize(new Dimension(32767, 80));
+        pnlBusquedaFiltros.setPreferredSize(new Dimension(440, 80));
+
+        txtBusqueda = new JTextField() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getText().isEmpty() && !hasFocus()) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                    g2.setColor(new Color(156, 163, 175));
+                    g2.setFont(getFont().deriveFont(Font.ITALIC, 12f));
+                    FontMetrics fm = g2.getFontMetrics();
+                    int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
+                    g2.drawString("🔍 Buscar por nombre, categoría, lugar o color...", getInsets().left + 4, y);
+                    g2.dispose();
+                }
+            }
+        };
+        txtBusqueda.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent e) { txtBusqueda.repaint(); }
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) { txtBusqueda.repaint(); }
+        });
+        txtBusqueda.setAlignmentX(Component.CENTER_ALIGNMENT);
+        txtBusqueda.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        txtBusqueda.setForeground(new Color(51, 65, 85));
+        txtBusqueda.setBackground(new Color(248, 250, 252));
+        txtBusqueda.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(new Color(226, 232, 240), 1, true),
+            BorderFactory.createEmptyBorder(6, 12, 6, 12)
+        ));
+        txtBusqueda.setMaximumSize(new Dimension(32767, 34));
+        txtBusqueda.setPreferredSize(new Dimension(440, 34));
+        txtBusqueda.setToolTipText("Escribe para filtrar por nombre, lugar, categoría o color");
+
+        txtBusqueda.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) { filtrar(); }
+            public void removeUpdate(DocumentEvent e) { filtrar(); }
+            public void changedUpdate(DocumentEvent e) { filtrar(); }
+            private void filtrar() {
+                textoBusqueda = txtBusqueda.getText().trim();
+                cargarObjetos();
+            }
+        });
+
+        JPanel pnlFiltros = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 2));
+        pnlFiltros.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pnlFiltros.setBackground(Color.WHITE);
+        pnlFiltros.setMaximumSize(new Dimension(32767, 36));
+        pnlFiltros.setPreferredSize(new Dimension(440, 36));
+        pnlFiltros.setBorder(BorderFactory.createEmptyBorder(0, -6, 0, 0));
+
+        btnFiltroTodos = crearBotonFiltro("Todos", "TODOS");
+        btnFiltroDisponibles = crearBotonFiltro("🟢 Disponibles", "DISPONIBLES");
+        btnFiltroPendientes = crearBotonFiltro("⏳ En Reclamo (Pendientes)", "PENDIENTES");
+
+        pnlFiltros.add(btnFiltroTodos);
+        pnlFiltros.add(btnFiltroDisponibles);
+        pnlFiltros.add(btnFiltroPendientes);
+
+        pnlBusquedaFiltros.add(txtBusqueda);
+        pnlBusquedaFiltros.add(Box.createVerticalStrut(6));
+        pnlBusquedaFiltros.add(pnlFiltros);
+
+        int idx = panelContenedor.getComponentZOrder(panelListaObjetos);
+        if (idx >= 0) {
+            panelContenedor.add(pnlBusquedaFiltros, idx);
+            panelContenedor.add(Box.createVerticalStrut(10), idx + 1);
+        } else {
+            panelContenedor.add(pnlBusquedaFiltros);
+        }
+
+        actualizarEstiloFiltros();
+    }
+
+    private JButton crearBotonFiltro(String texto, String filtro) {
+        JButton btn = new JButton(texto);
+        btn.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        btn.setFocusPainted(false);
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btn.addActionListener(e -> {
+            this.filtroActual = filtro;
+            actualizarEstiloFiltros();
+            cargarObjetos();
+        });
+        return btn;
+    }
+
+    private void actualizarEstiloFiltros() {
+        configurarBotonPill(btnFiltroTodos, "TODOS".equalsIgnoreCase(filtroActual));
+        configurarBotonPill(btnFiltroDisponibles, "DISPONIBLES".equalsIgnoreCase(filtroActual));
+        configurarBotonPill(btnFiltroPendientes, "PENDIENTES".equalsIgnoreCase(filtroActual));
+    }
+
+    private void configurarBotonPill(JButton btn, boolean seleccionado) {
+        if (btn == null) return;
+        if (seleccionado) {
+            btn.setBackground(new Color(37, 99, 235));
+            btn.setForeground(Color.WHITE);
+            btn.setFont(new Font("SansSerif", Font.BOLD, 11));
+            btn.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(new Color(37, 99, 235), 1, true),
+                BorderFactory.createEmptyBorder(4, 10, 4, 10)
+            ));
+        } else {
+            btn.setBackground(new Color(241, 245, 249));
+            btn.setForeground(new Color(71, 85, 105));
+            btn.setFont(new Font("SansSerif", Font.PLAIN, 11));
+            btn.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(new Color(226, 232, 240), 1, true),
+                BorderFactory.createEmptyBorder(4, 10, 4, 10)
+            ));
+        }
     }
 
     private void actualizarBienvenida() {
@@ -90,28 +235,58 @@ public class PanelInicio extends javax.swing.JPanel {
         panelListaObjetos.removeAll();
 
         this.objetoServicio = new ObjetoServicio();
+        this.reclamoServicio = new ReclamoServicio();
+
         List<ObjetoReportado> listaObjetos = null;
         try {
             listaObjetos = objetoServicio.listarTodos();
         } catch (Exception ignored) {
         }
 
-        if (listaObjetos == null || listaObjetos.isEmpty()) {
-            JLabel lblVacio = new JLabel("No hay objetos reportados en el campus por el momento.");
+        int mostrados = 0;
+        if (listaObjetos != null) {
+            for (ObjetoReportado obj : listaObjetos) {
+                if (obj == null) {
+                    continue;
+                }
+
+                String st = (obj.getEstado() != null) ? obj.getEstado().trim().toUpperCase() : "ENCONTRADO";
+                if ("DISPONIBLES".equals(filtroActual) && !"ENCONTRADO".equals(st)) {
+                    continue;
+                }
+                if ("PENDIENTES".equals(filtroActual) && !"PENDIENTE".equals(st)) {
+                    continue;
+                }
+
+                if (textoBusqueda != null && !textoBusqueda.isBlank()) {
+                    String q = textoBusqueda.toLowerCase().trim();
+                    String nom = obj.getNombre() != null ? obj.getNombre().toLowerCase() : "";
+                    String cat = obj.getCategoria() != null ? obj.getCategoria().toLowerCase() : "";
+                    String ubi = obj.getUbicacion() != null ? obj.getUbicacion().toLowerCase() : "";
+                    String col = obj.getColor() != null ? obj.getColor().toLowerCase() : "";
+                    if (!nom.contains(q) && !cat.contains(q) && !ubi.contains(q) && !col.contains(q)) {
+                        continue;
+                    }
+                }
+
+                JPanel tarjeta = crearTarjetaObjeto(obj);
+                panelListaObjetos.add(tarjeta);
+                panelListaObjetos.add(Box.createVerticalStrut(10));
+                mostrados++;
+            }
+        }
+
+        if (mostrados == 0) {
+            JLabel lblVacio = new JLabel(
+                (textoBusqueda != null && !textoBusqueda.isBlank()) 
+                    ? "No se encontraron objetos que coincidan con \"" + textoBusqueda + "\"."
+                    : "No hay objetos reportados en esta sección por el momento."
+            );
             lblVacio.setFont(new Font("SansSerif", Font.PLAIN, 12));
             lblVacio.setForeground(new Color(153, 153, 153));
             lblVacio.setAlignmentX(Component.CENTER_ALIGNMENT);
             panelListaObjetos.add(Box.createVerticalStrut(24));
             panelListaObjetos.add(lblVacio);
-        } else {
-            for (ObjetoReportado obj : listaObjetos) {
-                if (obj == null) {
-                    continue;
-                }
-                JPanel tarjeta = crearTarjetaObjeto(obj);
-                panelListaObjetos.add(tarjeta);
-                panelListaObjetos.add(Box.createVerticalStrut(10));
-            }
         }
 
         panelListaObjetos.revalidate();
@@ -122,64 +297,325 @@ public class PanelInicio extends javax.swing.JPanel {
         JPanel subpanel = new JPanel();
         subpanel.setBackground(Color.WHITE);
         subpanel.setBorder(BorderFactory.createCompoundBorder(
-            new LineBorder(new Color(225, 230, 235), 1, true),
-            BorderFactory.createEmptyBorder(10, 16, 10, 16)
+            new LineBorder(new Color(226, 232, 240), 1, true),
+            BorderFactory.createEmptyBorder(10, 14, 10, 14)
         ));
-        subpanel.setLayout(new BorderLayout(14, 0));
-        subpanel.setMaximumSize(new Dimension(32767, 82));
-        subpanel.setPreferredSize(new Dimension(440, 82));
+        subpanel.setLayout(new BorderLayout(12, 0));
+        subpanel.setMaximumSize(new Dimension(32767, 98));
+        subpanel.setPreferredSize(new Dimension(440, 98));
+
+        String estado = (obj.getEstado() != null) ? obj.getEstado().trim().toUpperCase() : "ENCONTRADO";
+        boolean esMio = (usuarioActual != null && obj.getReportadoPor() != null &&
+            usuarioActual.getIdentificacion().equalsIgnoreCase(obj.getReportadoPor().getIdentificacion()));
+        boolean yoLoReclame = false;
+        if (usuarioActual != null && reclamoServicio != null) {
+            yoLoReclame = reclamoServicio.existeReclamoPendiente(obj.getId(), usuarioActual.getIdentificacion());
+        }
 
         JPanel pnlInfo = new JPanel();
         pnlInfo.setBackground(Color.WHITE);
         pnlInfo.setLayout(new BoxLayout(pnlInfo, BoxLayout.Y_AXIS));
 
+        // Badges row
+        JPanel pnlBadges = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        pnlBadges.setBackground(Color.WHITE);
+        pnlBadges.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Category Badge
+        String catNom = obj.getCategoria() != null ? obj.getCategoria().trim().toUpperCase() : "GENERAL";
+        JLabel lblCat = crearBadgeCategoria(catNom);
+        pnlBadges.add(lblCat);
+
+        // Status Badge
+        JLabel lblStatus = crearBadgeEstado(estado);
+        pnlBadges.add(lblStatus);
+
+        if (esMio) {
+            JLabel lblMio = crearBadgePill("👤 Notificado por ti", new Color(238, 242, 255), new Color(55, 48, 163), new Color(199, 210, 254));
+            pnlBadges.add(lblMio);
+        } else if (yoLoReclame) {
+            JLabel lblReclamado = crearBadgePill("🙋 Tu reclamo pendiente", new Color(252, 231, 243), new Color(157, 23, 77), new Color(251, 207, 232));
+            pnlBadges.add(lblReclamado);
+        }
+
+        // Title
         JLabel lblNombre = new JLabel(obj.getNombre());
         lblNombre.setFont(new Font("SansSerif", Font.BOLD, 13));
-        lblNombre.setForeground(new Color(30, 35, 45));
+        lblNombre.setForeground(new Color(17, 24, 39));
         lblNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        // Details
         String ubicacion = (obj.getUbicacion() != null && !obj.getUbicacion().isBlank()) ? obj.getUbicacion() : "Campus";
-        JLabel lblUbicacion = new JLabel("Ubicación: " + ubicacion);
-        lblUbicacion.setFont(new Font("SansSerif", Font.PLAIN, 11));
-        lblUbicacion.setForeground(new Color(110, 120, 135));
-        lblUbicacion.setAlignmentX(Component.LEFT_ALIGNMENT);
-
         String fecha = (obj.getFecha() != null && !obj.getFecha().isBlank()) ? obj.getFecha() : "Reciente";
-        JLabel lblFecha = new JLabel("Fecha: " + fecha);
-        lblFecha.setFont(new Font("SansSerif", Font.PLAIN, 11));
-        lblFecha.setForeground(new Color(140, 150, 160));
-        lblFecha.setAlignmentX(Component.LEFT_ALIGNMENT);
+        String color = (obj.getColor() != null && !obj.getColor().isBlank() && !"No especificado".equalsIgnoreCase(obj.getColor())) ? obj.getColor() : "";
+        String detalleTxt = "📍 " + ubicacion + "  •  📅 " + fecha + (color.isEmpty() ? "" : "  •  🎨 " + color);
 
+        JLabel lblDetalle = new JLabel(detalleTxt);
+        lblDetalle.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        lblDetalle.setForeground(new Color(100, 116, 139));
+        lblDetalle.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        pnlInfo.add(pnlBadges);
+        pnlInfo.add(Box.createVerticalStrut(3));
         pnlInfo.add(lblNombre);
         pnlInfo.add(Box.createVerticalStrut(3));
-        pnlInfo.add(lblUbicacion);
-        pnlInfo.add(Box.createVerticalStrut(2));
-        pnlInfo.add(lblFecha);
+        pnlInfo.add(lblDetalle);
 
+        // Button Panel
         JPanel pnlBtn = new JPanel(new java.awt.GridBagLayout());
         pnlBtn.setBackground(Color.WHITE);
 
-        JButton btnVer = new JButton("Ver");
-        btnVer.setBackground(new Color(236, 235, 235));
-        btnVer.setForeground(new Color(51, 51, 51));
-        btnVer.setFont(new Font("SansSerif", Font.BOLD, 11));
-        btnVer.setFocusPainted(false);
-        btnVer.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btnVer.setPreferredSize(new Dimension(65, 30));
-        btnVer.addActionListener(e -> {
-            if (panelApp != null) {
-                if (panelApp.getPanelReclamar() != null) {
-                    panelApp.getPanelReclamar().setObjetoSeleccionado(obj);
-                }
-                panelApp.mostrar("reclamar");
+        JButton btnAccion = new JButton();
+        btnAccion.setFont(new Font("SansSerif", Font.BOLD, 11));
+        btnAccion.setFocusPainted(false);
+        btnAccion.setPreferredSize(new Dimension(116, 32));
+
+        if ("PENDIENTE".equals(estado)) {
+            if (esMio) {
+                btnAccion.setText("Revisar Reclamo");
+                btnAccion.setBackground(new Color(217, 119, 6)); // Amber-600
+                btnAccion.setForeground(Color.WHITE);
+                btnAccion.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                btnAccion.setBorder(BorderFactory.createCompoundBorder(
+                    new LineBorder(new Color(180, 83, 9), 1, true),
+                    BorderFactory.createEmptyBorder(4, 6, 4, 6)
+                ));
+                btnAccion.addActionListener(e -> abrirDialogoRevision(obj));
+            } else if (yoLoReclame) {
+                btnAccion.setText("Tu Reclamo");
+                btnAccion.setBackground(new Color(254, 243, 199));
+                btnAccion.setForeground(new Color(146, 64, 14));
+                btnAccion.setBorder(BorderFactory.createCompoundBorder(
+                    new LineBorder(new Color(253, 230, 138), 1, true),
+                    BorderFactory.createEmptyBorder(4, 6, 4, 6)
+                ));
+                btnAccion.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                btnAccion.addActionListener(e -> JOptionPane.showMessageDialog(this,
+                    "Tu reclamo para este objeto está en estado PENDIENTE de revisión.\nPuedes seguir las novedades en la pestaña Avisos.",
+                    "Reclamo Pendiente",
+                    JOptionPane.INFORMATION_MESSAGE));
+            } else {
+                btnAccion.setText("En Revisión");
+                btnAccion.setBackground(new Color(241, 245, 249));
+                btnAccion.setForeground(new Color(148, 163, 184));
+                btnAccion.setBorder(BorderFactory.createCompoundBorder(
+                    new LineBorder(new Color(226, 232, 240), 1, true),
+                    BorderFactory.createEmptyBorder(4, 6, 4, 6)
+                ));
+                btnAccion.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                btnAccion.addActionListener(e -> JOptionPane.showMessageDialog(this,
+                    "Este objeto ya cuenta con un reclamo en proceso de revisión y validación de propiedad.\nNo puede ser reclamado por otro estudiante mientras esté pendiente.",
+                    "Objeto en Revisión",
+                    JOptionPane.WARNING_MESSAGE));
             }
-        });
-        pnlBtn.add(btnVer);
+        } else if ("ENTREGADO".equals(estado)) {
+            btnAccion.setText("Entregado");
+            btnAccion.setBackground(new Color(243, 244, 246));
+            btnAccion.setForeground(new Color(156, 163, 175));
+            btnAccion.setBorder(new LineBorder(new Color(229, 231, 235), 1, true));
+            btnAccion.setEnabled(false);
+        } else { // ENCONTRADO
+            if (esMio) {
+                btnAccion.setText("Tú lo hallaste");
+                btnAccion.setBackground(new Color(248, 250, 252));
+                btnAccion.setForeground(new Color(100, 116, 139));
+                btnAccion.setBorder(new LineBorder(new Color(226, 232, 240), 1, true));
+                btnAccion.setEnabled(false);
+            } else {
+                btnAccion.setText("Reclamar");
+                btnAccion.setBackground(new Color(37, 99, 235));
+                btnAccion.setForeground(Color.WHITE);
+                btnAccion.setBorder(BorderFactory.createCompoundBorder(
+                    new LineBorder(new Color(29, 78, 216), 1, true),
+                    BorderFactory.createEmptyBorder(4, 8, 4, 8)
+                ));
+                btnAccion.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                btnAccion.addActionListener(e -> {
+                    if (panelApp != null) {
+                        if (panelApp.getPanelReclamar() != null) {
+                            panelApp.getPanelReclamar().setObjetoSeleccionado(obj);
+                        }
+                        panelApp.mostrar("reclamar");
+                    }
+                });
+            }
+        }
+
+        pnlBtn.add(btnAccion);
 
         subpanel.add(pnlInfo, BorderLayout.CENTER);
         subpanel.add(pnlBtn, BorderLayout.EAST);
 
         return subpanel;
+    }
+
+    private JLabel crearBadgeCategoria(String categoria) {
+        String texto;
+        Color bg, fg, border;
+        switch (categoria) {
+            case "PRENDA" -> {
+                texto = "👕 Prenda";
+                bg = new Color(243, 232, 255);
+                fg = new Color(107, 33, 168);
+                border = new Color(233, 213, 255);
+            }
+            case "DISPOSITIVO ELECTRONICO", "DISPOSITIVOELECTRONICO" -> {
+                texto = "📱 Dispositivo";
+                bg = new Color(219, 234, 254);
+                fg = new Color(30, 64, 175);
+                border = new Color(191, 219, 254);
+            }
+            case "DOCUMENTO" -> {
+                texto = "📄 Documento";
+                bg = new Color(255, 237, 213);
+                fg = new Color(194, 65, 12);
+                border = new Color(254, 215, 170);
+            }
+            default -> {
+                texto = "📦 General";
+                bg = new Color(241, 245, 249);
+                fg = new Color(51, 65, 85);
+                border = new Color(226, 232, 240);
+            }
+        }
+        return crearBadgePill(texto, bg, fg, border);
+    }
+
+    private JLabel crearBadgeEstado(String estado) {
+        if ("PENDIENTE".equalsIgnoreCase(estado)) {
+            return crearBadgePill("⏳ En Revisión (Pendiente)", new Color(254, 243, 199), new Color(180, 83, 9), new Color(253, 230, 138));
+        } else if ("ENTREGADO".equalsIgnoreCase(estado)) {
+            return crearBadgePill("✅ Entregado", new Color(243, 244, 246), new Color(75, 85, 99), new Color(229, 231, 235));
+        } else {
+            return crearBadgePill("🟢 Disponible", new Color(220, 252, 231), new Color(21, 128, 61), new Color(134, 239, 172));
+        }
+    }
+
+    private JLabel crearBadgePill(String texto, Color bg, Color fg, Color border) {
+        JLabel lbl = new JLabel(" " + texto + " ");
+        lbl.setFont(new Font("SansSerif", Font.BOLD, 10));
+        lbl.setForeground(fg);
+        lbl.setBackground(bg);
+        lbl.setOpaque(true);
+        lbl.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(border, 1, true),
+            BorderFactory.createEmptyBorder(1, 3, 1, 3)
+        ));
+        return lbl;
+    }
+
+    public void abrirDialogoRevision(ObjetoReportado obj) {
+        if (obj == null) return;
+        if (reclamoServicio == null) {
+            reclamoServicio = new ReclamoServicio();
+        }
+        List<Reclamo> reclamos = reclamoServicio.listarPorObjeto(obj.getId());
+        Reclamo pendiente = null;
+        for (Reclamo r : reclamos) {
+            if ("PENDIENTE".equalsIgnoreCase(r.getEstado())) {
+                pendiente = r;
+                break;
+            }
+        }
+
+        if (pendiente == null) {
+            JOptionPane.showMessageDialog(this,
+                "No hay reclamos pendientes activos para este objeto.",
+                "Sin Reclamos Pendientes",
+                JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        Reclamo r = pendiente;
+        Estudiante reclamante = r.getReclamante();
+        String nombreReclamante = (reclamante != null) ? reclamante.getNombre() : "Estudiante";
+        String dniReclamante = (reclamante != null) ? reclamante.getIdentificacion() : "No especificado";
+        String carreraReclamante = (reclamante != null) ? reclamante.getCarrera() : "Campus UDEP";
+
+        String[] preguntas = obj.preguntasVerificacion();
+        String[] datosReales = obj.datosVerificables();
+        ArrayList<String> respuestas = r.getRespuestas();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("📋 VALIDACIÓN DE RECLAMO: ").append(r.getId()).append("\n");
+        sb.append("────────────────────────────────────────\n");
+        sb.append("Objeto: ").append(obj.getNombre()).append(" (").append(obj.getCategoria()).append(")\n");
+        sb.append("Lugar hallado: ").append(obj.getUbicacion()).append(" | Color: ").append(obj.getColor()).append("\n\n");
+        sb.append("👤 DATOS DEL RECLAMANTE:\n");
+        sb.append("• Nombre: ").append(nombreReclamante).append("\n");
+        sb.append("• DNI: ").append(dniReclamante).append("\n");
+        sb.append("• Carrera: ").append(carreraReclamante).append("\n\n");
+        sb.append("🔍 COMPROBACIÓN DE PREGUNTAS:\n");
+
+        if (preguntas != null && datosReales != null && respuestas != null) {
+            for (int i = 0; i < preguntas.length; i++) {
+                String preg = preguntas[i];
+                String real = (i < datosReales.length) ? datosReales[i] : "N/A";
+                String resp = (i < respuestas.size()) ? respuestas.get(i) : "N/A";
+                boolean match = real.trim().equalsIgnoreCase(resp.trim()) ||
+                                real.toLowerCase().contains(resp.toLowerCase().trim()) ||
+                                resp.toLowerCase().contains(real.toLowerCase().trim());
+                sb.append((i + 1)).append(") ").append(preg).append("\n");
+                sb.append("    • Respuesta dada: \"").append(resp).append("\"\n");
+                sb.append("    • Dato registrado: \"").append(real).append("\"\n");
+                sb.append("    • Coincidencia: ").append(match ? "✅ COINCIDE" : "❌ NO COINCIDE").append("\n\n");
+            }
+        }
+
+        int coincidencias = reclamoServicio.contarCoincidencias(r.getId());
+        double pct = reclamoServicio.calcularPorcentajeCoincidencia(r.getId());
+        sb.append("📊 Resumen: ").append(String.format("%.0f%% de acierto (%d coincidencias)", pct, Math.max(0, coincidencias))).append("\n");
+        sb.append("────────────────────────────────────────\n");
+        sb.append("¿Deseas APROBAR la entrega del objeto o RECHAZAR el reclamo?");
+
+        Object[] opciones = {"Aprobar y Entregar", "Rechazar Reclamo", "Cancelar"};
+        int seleccion = JOptionPane.showOptionDialog(
+            this,
+            sb.toString(),
+            "Revisar Reclamo - FindBack",
+            JOptionPane.YES_NO_CANCEL_OPTION,
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            opciones,
+            opciones[0]
+        );
+
+        String revisorId = (usuarioActual != null) ? usuarioActual.getIdentificacion() : "USUARIO";
+        if (seleccion == 0) { // Aprobar
+            boolean ok = reclamoServicio.aprobarReclamo(r.getId(), revisorId, "Validado y aprobado por quien reportó el hallazgo.");
+            if (ok) {
+                JOptionPane.showMessageDialog(this,
+                    "¡Reclamo " + r.getId() + " APROBADO con éxito!\nEl objeto ha sido marcado como ENTREGADO y se notificó al reclamante.",
+                    "Reclamo Aprobado",
+                    JOptionPane.INFORMATION_MESSAGE);
+                cargarObjetos();
+                if (panelApp != null && panelApp.getPanelAvisos() != null) {
+                    panelApp.getPanelAvisos().cargarAvisos();
+                }
+            }
+        } else if (seleccion == 1) { // Rechazar
+            String motivo = JOptionPane.showInputDialog(this,
+                "Ingresa el motivo del rechazo del reclamo:",
+                "Motivo de rechazo",
+                JOptionPane.QUESTION_MESSAGE);
+            if (motivo == null) {
+                return;
+            }
+            if (motivo.isBlank()) {
+                motivo = "Las respuestas de verificación no coinciden con las características del objeto.";
+            }
+            boolean ok = reclamoServicio.rechazarReclamo(r.getId(), revisorId, motivo);
+            if (ok) {
+                JOptionPane.showMessageDialog(this,
+                    "El reclamo " + r.getId() + " ha sido RECHAZADO.\nEl objeto vuelve a estar DISPONIBLE para reclamos en el campus.",
+                    "Reclamo Rechazado",
+                    JOptionPane.INFORMATION_MESSAGE);
+                cargarObjetos();
+                if (panelApp != null && panelApp.getPanelAvisos() != null) {
+                    panelApp.getPanelAvisos().cargarAvisos();
+                }
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -416,20 +852,30 @@ public class PanelInicio extends javax.swing.JPanel {
 
     private void btnReclamarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReclamarActionPerformed
         if (panelApp != null) {
+            if (panelApp.getPanelReclamar() != null) {
+                panelApp.getPanelReclamar().limpiarFormulario();
+            }
             panelApp.mostrar("reclamar");
         }
     }//GEN-LAST:event_btnReclamarActionPerformed
 
     private void btnNotificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotificarActionPerformed
         if (panelApp != null) {
+            if (panelApp.getPanelNotificar() != null) {
+                panelApp.getPanelNotificar().limpiarFormulario();
+            }
             panelApp.mostrar("notificar");
         }
     }//GEN-LAST:event_btnNotificarActionPerformed
 
     private void btnBuscarTodosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarTodosActionPerformed
-        if (panelApp != null) {
-            panelApp.mostrar("reclamar");
+        if (txtBusqueda != null) {
+            txtBusqueda.setText("");
         }
+        textoBusqueda = "";
+        filtroActual = "TODOS";
+        actualizarEstiloFiltros();
+        cargarObjetos();
     }//GEN-LAST:event_btnBuscarTodosActionPerformed
 
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed

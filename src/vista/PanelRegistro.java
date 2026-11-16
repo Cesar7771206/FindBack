@@ -13,6 +13,11 @@ public class PanelRegistro extends javax.swing.JPanel {
         this.autenticacionServicio = new AutenticacionServicio();
         cargarFacultadesYCarreras();
         cbxFacultad.addActionListener(evt -> actualizarCarreras());
+        jPasswordField3.addActionListener(this::jButton1ActionPerformed);
+        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton5.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     }
 
     private void cargarFacultadesYCarreras() {

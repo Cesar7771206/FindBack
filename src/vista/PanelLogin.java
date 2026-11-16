@@ -13,6 +13,12 @@ public class PanelLogin extends javax.swing.JPanel {
     public PanelLogin() {
         initComponents();
         this.autenticacionServicio = new AutenticacionServicio();
+        jTextField1.addActionListener(this::jButton2ActionPerformed);
+        jPasswordField1.addActionListener(this::jButton2ActionPerformed);
+        jLabel4.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        jButton1.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        jButton2.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        jButton3.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
     public PanelLogin(frmPrincipal ventana) {

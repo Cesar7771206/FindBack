@@ -1,12 +1,27 @@
 package vista;
 
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.LineBorder;
 import modelo.Estudiante;
+import modelo.DispositivoElectronico;
+import modelo.Documento;
 import modelo.ObjetoGenerico;
 import modelo.ObjetoReportado;
+import modelo.Prenda;
 import repositorio.UsuarioCsvRepositorio;
 import servicio.CoincidenciaServicio;
 import servicio.ObjetoServicio;
@@ -22,6 +37,15 @@ public class PanelReclamar extends javax.swing.JPanel {
     private CoincidenciaServicio coincidenciaServicio;
     private ObjetoReportado objetoObjetivo;
 
+    private javax.swing.JPanel pnlCamposDinamicos;
+    private javax.swing.JTextField txtTalla;
+    private javax.swing.JTextField txtMarca;
+    private javax.swing.JTextField txtModelo;
+    private javax.swing.JTextField txtSerie;
+    private javax.swing.JTextField txtTipoDoc;
+    private javax.swing.JTextField txtTitular;
+    private javax.swing.JTextField txtDetalleExtra;
+
     public PanelReclamar() {
         initComponents();
         if (jScrollPane1 != null && jScrollPane1.getVerticalScrollBar() != null) {
@@ -33,8 +57,9 @@ public class PanelReclamar extends javax.swing.JPanel {
         this.txtFecha.setText(LocalDate.now().toString());
         cargarCategorias();
         cargarUbicaciones();
-        cbxCategoria.addActionListener(evt -> actualizarGuiaVerificacion());
-        actualizarGuiaVerificacion();
+        inicializarCamposDinamicos();
+        actualizarCamposDinamicos();
+        cbxCategoria.addActionListener(evt -> actualizarCamposDinamicos());
     }
 
     private void cargarCategorias() {
@@ -51,17 +76,139 @@ public class PanelReclamar extends javax.swing.JPanel {
         }
     }
 
-    private void actualizarGuiaVerificacion() {
+    private JTextField crearTextField() {
+        JTextField txt = new JTextField();
+        txt.setAlignmentX(0.0f);
+        txt.setBackground(new Color(249, 250, 251));
+        txt.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        txt.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(new Color(209, 213, 219), 1, true),
+            BorderFactory.createEmptyBorder(6, 10, 6, 10)
+        ));
+        txt.setMaximumSize(new Dimension(32767, 36));
+        txt.setPreferredSize(new Dimension(440, 36));
+        return txt;
+    }
+
+    private JLabel crearEtiquetaCampo(String texto) {
+        JLabel lbl = new JLabel(texto);
+        lbl.setAlignmentX(0.0f);
+        lbl.setFont(new Font("SansSerif", Font.BOLD, 12));
+        lbl.setForeground(new Color(75, 85, 99));
+        return lbl;
+    }
+
+    private JPanel crearEspacio(int h) {
+        JPanel p = new JPanel();
+        p.setAlignmentX(0.0f);
+        p.setBackground(Color.WHITE);
+        p.setMaximumSize(new Dimension(32767, h));
+        p.setPreferredSize(new Dimension(440, h));
+        return p;
+    }
+
+    private void inicializarCamposDinamicos() {
+        txtTalla = crearTextField();
+        txtMarca = crearTextField();
+        txtModelo = crearTextField();
+        txtSerie = crearTextField();
+        txtTipoDoc = crearTextField();
+        txtTitular = crearTextField();
+        txtDetalleExtra = crearTextField();
+
+        pnlCamposDinamicos = new JPanel();
+        pnlCamposDinamicos.setAlignmentX(0.0f);
+        pnlCamposDinamicos.setBackground(Color.WHITE);
+        pnlCamposDinamicos.setLayout(new BoxLayout(pnlCamposDinamicos, BoxLayout.Y_AXIS));
+
+        if (lblDatoPrivado != null) lblDatoPrivado.setVisible(false);
+        if (txtDatoPrivado != null) txtDatoPrivado.setVisible(false);
+
+        int idx = panelContenedor.getComponentZOrder(lblDatoPrivado);
+        if (idx >= 0) {
+            panelContenedor.add(pnlCamposDinamicos, idx);
+        } else {
+            panelContenedor.add(pnlCamposDinamicos);
+        }
+
+        JButton btnCancelar = new JButton("Cancelar y Volver al Inicio");
+        btnCancelar.setAlignmentX(0.0f);
+        btnCancelar.setBackground(new Color(248, 250, 252));
+        btnCancelar.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        btnCancelar.setForeground(new Color(100, 116, 139));
+        btnCancelar.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(new Color(226, 232, 240), 1, true),
+            BorderFactory.createEmptyBorder(8, 12, 8, 12)
+        ));
+        btnCancelar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnCancelar.setMaximumSize(new Dimension(32767, 36));
+        btnCancelar.setPreferredSize(new Dimension(440, 36));
+        btnCancelar.addActionListener(e -> {
+            limpiarFormulario();
+            if (panelApp != null) {
+                panelApp.mostrar("inicio");
+            }
+        });
+
+        int btnIdx = panelContenedor.getComponentZOrder(btnReclamar);
+        if (btnIdx >= 0) {
+            panelContenedor.add(Box.createVerticalStrut(8), btnIdx + 1);
+            panelContenedor.add(btnCancelar, btnIdx + 2);
+        } else {
+            panelContenedor.add(btnCancelar);
+        }
+    }
+
+    private void actualizarCamposDinamicos() {
+        if (pnlCamposDinamicos == null) {
+            return;
+        }
+        pnlCamposDinamicos.removeAll();
+
         String cat = (String) cbxCategoria.getSelectedItem();
         if (cat == null) {
             cat = "Documento";
         }
+
         switch (cat) {
-            case "Prenda" -> lblDatoPrivado.setText("Dato privado: Talla y Marca (separados por coma) *");
-            case "Dispositivo Electronico" -> lblDatoPrivado.setText("Dato privado: Marca, Modelo y Serie (separados por coma) *");
-            case "Documento" -> lblDatoPrivado.setText("Dato privado: Tipo de documento y Titular (separados por coma) *");
-            default -> lblDatoPrivado.setText("Dato privado o detalle que solo el dueño conoce *");
+            case "Prenda" -> {
+                pnlCamposDinamicos.add(crearEtiquetaCampo("Pregunta 1: Talla de la prenda (S, M, L, XL, etc.) *"));
+                pnlCamposDinamicos.add(txtTalla);
+                pnlCamposDinamicos.add(crearEspacio(12));
+                pnlCamposDinamicos.add(crearEtiquetaCampo("Pregunta 2: Marca de la prenda *"));
+                pnlCamposDinamicos.add(txtMarca);
+                pnlCamposDinamicos.add(crearEspacio(12));
+            }
+            case "Dispositivo Electronico" -> {
+                pnlCamposDinamicos.add(crearEtiquetaCampo("Pregunta 1: Marca del dispositivo *"));
+                pnlCamposDinamicos.add(txtMarca);
+                pnlCamposDinamicos.add(crearEspacio(12));
+                pnlCamposDinamicos.add(crearEtiquetaCampo("Pregunta 2: Modelo exacto del dispositivo *"));
+                pnlCamposDinamicos.add(txtModelo);
+                pnlCamposDinamicos.add(crearEspacio(12));
+                pnlCamposDinamicos.add(crearEtiquetaCampo("Pregunta 3: Número de serie o detalle único identificable *"));
+                pnlCamposDinamicos.add(txtSerie);
+                pnlCamposDinamicos.add(crearEspacio(12));
+            }
+            case "Documento" -> {
+                pnlCamposDinamicos.add(crearEtiquetaCampo("Pregunta 1: Tipo de documento (DNI, Carné, Licencia, etc.) *"));
+                pnlCamposDinamicos.add(txtTipoDoc);
+                pnlCamposDinamicos.add(crearEspacio(12));
+                pnlCamposDinamicos.add(crearEtiquetaCampo("Pregunta 2: Nombre completo del titular en el documento *"));
+                pnlCamposDinamicos.add(txtTitular);
+                pnlCamposDinamicos.add(crearEspacio(12));
+            }
+            default -> {
+                pnlCamposDinamicos.add(crearEtiquetaCampo("Pregunta: Característica o detalle distintivo (prueba de dueño) *"));
+                pnlCamposDinamicos.add(txtDetalleExtra);
+                pnlCamposDinamicos.add(crearEspacio(12));
+            }
         }
+
+        pnlCamposDinamicos.revalidate();
+        pnlCamposDinamicos.repaint();
+        panelContenedor.revalidate();
+        panelContenedor.repaint();
     }
 
     public PanelReclamar(frmPrincipal ventana, PanelApp panelApp) {
@@ -75,7 +222,11 @@ public class PanelReclamar extends javax.swing.JPanel {
     }
 
     public void setObjetoSeleccionado(ObjetoReportado obj) {
+        limpiarFormulario();
         this.objetoObjetivo = obj;
+        if (reclamoServicio == null) {
+            reclamoServicio = new ReclamoServicio();
+        }
         if (obj != null) {
             txtNombre.setText(obj.getNombre());
             for (int i = 0; i < cbxCategoria.getItemCount(); i++) {
@@ -84,24 +235,90 @@ public class PanelReclamar extends javax.swing.JPanel {
                     break;
                 }
             }
+            for (int i = 0; i < cbxLugar.getItemCount(); i++) {
+                if (cbxLugar.getItemAt(i).equalsIgnoreCase(obj.getUbicacion())) {
+                    cbxLugar.setSelectedIndex(i);
+                    break;
+                }
+            }
             if (obj.getColor() != null && !obj.getColor().isBlank()) {
                 txtColor.setText(obj.getColor());
+            } else {
+                txtColor.setText("");
             }
+            if (obj.getFecha() != null && !obj.getFecha().isBlank()) {
+                txtFecha.setText(obj.getFecha());
+            } else {
+                txtFecha.setText(LocalDate.now().toString());
+            }
+            txtDescripcion.setText("");
+
+            String st = (obj.getEstado() != null) ? obj.getEstado().trim().toUpperCase() : "ENCONTRADO";
+            if ("PENDIENTE".equals(st) || reclamoServicio.tieneReclamoPendiente(obj.getId())) {
+                lblSubtitulo.setText("⚠️ Objeto en revisión: ya cuenta con un reclamo pendiente. No es posible reclamarlo nuevamente.");
+                lblSubtitulo.setForeground(new Color(180, 83, 9));
+                btnReclamar.setEnabled(false);
+                btnReclamar.setText("Reclamo ya en proceso");
+            } else if (usuarioActual != null && obj.getReportadoPor() != null &&
+                usuarioActual.getIdentificacion().equalsIgnoreCase(obj.getReportadoPor().getIdentificacion())) {
+                lblSubtitulo.setText("⚠️ Tú reportaste este objeto como hallado. No puedes reclamarlo con tu propia cuenta.");
+                lblSubtitulo.setForeground(new Color(220, 38, 38));
+                btnReclamar.setEnabled(false);
+                btnReclamar.setText("No puedes reclamar tu propio reporte");
+            } else if (usuarioActual != null && reclamoServicio.existeReclamoPendiente(obj.getId(), usuarioActual.getIdentificacion())) {
+                lblSubtitulo.setText("ℹ️ Ya registraste un reclamo para este objeto y está PENDIENTE. Consulta la pestaña Avisos.");
+                lblSubtitulo.setForeground(new Color(37, 99, 235));
+                btnReclamar.setEnabled(false);
+                btnReclamar.setText("Reclamo ya registrado");
+            } else {
+                lblSubtitulo.setText("Reclamando objeto hallado: " + obj.getNombre() + " (" + obj.getCategoria() + " en " + obj.getUbicacion() + ")");
+                lblSubtitulo.setForeground(new Color(37, 99, 235));
+                btnReclamar.setEnabled(true);
+                btnReclamar.setText("Confirmar Reclamo");
+            }
+            actualizarCamposDinamicos();
+        } else {
+            lblSubtitulo.setText("Registro de datos del objeto perdido o reclamo de hallazgo");
+            lblSubtitulo.setForeground(new Color(102, 102, 102));
+            btnReclamar.setEnabled(true);
+            btnReclamar.setText("Confirmar Reclamo");
+            actualizarCamposDinamicos();
         }
     }
 
     public void cargarDatos() {
+        if (objetoObjetivo != null) {
+            setObjetoSeleccionado(objetoObjetivo);
+        } else {
+            limpiarFormulario();
+        }
     }
 
     public void limpiarFormulario() {
-        txtNombre.setText("");
-        cbxCategoria.setSelectedIndex(0);
-        cbxLugar.setSelectedIndex(0);
-        txtFecha.setText(LocalDate.now().toString());
-        txtColor.setText("");
-        txtDescripcion.setText("");
-        txtDatoPrivado.setText("");
         this.objetoObjetivo = null;
+        if (txtNombre != null) txtNombre.setText("");
+        if (cbxCategoria != null && cbxCategoria.getItemCount() > 0) cbxCategoria.setSelectedIndex(0);
+        if (cbxLugar != null && cbxLugar.getItemCount() > 0) cbxLugar.setSelectedIndex(0);
+        if (txtFecha != null) txtFecha.setText(LocalDate.now().toString());
+        if (txtColor != null) txtColor.setText("");
+        if (txtDescripcion != null) txtDescripcion.setText("");
+        if (txtDatoPrivado != null) txtDatoPrivado.setText("");
+        if (txtTalla != null) txtTalla.setText("");
+        if (txtMarca != null) txtMarca.setText("");
+        if (txtModelo != null) txtModelo.setText("");
+        if (txtSerie != null) txtSerie.setText("");
+        if (txtTipoDoc != null) txtTipoDoc.setText("");
+        if (txtTitular != null) txtTitular.setText("");
+        if (txtDetalleExtra != null) txtDetalleExtra.setText("");
+        if (lblSubtitulo != null) {
+            lblSubtitulo.setText("Registro de datos del objeto perdido o reclamo de hallazgo");
+            lblSubtitulo.setForeground(new Color(102, 102, 102));
+        }
+        if (btnReclamar != null) {
+            btnReclamar.setEnabled(true);
+            btnReclamar.setText("Confirmar Reclamo");
+        }
+        actualizarCamposDinamicos();
     }
 
     @SuppressWarnings("unchecked")
@@ -346,7 +563,6 @@ public class PanelReclamar extends javax.swing.JPanel {
         String fecha = txtFecha.getText().trim();
         String color = txtColor.getText().trim();
         String desc = txtDescripcion.getText().trim();
-        String datoPrivado = txtDatoPrivado.getText().trim();
 
         if (nombre.isEmpty()) {
             JOptionPane.showMessageDialog(this,
@@ -356,12 +572,66 @@ public class PanelReclamar extends javax.swing.JPanel {
             return;
         }
 
-        if (datoPrivado.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                "Debes ingresar un dato privado o prueba de dueño para comprobar que te pertenece.",
-                "Campo requerido",
-                JOptionPane.WARNING_MESSAGE);
-            return;
+        // Recolectar respuestas de verificación según los inputs dinámicos de la categoría
+        List<String> respuestas = new ArrayList<>();
+        String datoPrivado = "";
+
+        if ("Prenda".equalsIgnoreCase(categoria)) {
+            String talla = (txtTalla != null) ? txtTalla.getText().trim() : "";
+            String marca = (txtMarca != null) ? txtMarca.getText().trim() : "";
+            if (talla.isEmpty() || marca.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                    "Debes completar ambas preguntas de verificación para Prenda:\n1. Talla\n2. Marca",
+                    "Respuestas Requeridas",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            respuestas.add(talla);
+            respuestas.add(marca);
+            datoPrivado = talla + ";" + marca;
+        } else if ("Dispositivo Electronico".equalsIgnoreCase(categoria)) {
+            String marca = (txtMarca != null) ? txtMarca.getText().trim() : "";
+            String modelo = (txtModelo != null) ? txtModelo.getText().trim() : "";
+            String serie = (txtSerie != null) ? txtSerie.getText().trim() : "";
+            if (marca.isEmpty() || modelo.isEmpty() || serie.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                    "Debes completar las preguntas de verificación para Dispositivo Electrónico:\n1. Marca\n2. Modelo\n3. N° de Serie o Detalle único",
+                    "Respuestas Requeridas",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            respuestas.add(marca);
+            respuestas.add(modelo);
+            respuestas.add(serie);
+            datoPrivado = marca + ";" + modelo + ";" + serie;
+        } else if ("Documento".equalsIgnoreCase(categoria)) {
+            String tipoDoc = (txtTipoDoc != null) ? txtTipoDoc.getText().trim() : "";
+            String titular = (txtTitular != null) ? txtTitular.getText().trim() : "";
+            if (tipoDoc.isEmpty() || titular.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                    "Debes completar las preguntas de verificación para Documento:\n1. Tipo de Documento\n2. Nombre completo del Titular",
+                    "Respuestas Requeridas",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            respuestas.add(tipoDoc);
+            respuestas.add(titular);
+            datoPrivado = tipoDoc + ";" + titular;
+        } else {
+            String det = (txtDetalleExtra != null) ? txtDetalleExtra.getText().trim() : "";
+            if (det.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                    "Debes ingresar la característica o detalle distintivo para comprobar tu pertenencia.",
+                    "Respuesta Requerida",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            respuestas.add(det);
+            datoPrivado = det;
+        }
+
+        if (txtDatoPrivado != null) {
+            txtDatoPrivado.setText(datoPrivado);
         }
 
         if (fecha.isEmpty()) {
@@ -370,6 +640,10 @@ public class PanelReclamar extends javax.swing.JPanel {
 
         if (color.isEmpty()) {
             color = "No especificado";
+        }
+
+        if (desc.isEmpty()) {
+            desc = "Objeto reportado en campus";
         }
 
         if (usuarioActual == null) {
@@ -401,6 +675,23 @@ public class PanelReclamar extends javax.swing.JPanel {
         }
 
         if (match != null) {
+            String estadoMatch = (match.getEstado() != null) ? match.getEstado().trim().toUpperCase() : "ENCONTRADO";
+            if ("PENDIENTE".equals(estadoMatch) || reclamoServicio.tieneReclamoPendiente(match.getId())) {
+                JOptionPane.showMessageDialog(this,
+                    "Este objeto ya tiene un reclamo en estado PENDIENTE en proceso de validación.\nNo es posible reclamarlo nuevamente hasta que sea evaluado.",
+                    "Objeto en Revisión",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            if ("ENTREGADO".equals(estadoMatch)) {
+                JOptionPane.showMessageDialog(this,
+                    "Este objeto ya fue entregado a su dueño legítimo.",
+                    "Objeto no disponible",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             if (match.getReportadoPor() != null && usuarioActual != null &&
                 match.getReportadoPor().getIdentificacion().equalsIgnoreCase(usuarioActual.getIdentificacion())) {
                 JOptionPane.showMessageDialog(this,
@@ -419,20 +710,6 @@ public class PanelReclamar extends javax.swing.JPanel {
             }
 
             int totalPreguntas = match.preguntasVerificacion().length;
-            List<String> respuestas = new ArrayList<>();
-            String[] partes = datoPrivado.split("[,;]");
-            for (String p : partes) {
-                String pTrim = p.trim();
-                if (!pTrim.isEmpty()) {
-                    respuestas.add(pTrim);
-                }
-            }
-            if (respuestas.size() < totalPreguntas && !color.isEmpty() && !"No especificado".equalsIgnoreCase(color)) {
-                respuestas.add(color);
-            }
-            if (respuestas.size() < totalPreguntas && !desc.isEmpty()) {
-                respuestas.add(desc);
-            }
             while (respuestas.size() < totalPreguntas) {
                 respuestas.add("N/A");
             }
@@ -440,18 +717,32 @@ public class PanelReclamar extends javax.swing.JPanel {
             boolean ok = reclamoServicio.crearReclamo(match.getId(), usuarioActual, respuestas);
             if (ok) {
                 JOptionPane.showMessageDialog(this,
-                    "¡Reclamo enviado exitosamente para '" + match.getNombre() + "'!\nPuedes seguir su avance en el panel de Avisos.",
+                    "¡Reclamo enviado exitosamente para '" + match.getNombre() + "'!\n\n" +
+                    "• Estado: PENDIENTE de revisión\n" +
+                    "• El objeto ahora aparece como PENDIENTE para ambas cuentas.\n" +
+                    "• Quien lo reportó ha sido notificado para evaluar tus respuestas.\n" +
+                    "• Puedes consultar las actualizaciones en la pestaña Avisos.",
                     "Reclamo Registrado",
                     JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this,
-                    "No se pudo registrar el reclamo. Verifica que el objeto siga disponible.",
+                    "No se pudo registrar el reclamo. Verifica que el objeto siga disponible y no tenga un reclamo pendiente en curso.",
                     "Aviso",
                     JOptionPane.WARNING_MESSAGE);
+                return;
             }
         } else {
             int nuevoId = objetoServicio.generarNuevoId();
-            ObjetoReportado objPerdido = new ObjetoGenerico(datoPrivado, nuevoId, nombre, desc, categoria, color, fecha, lugar, "PERDIDO", usuarioActual);
+            ObjetoReportado objPerdido;
+            if ("Prenda".equalsIgnoreCase(categoria)) {
+                objPerdido = new Prenda(respuestas.get(0), respuestas.get(1), nuevoId, nombre, desc, "PRENDA", color, fecha, lugar, "PERDIDO", usuarioActual);
+            } else if ("Dispositivo Electronico".equalsIgnoreCase(categoria)) {
+                objPerdido = new DispositivoElectronico(respuestas.get(0), respuestas.get(1), respuestas.get(2), nuevoId, nombre, desc, "DISPOSITIVO ELECTRONICO", color, fecha, lugar, "PERDIDO", usuarioActual);
+            } else if ("Documento".equalsIgnoreCase(categoria)) {
+                objPerdido = new Documento(respuestas.get(0), respuestas.get(1), nuevoId, nombre, desc, "DOCUMENTO", color, fecha, lugar, "PERDIDO", usuarioActual);
+            } else {
+                objPerdido = new ObjetoGenerico(respuestas.get(0), nuevoId, nombre, desc, "OBJETO GENERICO", color, fecha, lugar, "PERDIDO", usuarioActual);
+            }
             objetoServicio.registrarObjeto(objPerdido);
 
             JOptionPane.showMessageDialog(this,

@@ -11,6 +11,7 @@ public class PanelApp extends javax.swing.JPanel {
     private PanelNotificar panelNotificar;
     private PanelAvisos panelAvisos;
     private Estudiante usuarioActual;
+    private String seccionActual = "inicio";
     
     public PanelApp() {
         initComponents();
@@ -48,6 +49,12 @@ public class PanelApp extends javax.swing.JPanel {
     }
     
     public void setUsuarioActual(Estudiante estudiante) {
+        if (estudiante != null) {
+            modelo.Usuario u = new repositorio.UsuarioCsvRepositorio().obtenerUsuarioPorIdentificacion(estudiante.getIdentificacion());
+            if (u instanceof Estudiante) {
+                estudiante = (Estudiante) u;
+            }
+        }
         this.usuarioActual = estudiante;
         if (panelAvisos != null) {
             panelAvisos.setUsuarioActual(estudiante);
@@ -80,6 +87,29 @@ public class PanelApp extends javax.swing.JPanel {
     }
     
     public void mostrar(String nombre) {
+        if (nombre == null) return;
+
+        // Si salimos de una sección con formulario (reclamar / notificar) hacia otra diferente, limpiar datos previos
+        if ("reclamar".equalsIgnoreCase(seccionActual) && !"reclamar".equalsIgnoreCase(nombre)) {
+            if (panelReclamar != null) {
+                panelReclamar.limpiarFormulario();
+            }
+        }
+        if ("notificar".equalsIgnoreCase(seccionActual) && !"notificar".equalsIgnoreCase(nombre)) {
+            if (panelNotificar != null) {
+                panelNotificar.limpiarFormulario();
+            }
+        }
+
+        seccionActual = nombre.toLowerCase();
+
+        if ("inicio".equalsIgnoreCase(nombre) && panelInicio != null) {
+            panelInicio.cargarObjetos();
+        } else if ("avisos".equalsIgnoreCase(nombre) && panelAvisos != null) {
+            panelAvisos.cargarAvisos();
+        } else if ("reclamar".equalsIgnoreCase(nombre) && panelReclamar != null) {
+            panelReclamar.cargarDatos();
+        }
         cardLayout.show(contenido, nombre);
         actualizarEstiloBotones(nombre);
     }
@@ -197,12 +227,15 @@ public class PanelApp extends javax.swing.JPanel {
 
     private void btnPanelReclamarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPanelReclamarActionPerformed
         if (panelReclamar != null) {
-            panelReclamar.cargarDatos();
+            panelReclamar.limpiarFormulario();
         }
         mostrar("reclamar");
     }//GEN-LAST:event_btnPanelReclamarActionPerformed
 
     private void btnPanelNotificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPanelNotificarActionPerformed
+        if (panelNotificar != null) {
+            panelNotificar.limpiarFormulario();
+        }
         mostrar("notificar");
     }//GEN-LAST:event_btnPanelNotificarActionPerformed
 

@@ -1,1 +1,23 @@
 id|idObjeto|codigoReclamante|respuestas|estado|observacion|codigoRevisor
+REC-001|1|80316377|Adidas;ROJO|RECHAZADO|no coincide con las caracteristicas|61108115
+REC-002|10|61108115|Logitech;MX Anywhere 3;MXA-30918|PENDIENTE||
+REC-003|11|80316377|Billetera con iniciales grabadas RC y compartimento para monedas|APROBADO|Respuestas verificadas correctamente|61108115
+REC-004|15|72154890|Apple;MagSafe 65W;A2166-77891|PENDIENTE||
+REC-005|17|74820193|S;Nike|PENDIENTE||
+REC-006|19|73491205|Lenovo;ThinkPad E14;PF-388102|APROBADO|Número de serie y modelo coincidentes|78301928
+REC-007|21|78301928|Pasaporte;ANDREA PAOLA VARGAS NÚÑEZ|PENDIENTE||
+REC-008|23|75619283|Garmin;Forerunner 245;GAR-449102|APROBADO|Verificación de serie y datos correcta|82745362
+REC-009|2|71928374|Casio;fx-570LA;CAS-112233|RECHAZADO|Numero de serie no coincide|61108115
+REC-010|4|76182940|M;Champion|RECHAZADO|Talla incorrecta|61108115
+REC-011|5|77291038|Termo de 500ml con sticker de Naruto|RECHAZADO|Detalle de stickers no corresponde|61108115
+REC-012|6|79412039|Apple;AirPods Pro 2;H7GTX0000|RECHAZADO|Numero de serie no coincide|80316377
+REC-013|8|81634251|S;The North Face|RECHAZADO|Indico talla S y es talla M|80316377
+REC-014|9|82745362|Mochila Samsonite con llavero de peluche|RECHAZADO|No coinciden los accesorios descritos|80316377
+REC-015|12|83856473|Samsung;Galaxy Tab S6 Lite;SM-P610-1122|RECHAZADO|Modelo indicado no coincide|72154890
+REC-016|13|84967584|M;Wrangler|RECHAZADO|Marca descrita no es correcta|73491205
+REC-017|14|85078695|DNI;JORGE LUIS HERRERA SANDOVAL|RECHAZADO|Titular no corresponde al documento|74820193
+REC-018|16|86189706|Cuaderno con apuntes de Derecho Civil|RECHAZADO|Curso y apuntes no coinciden|75619283
+REC-019|18|87290817|Juego de 2 llaves con llavero rojo|RECHAZADO|Cantidad de llaves no coincide|77291038
+REC-020|20|88301928|M;GAP|RECHAZADO|Talla indicada no coincide|79412039
+REC-021|22|89412039|Paraguas azul con mango recto de madera|RECHAZADO|Color del mango no coincide|81634251
+REC-022|24|90523140|L;New Era|RECHAZADO|Talla indicada no corresponde|83856473
