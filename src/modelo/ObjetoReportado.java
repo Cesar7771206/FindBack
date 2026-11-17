@@ -5,19 +5,19 @@ public abstract class ObjetoReportado implements Buscable {
     protected int id;
     protected String nombre;
     protected String descripcion;
-    protected String categoria;
+    protected Categoria categoria;
     protected String color;
     protected String fecha;
     protected String ubicacion;
     protected String estado;
     protected Estudiante reportadoPor;
 
-    public ObjetoReportado(int id, String nombre, String descripcion, String categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
+    public ObjetoReportado(int id, String nombre, String descripcion, Categoria categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
         setId(id);
         setAtributosObjetoReportado(nombre, descripcion, categoria, color, fecha, ubicacion, estado, reportadoPor);
     }
 
-    protected void setAtributosObjetoReportado(String nombre, String descripcion, String categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
+    protected void setAtributosObjetoReportado(String nombre, String descripcion, Categoria categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
         setNombre(nombre);
         setDescripcion(descripcion);
         setCategoria(categoria);
@@ -26,8 +26,7 @@ public abstract class ObjetoReportado implements Buscable {
         setUbicacion(ubicacion);
         setEstado(estado);
         setReportadoPor(reportadoPor);
-    }    
-    
+    }
 
     public int getId() {
         return id;
@@ -62,15 +61,19 @@ public abstract class ObjetoReportado implements Buscable {
         this.descripcion = descripcion.trim();
     }
 
-    public String getCategoria() {
+    public Categoria getCategoria() {
         return categoria;
     }
 
-    public void setCategoria(String categoria) {
-        if (categoria == null || categoria.isBlank()) {
-            throw new IllegalArgumentException("La categoría no puede ser nula, estar vacía ni contener solo espacios");
+    public String getCategoriaNombre() {
+        return (categoria != null) ? categoria.getNombre() : "";
+    }
+
+    public void setCategoria(Categoria categoria) {
+        if (categoria == null) {
+            throw new IllegalArgumentException("La categoría no puede ser nula");
         }
-        this.categoria = categoria.trim().toUpperCase();
+        this.categoria = categoria;
     }
 
     public String getColor() {
@@ -135,9 +138,12 @@ public abstract class ObjetoReportado implements Buscable {
             throw new IllegalArgumentException("El criterio no puede estar vacío ni contener solo espacios");
         }
         String crit = criterio.toLowerCase().trim();
+        String catNom = (categoria != null) ? categoria.getNombre().toLowerCase() : "";
+        String catName = (categoria != null) ? categoria.name().toLowerCase() : "";
         return (nombre.toLowerCase().contains(crit))
                 || (descripcion.toLowerCase().contains(crit))
-                || (categoria.toLowerCase().contains(crit))
+                || (catNom.contains(crit))
+                || (catName.contains(crit))
                 || (color.toLowerCase().contains(crit))
                 || (ubicacion.toLowerCase().contains(crit));
     }
@@ -147,7 +153,7 @@ public abstract class ObjetoReportado implements Buscable {
                 String.valueOf(id),
                 nombre,
                 descripcion,
-                categoria,
+                (categoria != null ? categoria.name().replace("_", " ") : "OBJETO GENERICO"),
                 color,
                 fecha, 
                 ubicacion,

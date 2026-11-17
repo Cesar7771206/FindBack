@@ -5,14 +5,18 @@ public class Documento extends ObjetoReportado {
     private String tipoDocumento;
     private String nombreTitular;
 
-    public Documento(String tipoDocumento, String nombreTitular, int id, String nombre, String descripcion, String categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
-        super(id, nombre, descripcion, "DOCUMENTO", color, fecha, ubicacion, estado, reportadoPor);
+    public Documento(String tipoDocumento, String nombreTitular, int id, String nombre, String descripcion, Categoria categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
+        super(id, nombre, descripcion, Categoria.DOCUMENTO, color, fecha, ubicacion, estado, reportadoPor);
         setTipoDocumento(tipoDocumento);
         setNombreTitular(nombreTitular);
     }
+
+    public Documento(String tipoDocumento, String nombreTitular, int id, String nombre, String descripcion, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
+        this(tipoDocumento, nombreTitular, id, nombre, descripcion, Categoria.DOCUMENTO, color, fecha, ubicacion, estado, reportadoPor);
+    }
     
-    public void setAtributosDocumento(String tipoDocumento, String nombreTitular, String nombre, String descripcion, String categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
-        setAtributosObjetoReportado(nombre, descripcion, categoria, color, fecha, ubicacion, estado, reportadoPor);
+    public void setAtributosDocumento(String tipoDocumento, String nombreTitular, String nombre, String descripcion, Categoria categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
+        setAtributosObjetoReportado(nombre, descripcion, Categoria.DOCUMENTO, color, fecha, ubicacion, estado, reportadoPor);
         setTipoDocumento(tipoDocumento);
         setNombreTitular(nombreTitular);
     }

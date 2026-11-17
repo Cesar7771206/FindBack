@@ -3,6 +3,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import modelo.Categoria;
 import modelo.Estudiante;
 import modelo.ObjetoReportado;
 import modelo.Prenda;
@@ -46,7 +47,7 @@ public class ReclamoServicioTest {
 
         // 1. Estudiante A notifica una casaca hallada
         int idObj = objetoServicio.generarNuevoId();
-        Prenda casaca = new Prenda("L", "Nike", idObj, "Casaca negra", "Hallada en cafetin", "PRENDA", "NEGRO", "2026-11-13", "CAFETERÍA CENTRAL", "ENCONTRADO", estA);
+        Prenda casaca = new Prenda("L", "Nike", idObj, "Casaca negra", "Hallada en cafetin", Categoria.PRENDA, "NEGRO", "2026-11-13", "CAFETERÍA CENTRAL", "ENCONTRADO", estA);
         objetoServicio.registrarObjeto(casaca);
 
         ObjetoReportado objGuardado = objetoServicio.obtenerPorId(idObj);
@@ -91,7 +92,7 @@ public class ReclamoServicioTest {
 
         // 8. Probar rechazo de reclamo (el objeto debe volver a ENCONTRADO)
         int idObj2 = objetoServicio.generarNuevoId();
-        Prenda pantalon = new Prenda("32", "Levis", idObj2, "Pantalón azul", "Hallada en CA 101", "PRENDA", "AZUL", "2026-11-13", "CA 101", "ENCONTRADO", estA);
+        Prenda pantalon = new Prenda("32", "Levis", idObj2, "Pantalón azul", "Hallada en CA 101", Categoria.PRENDA, "AZUL", "2026-11-13", "CA 101", "ENCONTRADO", estA);
         objetoServicio.registrarObjeto(pantalon);
 
         boolean reclamoPantalon = reclamoServicio.crearReclamo(idObj2, estB, List.of("32", "Levis"));

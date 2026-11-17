@@ -485,46 +485,52 @@ public class PanelNotificar extends javax.swing.JPanel {
         int nuevoId = objetoServicio.generarNuevoId();
         ObjetoReportado nuevoObj;
 
-        if ("Prenda".equalsIgnoreCase(categoria)) {
-            String talla = txtTalla.getText().trim();
-            String marca = txtMarca.getText().trim();
-            if (talla.isEmpty()) {
-                talla = "Estándar";
+        Categoria catEnum = Categoria.fromString(categoria);
+        switch (catEnum) {
+            case PRENDA -> {
+                String talla = txtTalla.getText().trim();
+                String marca = txtMarca.getText().trim();
+                if (talla.isEmpty()) {
+                    talla = "Estándar";
+                }
+                if (marca.isEmpty()) {
+                    marca = "Sin marca";
+                }
+                nuevoObj = new Prenda(talla, marca, nuevoId, nombre, desc, Categoria.PRENDA, color, fecha, lugar, "ENCONTRADO", usuarioActual);
             }
-            if (marca.isEmpty()) {
-                marca = "Sin marca";
+            case DISPOSITIVO_ELECTRONICO -> {
+                String marca = txtMarca.getText().trim();
+                String modelo = txtModelo.getText().trim();
+                String serie = txtSerie.getText().trim();
+                if (marca.isEmpty()) {
+                    marca = "Genérico";
+                }
+                if (modelo.isEmpty()) {
+                    modelo = "No especificado";
+                }
+                if (serie.isEmpty()) {
+                    serie = "No registrado";
+                }
+                nuevoObj = new DispositivoElectronico(marca, modelo, serie, nuevoId, nombre, desc, Categoria.DISPOSITIVO_ELECTRONICO, color, fecha, lugar, "ENCONTRADO", usuarioActual);
             }
-            nuevoObj = new Prenda(talla, marca, nuevoId, nombre, desc, "PRENDA", color, fecha, lugar, "ENCONTRADO", usuarioActual);
-        } else if ("Dispositivo Electronico".equalsIgnoreCase(categoria)) {
-            String marca = txtMarca.getText().trim();
-            String modelo = txtModelo.getText().trim();
-            String serie = txtSerie.getText().trim();
-            if (marca.isEmpty()) {
-                marca = "Genérico";
+            case DOCUMENTO -> {
+                String tipoDoc = txtTipoDoc.getText().trim();
+                String titular = txtTitular.getText().trim();
+                if (tipoDoc.isEmpty()) {
+                    tipoDoc = "Documento";
+                }
+                if (titular.isEmpty()) {
+                    titular = "No especificado";
+                }
+                nuevoObj = new Documento(tipoDoc, titular, nuevoId, nombre, desc, Categoria.DOCUMENTO, color, fecha, lugar, "ENCONTRADO", usuarioActual);
             }
-            if (modelo.isEmpty()) {
-                modelo = "No especificado";
+            default -> {
+                String det = txtDetalleExtra.getText().trim();
+                if (det.isEmpty()) {
+                    det = desc;
+                }
+                nuevoObj = new ObjetoGenerico(det, nuevoId, nombre, desc, Categoria.OBJETO_GENERICO, color, fecha, lugar, "ENCONTRADO", usuarioActual);
             }
-            if (serie.isEmpty()) {
-                serie = "No registrado";
-            }
-            nuevoObj = new DispositivoElectronico(marca, modelo, serie, nuevoId, nombre, desc, "DISPOSITIVO ELECTRONICO", color, fecha, lugar, "ENCONTRADO", usuarioActual);
-        } else if ("Documento".equalsIgnoreCase(categoria)) {
-            String tipoDoc = txtTipoDoc.getText().trim();
-            String titular = txtTitular.getText().trim();
-            if (tipoDoc.isEmpty()) {
-                tipoDoc = "Documento";
-            }
-            if (titular.isEmpty()) {
-                titular = "No especificado";
-            }
-            nuevoObj = new Documento(tipoDoc, titular, nuevoId, nombre, desc, "DOCUMENTO", color, fecha, lugar, "ENCONTRADO", usuarioActual);
-        } else {
-            String det = txtDetalleExtra.getText().trim();
-            if (det.isEmpty()) {
-                det = desc;
-            }
-            nuevoObj = new ObjetoGenerico(det, nuevoId, nombre, desc, "OBJETO GENERICO", color, fecha, lugar, "ENCONTRADO", usuarioActual);
         }
 
         boolean ok = objetoServicio.registrarObjeto(nuevoObj);

@@ -1,5 +1,7 @@
 package modelo;
 
+import java.text.Normalizer;
+
 public enum Categoria {
     DOCUMENTO("Documento"),
     PRENDA("Prenda"),
@@ -21,6 +23,14 @@ public enum Categoria {
         return nombre;
     }
 
+    private static String normalizar(String texto) {
+        if (texto == null) return "";
+        return Normalizer.normalize(texto, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .toLowerCase()
+                .trim();
+    }
+
     public static Categoria fromString(String texto) {
         if (texto == null || texto.isBlank()) {
             return OBJETO_GENERICO;
@@ -31,13 +41,19 @@ public enum Categoria {
                 return c;
             }
         }
-        if (clean.toLowerCase().contains("doc")) {
+        String norm = normalizar(clean);
+        for (Categoria c : values()) {
+            if (normalizar(c.nombre).equals(norm) || normalizar(c.name()).equals(norm.replace(" ", "_"))) {
+                return c;
+            }
+        }
+        if (norm.contains("doc")) {
             return DOCUMENTO;
         }
-        if (clean.toLowerCase().contains("prend")) {
+        if (norm.contains("prend")) {
             return PRENDA;
         }
-        if (clean.toLowerCase().contains("disp") || clean.toLowerCase().contains("elect")) {
+        if (norm.contains("disp") || norm.contains("elect")) {
             return DISPOSITIVO_ELECTRONICO;
         }
         return OBJETO_GENERICO;

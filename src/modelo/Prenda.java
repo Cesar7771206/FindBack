@@ -5,14 +5,18 @@ public class Prenda extends ObjetoReportado {
     private String talla;
     private String marca;
 
-    public Prenda(String talla, String marca, int id, String nombre, String descripcion, String categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
-        super(id, nombre, descripcion, "PRENDA", color, fecha, ubicacion, estado, reportadoPor);
+    public Prenda(String talla, String marca, int id, String nombre, String descripcion, Categoria categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
+        super(id, nombre, descripcion, Categoria.PRENDA, color, fecha, ubicacion, estado, reportadoPor);
         setTalla(talla);
         setMarca(marca);
     }
 
-    public void setAtributosPrenda(String talla, String marca, String nombre, String descripcion, String categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
-        setAtributosObjetoReportado(nombre, descripcion, categoria, color, fecha, ubicacion, estado, reportadoPor);
+    public Prenda(String talla, String marca, int id, String nombre, String descripcion, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
+        this(talla, marca, id, nombre, descripcion, Categoria.PRENDA, color, fecha, ubicacion, estado, reportadoPor);
+    }
+
+    public void setAtributosPrenda(String talla, String marca, String nombre, String descripcion, Categoria categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
+        setAtributosObjetoReportado(nombre, descripcion, Categoria.PRENDA, color, fecha, ubicacion, estado, reportadoPor);
         setTalla(talla);
         setMarca(marca);
     }

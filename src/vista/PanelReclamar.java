@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
+import modelo.Categoria;
 import modelo.Estudiante;
 import modelo.DispositivoElectronico;
 import modelo.Documento;
@@ -230,7 +231,7 @@ public class PanelReclamar extends javax.swing.JPanel {
         if (obj != null) {
             txtNombre.setText(obj.getNombre());
             for (int i = 0; i < cbxCategoria.getItemCount(); i++) {
-                if (cbxCategoria.getItemAt(i).equalsIgnoreCase(obj.getCategoria())) {
+                if (cbxCategoria.getItemAt(i).equalsIgnoreCase(obj.getCategoriaNombre())) {
                     cbxCategoria.setSelectedIndex(i);
                     break;
                 }
@@ -271,7 +272,7 @@ public class PanelReclamar extends javax.swing.JPanel {
                 btnReclamar.setEnabled(false);
                 btnReclamar.setText("Reclamo ya registrado");
             } else {
-                lblSubtitulo.setText("Reclamando objeto hallado: " + obj.getNombre() + " (" + obj.getCategoria() + " en " + obj.getUbicacion() + ")");
+                lblSubtitulo.setText("Reclamando objeto hallado: " + obj.getNombre() + " (" + obj.getCategoriaNombre() + " en " + obj.getUbicacion() + ")");
                 lblSubtitulo.setForeground(new Color(37, 99, 235));
                 btnReclamar.setEnabled(true);
                 btnReclamar.setText("Confirmar Reclamo");
@@ -734,14 +735,12 @@ public class PanelReclamar extends javax.swing.JPanel {
         } else {
             int nuevoId = objetoServicio.generarNuevoId();
             ObjetoReportado objPerdido;
-            if ("Prenda".equalsIgnoreCase(categoria)) {
-                objPerdido = new Prenda(respuestas.get(0), respuestas.get(1), nuevoId, nombre, desc, "PRENDA", color, fecha, lugar, "PERDIDO", usuarioActual);
-            } else if ("Dispositivo Electronico".equalsIgnoreCase(categoria)) {
-                objPerdido = new DispositivoElectronico(respuestas.get(0), respuestas.get(1), respuestas.get(2), nuevoId, nombre, desc, "DISPOSITIVO ELECTRONICO", color, fecha, lugar, "PERDIDO", usuarioActual);
-            } else if ("Documento".equalsIgnoreCase(categoria)) {
-                objPerdido = new Documento(respuestas.get(0), respuestas.get(1), nuevoId, nombre, desc, "DOCUMENTO", color, fecha, lugar, "PERDIDO", usuarioActual);
-            } else {
-                objPerdido = new ObjetoGenerico(respuestas.get(0), nuevoId, nombre, desc, "OBJETO GENERICO", color, fecha, lugar, "PERDIDO", usuarioActual);
+            Categoria catEnum = Categoria.fromString(categoria);
+            switch (catEnum) {
+                case PRENDA -> objPerdido = new Prenda(respuestas.get(0), respuestas.get(1), nuevoId, nombre, desc, Categoria.PRENDA, color, fecha, lugar, "PERDIDO", usuarioActual);
+                case DISPOSITIVO_ELECTRONICO -> objPerdido = new DispositivoElectronico(respuestas.get(0), respuestas.get(1), respuestas.get(2), nuevoId, nombre, desc, Categoria.DISPOSITIVO_ELECTRONICO, color, fecha, lugar, "PERDIDO", usuarioActual);
+                case DOCUMENTO -> objPerdido = new Documento(respuestas.get(0), respuestas.get(1), nuevoId, nombre, desc, Categoria.DOCUMENTO, color, fecha, lugar, "PERDIDO", usuarioActual);
+                default -> objPerdido = new ObjetoGenerico(respuestas.get(0), nuevoId, nombre, desc, Categoria.OBJETO_GENERICO, color, fecha, lugar, "PERDIDO", usuarioActual);
             }
             objetoServicio.registrarObjeto(objPerdido);
 

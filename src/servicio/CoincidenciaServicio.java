@@ -36,7 +36,7 @@ public class CoincidenciaServicio {
                 continue;
             }
 
-            if (!candidato.getCategoria().equalsIgnoreCase(base.getCategoria())) {
+            if (candidato.getCategoria() != base.getCategoria()) {
                 continue;
             }
 

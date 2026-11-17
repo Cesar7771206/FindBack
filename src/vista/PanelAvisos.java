@@ -135,7 +135,7 @@ public class PanelAvisos extends javax.swing.JPanel {
 
                         JPanel card = crearTarjetaAvisoInteractivo(
                             "⏳ RECLAMO PENDIENTE EN TU OBJETO HALLADO",
-                            "Tu objeto notificado '" + obj.getNombre() + "' (" + obj.getCategoria() + ") tiene una solicitud de reclamo pendiente" + infoReclamante + ". Haz clic en 'Revisar' para validar sus respuestas.",
+                            "Tu objeto notificado '" + obj.getNombre() + "' (" + obj.getCategoriaNombre() + ") tiene una solicitud de reclamo pendiente" + infoReclamante + ". Haz clic en 'Revisar' para validar sus respuestas.",
                             "PENDIENTE",
                             new Color(254, 243, 199), // Amber-100 bg
                             new Color(253, 230, 138), // Amber-200 border
@@ -162,7 +162,7 @@ public class PanelAvisos extends javax.swing.JPanel {
                     } else { // ENCONTRADO
                         JPanel card = crearTarjetaAvisoInteractivo(
                             "🟢 OBJETO PUBLICADO EN CAMPUS",
-                            "Tu reporte de '" + obj.getNombre() + "' (" + obj.getCategoria() + ") está disponible en el campus para que su dueño lo reclame.",
+                            "Tu reporte de '" + obj.getNombre() + "' (" + obj.getCategoriaNombre() + ") está disponible en el campus para que su dueño lo reclame.",
                             "DISPONIBLE",
                             new Color(240, 253, 244),
                             new Color(187, 247, 208),
@@ -177,7 +177,7 @@ public class PanelAvisos extends javax.swing.JPanel {
                     // Coincidencias detectadas para este objeto
                     List<ObjetoReportado> matches = coincidenciaServicio.buscarCoincidencias(obj);
                     for (ObjetoReportado match : matches) {
-                        String desc = "Se detectó coincidencia con: " + match.getNombre() + " (" + match.getCategoria() + ") reportado en " + match.getUbicacion() + ".";
+                        String desc = "Se detectó coincidencia con: " + match.getNombre() + " (" + match.getCategoriaNombre() + ") reportado en " + match.getUbicacion() + ".";
                         JPanel card = crearTarjetaAvisoInteractivo(
                             "🎯 ¡COINCIDENCIA DETECTADA!",
                             desc,
@@ -387,7 +387,7 @@ public class PanelAvisos extends javax.swing.JPanel {
         StringBuilder sb = new StringBuilder();
         sb.append("📋 VALIDACIÓN DE RECLAMO: ").append(r.getId()).append("\n");
         sb.append("────────────────────────────────────────\n");
-        sb.append("Objeto: ").append(obj.getNombre()).append(" (").append(obj.getCategoria()).append(")\n");
+        sb.append("Objeto: ").append(obj.getNombre()).append(" (").append(obj.getCategoriaNombre()).append(")\n");
         sb.append("Lugar hallado: ").append(obj.getUbicacion()).append(" | Color: ").append(obj.getColor()).append("\n\n");
         sb.append("👤 DATOS DEL RECLAMANTE:\n");
         sb.append("• Nombre: ").append(nombreReclamante).append("\n");

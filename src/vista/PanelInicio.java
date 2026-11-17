@@ -24,6 +24,7 @@ import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import modelo.Categoria;
 import modelo.Estudiante;
 import modelo.ObjetoReportado;
 import modelo.Reclamo;
@@ -261,7 +262,7 @@ public class PanelInicio extends javax.swing.JPanel {
                 if (textoBusqueda != null && !textoBusqueda.isBlank()) {
                     String q = textoBusqueda.toLowerCase().trim();
                     String nom = obj.getNombre() != null ? obj.getNombre().toLowerCase() : "";
-                    String cat = obj.getCategoria() != null ? obj.getCategoria().toLowerCase() : "";
+                    String cat = obj.getCategoriaNombre() != null ? obj.getCategoriaNombre().toLowerCase() : "";
                     String ubi = obj.getUbicacion() != null ? obj.getUbicacion().toLowerCase() : "";
                     String col = obj.getColor() != null ? obj.getColor().toLowerCase() : "";
                     if (!nom.contains(q) && !cat.contains(q) && !ubi.contains(q) && !col.contains(q)) {
@@ -322,8 +323,7 @@ public class PanelInicio extends javax.swing.JPanel {
         pnlBadges.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Category Badge
-        String catNom = obj.getCategoria() != null ? obj.getCategoria().trim().toUpperCase() : "GENERAL";
-        JLabel lblCat = crearBadgeCategoria(catNom);
+        JLabel lblCat = crearBadgeCategoria(obj.getCategoria());
         pnlBadges.add(lblCat);
 
         // Status Badge
@@ -449,23 +449,26 @@ public class PanelInicio extends javax.swing.JPanel {
         return subpanel;
     }
 
-    private JLabel crearBadgeCategoria(String categoria) {
+    private JLabel crearBadgeCategoria(Categoria categoria) {
         String texto;
         Color bg, fg, border;
+        if (categoria == null) {
+            categoria = Categoria.OBJETO_GENERICO;
+        }
         switch (categoria) {
-            case "PRENDA" -> {
+            case PRENDA -> {
                 texto = "👕 Prenda";
                 bg = new Color(243, 232, 255);
                 fg = new Color(107, 33, 168);
                 border = new Color(233, 213, 255);
             }
-            case "DISPOSITIVO ELECTRONICO", "DISPOSITIVOELECTRONICO" -> {
+            case DISPOSITIVO_ELECTRONICO -> {
                 texto = "📱 Dispositivo";
                 bg = new Color(219, 234, 254);
                 fg = new Color(30, 64, 175);
                 border = new Color(191, 219, 254);
             }
-            case "DOCUMENTO" -> {
+            case DOCUMENTO -> {
                 texto = "📄 Documento";
                 bg = new Color(255, 237, 213);
                 fg = new Color(194, 65, 12);
@@ -539,7 +542,7 @@ public class PanelInicio extends javax.swing.JPanel {
         StringBuilder sb = new StringBuilder();
         sb.append("📋 VALIDACIÓN DE RECLAMO: ").append(r.getId()).append("\n");
         sb.append("────────────────────────────────────────\n");
-        sb.append("Objeto: ").append(obj.getNombre()).append(" (").append(obj.getCategoria()).append(")\n");
+        sb.append("Objeto: ").append(obj.getNombre()).append(" (").append(obj.getCategoriaNombre()).append(")\n");
         sb.append("Lugar hallado: ").append(obj.getUbicacion()).append(" | Color: ").append(obj.getColor()).append("\n\n");
         sb.append("👤 DATOS DEL RECLAMANTE:\n");
         sb.append("• Nombre: ").append(nombreReclamante).append("\n");

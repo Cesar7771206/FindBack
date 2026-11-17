@@ -4,16 +4,18 @@ public class ObjetoGenerico extends ObjetoReportado {
 
     private String detalleExtra;
 
-    public ObjetoGenerico(String detalleExtra, int id, String nombre, String descripcion, String categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
-        super(id, nombre, descripcion, categoria, color, fecha, ubicacion, estado, reportadoPor);
+    public ObjetoGenerico(String detalleExtra, int id, String nombre, String descripcion, Categoria categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
+        super(id, nombre, descripcion, (categoria != null ? categoria : Categoria.OBJETO_GENERICO), color, fecha, ubicacion, estado, reportadoPor);
         setDetalleExtra(detalleExtra);
     }
+
+    public ObjetoGenerico(String detalleExtra, int id, String nombre, String descripcion, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
+        this(detalleExtra, id, nombre, descripcion, Categoria.OBJETO_GENERICO, color, fecha, ubicacion, estado, reportadoPor);
+    }
     
-    public void setAtributosObjetoGenerico(String detalleExtra, String nombre, String descripcion, String categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor){
-        setAtributosObjetoReportado(nombre, descripcion, categoria, color, fecha, ubicacion,
-                estado, reportadoPor);
+    public void setAtributosObjetoGenerico(String detalleExtra, String nombre, String descripcion, Categoria categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor){
+        setAtributosObjetoReportado(nombre, descripcion, (categoria != null ? categoria : Categoria.OBJETO_GENERICO), color, fecha, ubicacion, estado, reportadoPor);
         setDetalleExtra(detalleExtra);
-        
     }
 
     public String getDetalleExtra() {

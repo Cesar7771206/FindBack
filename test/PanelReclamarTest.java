@@ -13,7 +13,7 @@ public class PanelReclamarTest {
         panel.setUsuarioActual(estReclama);
 
         // Test Prenda selection
-        Prenda prenda = new Prenda("L", "Adidas", 99, "Casaca deportiva", "Casaca azul", "PRENDA", "AZUL", "2026-11-13", "CAMPUS", "ENCONTRADO", estReporta);
+        Prenda prenda = new Prenda("L", "Adidas", 99, "Casaca deportiva", "Casaca azul", Categoria.PRENDA, "AZUL", "2026-11-13", "CAMPUS", "ENCONTRADO", estReporta);
         panel.setObjetoSeleccionado(prenda);
 
         // Verify dynamic question components are present

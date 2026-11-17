@@ -3,6 +3,7 @@ package servicio;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import modelo.Categoria;
 import modelo.ObjetoReportado;
 import repositorio.ObjetoReportadoCsvRepositorio;
 import repositorio.ObjetoReportadoRepositorio;
@@ -89,13 +90,13 @@ public class ObjetoServicio {
         return resultado;
     }
     
-    public List<ObjetoReportado> listarPorCategoria(String categoria) {
-        if (categoria == null || categoria.isBlank()) {
+    public List<ObjetoReportado> listarPorCategoria(Categoria categoria) {
+        if (categoria == null) {
             return Collections.emptyList();
         }
         List<ObjetoReportado> resultado = new ArrayList<>();
         for (ObjetoReportado objeto : objetoRepo.obtenerObjetos()) {
-            if (objeto.getCategoria().equalsIgnoreCase(categoria.trim())) {
+            if (objeto.getCategoria() == categoria) {
                 resultado.add(objeto);
             }
         }

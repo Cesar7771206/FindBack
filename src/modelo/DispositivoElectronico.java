@@ -6,18 +6,22 @@ public class DispositivoElectronico extends ObjetoReportado {
     private String modelo;
     private String numeroSerie;
 
-    public DispositivoElectronico(String marca, String modelo, String numeroSerie, int id, String nombre, String descripcion, String categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
-        super(id, nombre, descripcion, "DISPOSITIVO ELECTRONICO", color, fecha, ubicacion, estado, reportadoPor);
+    public DispositivoElectronico(String marca, String modelo, String numeroSerie, int id, String nombre, String descripcion, Categoria categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
+        super(id, nombre, descripcion, Categoria.DISPOSITIVO_ELECTRONICO, color, fecha, ubicacion, estado, reportadoPor);
         setMarca(marca);
         setModelo(modelo);
         setNumeroSerie(numeroSerie);
     }
-    public void setAtributosDispositivoElectronico(String marca, String modelo, String numeroSerie, String nombre, String descripcion, String categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
-        setAtributosObjetoReportado(nombre, descripcion, categoria, color, fecha, ubicacion, estado, reportadoPor);
+
+    public DispositivoElectronico(String marca, String modelo, String numeroSerie, int id, String nombre, String descripcion, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
+        this(marca, modelo, numeroSerie, id, nombre, descripcion, Categoria.DISPOSITIVO_ELECTRONICO, color, fecha, ubicacion, estado, reportadoPor);
+    }
+
+    public void setAtributosDispositivoElectronico(String marca, String modelo, String numeroSerie, String nombre, String descripcion, Categoria categoria, String color, String fecha, String ubicacion, String estado, Estudiante reportadoPor) {
+        setAtributosObjetoReportado(nombre, descripcion, Categoria.DISPOSITIVO_ELECTRONICO, color, fecha, ubicacion, estado, reportadoPor);
         setMarca(marca);
         setModelo(modelo);
         setNumeroSerie(numeroSerie);
-        
     }
             
     public String getMarca() {
