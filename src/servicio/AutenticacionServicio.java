@@ -38,10 +38,6 @@ public class AutenticacionServicio {
         usuarioRepo.guardar(nuevo);
         return true;
     }
-
-    public boolean registrarUsuario(String identificacion, String nombre, String correo, String contrasena, String mensajes, String facultad, String carrera, int ciclo) {
-        return registrarUsuario(identificacion, nombre, correo, contrasena, mensajes, Facultad.fromString(facultad), Carrera.fromString(carrera), ciclo);
-    }
     
     public Estudiante login(String correoOCodigo, String contrasena) {
         if (correoOCodigo == null || contrasena == null) {

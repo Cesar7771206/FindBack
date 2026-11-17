@@ -8,8 +8,8 @@ public class PanelReclamarTest {
         System.out.println("Iniciando pruebas de PanelReclamar...");
 
         PanelReclamar panel = new PanelReclamar();
-        Estudiante estReporta = new Estudiante("Ingenieria", "Sistemas", 5, "2021002", "Pedro Reporta", "pedro@udep.edu.pe", "pass123");
-        Estudiante estReclama = new Estudiante("Ingenieria", "Sistemas", 5, "2021001", "Cesar Reclama", "cesar@udep.edu.pe", "pass123");
+        Estudiante estReporta = new Estudiante(Facultad.INGENIERIA, Carrera.SISTEMAS, 5, "2021002", "Pedro Reporta", "pedro@udep.edu.pe", "pass123");
+        Estudiante estReclama = new Estudiante(Facultad.INGENIERIA, Carrera.SISTEMAS, 5, "2021001", "Cesar Reclama", "cesar@udep.edu.pe", "pass123");
         panel.setUsuarioActual(estReclama);
 
         // Test Prenda selection

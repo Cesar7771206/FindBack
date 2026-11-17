@@ -16,10 +16,6 @@ public class Estudiante extends Usuario {
         setCiclo(ciclo);
     }
 
-    public Estudiante(String facultad, String carrera, int ciclo, String identificacion, String nombre, String correo, String contrasena) {
-        this(Facultad.fromString(facultad), Carrera.fromString(carrera), ciclo, identificacion, nombre, correo, contrasena);
-    }
-
     public Facultad getFacultad() {
         return facultad;
     }
@@ -33,13 +29,6 @@ public class Estudiante extends Usuario {
             throw new IllegalArgumentException("El campo facultad no puede ser nulo");
         }
         this.facultad = facultad;
-    }
-
-    public void setFacultad(String facultadTexto) {
-        if (facultadTexto == null || facultadTexto.isBlank()) {
-            throw new IllegalArgumentException("El campo facultad no puede estar vacío ni contener solo espacios");
-        }
-        this.facultad = Facultad.fromString(facultadTexto);
     }
 
     public Carrera getCarrera() {
@@ -57,16 +46,6 @@ public class Estudiante extends Usuario {
         this.carrera = carrera;
         if (this.facultad == null) {
             this.facultad = carrera.getFacultad();
-        }
-    }
-
-    public void setCarrera(String carreraTexto) {
-        if (carreraTexto == null || carreraTexto.isBlank()) {
-            throw new IllegalArgumentException("El campo carrera no puede estar vacío ni contener solo espacios");
-        }
-        this.carrera = Carrera.fromString(carreraTexto);
-        if (this.facultad == null) {
-            this.facultad = this.carrera.getFacultad();
         }
     }
 

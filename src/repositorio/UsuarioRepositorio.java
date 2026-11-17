@@ -15,9 +15,7 @@ public interface UsuarioRepositorio {
 
     void actualizar(Usuario usuario);
 
-    void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva, Carrera carreraNueva, Facultad facultadNueva, int cicloNuevo);
-
-    void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva, String carreraNueva, String facultadNueva, int cicloNuevo);
+    void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva, Facultad facultadNueva, Carrera carreraNueva, int cicloNuevo);
 
     void eliminarUsuario(String identificacion);
 

@@ -138,7 +138,7 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
     }
 
     @Override
-    public void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva, Carrera carreraNueva, Facultad facultadNueva, int cicloNuevo) {
+    public void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva, Facultad facultadNueva, Carrera carreraNueva, int cicloNuevo) {
         this.usuarios = cargarUsuarios();
         for (Usuario u : usuarios) {
             if (u.getIdentificacion().equalsIgnoreCase(identificacionBuscar)) {
@@ -154,11 +154,6 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
                 return;
             }
         }
-    }
-
-    @Override
-    public void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva, String carreraNueva, String facultadNueva, int cicloNuevo) {
-        actualizarUsuario(identificacionBuscar, nombreNuevo, correoNuevo, contrasenaNueva, Carrera.fromString(carreraNueva), Facultad.fromString(facultadNueva), cicloNuevo);
     }
     
     @Override
