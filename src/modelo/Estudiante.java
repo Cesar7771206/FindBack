@@ -1,37 +1,73 @@
 package modelo;
 
-public class Estudiante extends Usuario{
-    private String facultad;
-    private String carrera;
+public class Estudiante extends Usuario {
+    private Facultad facultad;
+    private Carrera carrera;
     private int ciclo;
 
-    public Estudiante(String facultad, String carrera, int ciclo, String identificacion, String nombre, String correo, String contrasena) {
+    public Estudiante(Facultad facultad, Carrera carrera, int ciclo, String identificacion, String nombre, String correo, String contrasena) {
         super(identificacion, nombre, correo, contrasena);
-        setFacultad(facultad);
         setCarrera(carrera);
+        if (facultad != null) {
+            setFacultad(facultad);
+        } else if (this.carrera != null) {
+            setFacultad(this.carrera.getFacultad());
+        }
         setCiclo(ciclo);
     }
 
-    public String getFacultad() {
+    public Estudiante(String facultad, String carrera, int ciclo, String identificacion, String nombre, String correo, String contrasena) {
+        this(Facultad.fromString(facultad), Carrera.fromString(carrera), ciclo, identificacion, nombre, correo, contrasena);
+    }
+
+    public Facultad getFacultad() {
         return facultad;
     }
 
-    public void setFacultad(String facultad) {
-        if (facultad == null || facultad.isBlank()){
-            throw new IllegalArgumentException("El campo facultad no puede estar vacío ni contener solo espacios"); 
-        }
-        this.facultad = facultad.trim().toUpperCase();
+    public String getFacultadNombre() {
+        return (facultad != null) ? facultad.getNombre() : "";
     }
 
-    public String getCarrera() {
+    public void setFacultad(Facultad facultad) {
+        if (facultad == null) {
+            throw new IllegalArgumentException("El campo facultad no puede ser nulo");
+        }
+        this.facultad = facultad;
+    }
+
+    public void setFacultad(String facultadTexto) {
+        if (facultadTexto == null || facultadTexto.isBlank()) {
+            throw new IllegalArgumentException("El campo facultad no puede estar vacío ni contener solo espacios");
+        }
+        this.facultad = Facultad.fromString(facultadTexto);
+    }
+
+    public Carrera getCarrera() {
         return carrera;
     }
 
-    public void setCarrera(String carrera) {
-        if (carrera == null || carrera.isBlank()){
-            throw new IllegalArgumentException("El campo carrera no puede estar vacío ni contener solo espacios"); 
+    public String getCarreraNombre() {
+        return (carrera != null) ? carrera.getNombre() : "";
+    }
+
+    public void setCarrera(Carrera carrera) {
+        if (carrera == null) {
+            throw new IllegalArgumentException("El campo carrera no puede ser nulo");
         }
-        this.carrera = carrera.trim().toUpperCase();
+        this.carrera = carrera;
+        if (this.facultad == null) {
+            this.facultad = carrera.getFacultad();
+        }
+    }
+
+    public void setCarrera(String carreraTexto) {
+        if (carreraTexto == null || carreraTexto.isBlank()) {
+            throw new IllegalArgumentException("El campo carrera no puede estar vacío ni contener solo espacios");
+        }
+        this.carrera = Carrera.fromString(carreraTexto);
+        if (this.facultad == null) {
+            this.facultad = this.carrera.getFacultad();
+        }
     }
 
     public int getCiclo() {
@@ -39,20 +75,22 @@ public class Estudiante extends Usuario{
     }
 
     public void setCiclo(int ciclo) {
-        if (ciclo < 0 || ciclo > 10){
-            throw new IllegalArgumentException("El ciclo debe estar entre 0 y 10"); 
+        if (ciclo < 0 || ciclo > 10) {
+            throw new IllegalArgumentException("El ciclo debe estar entre 0 y 10");
         }
         this.ciclo = ciclo;
     }
-    
+
     @Override
-    public String getRol(){
+    public String getRol() {
         return "ESTUDIANTE";
     }
-    
+
     @Override
-    public String toTxt(){
-        String mensajesTxt = mensajes.isEmpty() ? "SIN_MENSAJES" : String.join(";", mensajes); 
-        return  identificacion + "|" + nombre + "|" + correo + "|" + contrasena + "|" + facultad + "|" + carrera + "|" + ciclo + "|" + mensajesTxt;
+    public String toTxt() {
+        String mensajesTxt = mensajes.isEmpty() ? "SIN_MENSAJES" : String.join(";", mensajes);
+        String facTxt = (facultad != null) ? facultad.getNombre().toUpperCase() : "";
+        String carTxt = (carrera != null) ? carrera.getNombre().toUpperCase() : "";
+        return identificacion + "|" + nombre + "|" + correo + "|" + contrasena + "|" + facTxt + "|" + carTxt + "|" + ciclo + "|" + mensajesTxt;
     }
 }

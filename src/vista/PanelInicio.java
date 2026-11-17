@@ -215,7 +215,7 @@ public class PanelInicio extends javax.swing.JPanel {
             String primerNombre = partes[0];
             primerNombre = primerNombre.substring(0, 1).toUpperCase() + primerNombre.substring(1).toLowerCase();
             lblSaludo.setText("¡Hola, " + primerNombre + "!");
-            String car = usuarioActual.getCarrera();
+            String car = usuarioActual.getCarreraNombre();
             if (car != null && !car.isBlank()) {
                 lblSubSaludo.setText("Estudiante de " + car);
             } else {
@@ -530,7 +530,7 @@ public class PanelInicio extends javax.swing.JPanel {
         Estudiante reclamante = r.getReclamante();
         String nombreReclamante = (reclamante != null) ? reclamante.getNombre() : "Estudiante";
         String dniReclamante = (reclamante != null) ? reclamante.getIdentificacion() : "No especificado";
-        String carreraReclamante = (reclamante != null) ? reclamante.getCarrera() : "Campus UDEP";
+        String carreraReclamante = (reclamante != null && !reclamante.getCarreraNombre().isBlank()) ? reclamante.getCarreraNombre() : "Campus UDEP";
 
         String[] preguntas = obj.preguntasVerificacion();
         String[] datosReales = obj.datosVerificables();

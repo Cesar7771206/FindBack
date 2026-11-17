@@ -9,7 +9,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import modelo.Carrera;
 import modelo.Estudiante;
+import modelo.Facultad;
 
 public class UsuarioCsvRepositorio implements UsuarioRepositorio {
 
@@ -64,8 +66,8 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
                 String correo = atributos[2];
                 String contrasena = atributos[3];
 
-                String facultad = atributos[4];
-                String carrera = atributos[5];
+                String facultadStr = atributos[4];
+                String carreraStr = atributos[5];
                 int ciclo = Integer.parseInt(atributos[6]);
 
                 String[] mensajes_estatico = (atributos.length > 7 && !atributos[7].isEmpty() && !atributos[7].equals("SIN_MENSAJES"))
@@ -74,6 +76,8 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
 
                 ArrayList<String> mensajes = new ArrayList<>(List.of(mensajes_estatico));
 
+                Facultad facultad = Facultad.fromString(facultadStr);
+                Carrera carrera = Carrera.fromString(carreraStr);
                 Estudiante estudiante = new Estudiante(facultad, carrera, ciclo, identificacion, nombre, correo, contrasena);
                 estudiante.setMensajes(mensajes);
                 lista.add(estudiante);
@@ -134,7 +138,7 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
     }
 
     @Override
-    public void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva, String carreraNueva, String facultadNueva, int cicloNuevo) {
+    public void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva, Carrera carreraNueva, Facultad facultadNueva, int cicloNuevo) {
         this.usuarios = cargarUsuarios();
         for (Usuario u : usuarios) {
             if (u.getIdentificacion().equalsIgnoreCase(identificacionBuscar)) {
@@ -150,6 +154,11 @@ public class UsuarioCsvRepositorio implements UsuarioRepositorio {
                 return;
             }
         }
+    }
+
+    @Override
+    public void actualizarUsuario(String identificacionBuscar, String nombreNuevo, String correoNuevo, String contrasenaNueva, String carreraNueva, String facultadNueva, int cicloNuevo) {
+        actualizarUsuario(identificacionBuscar, nombreNuevo, correoNuevo, contrasenaNueva, Carrera.fromString(carreraNueva), Facultad.fromString(facultadNueva), cicloNuevo);
     }
     
     @Override

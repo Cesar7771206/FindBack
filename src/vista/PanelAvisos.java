@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
@@ -379,7 +378,7 @@ public class PanelAvisos extends javax.swing.JPanel {
         Estudiante reclamante = r.getReclamante();
         String nombreReclamante = (reclamante != null) ? reclamante.getNombre() : "Estudiante";
         String dniReclamante = (reclamante != null) ? reclamante.getIdentificacion() : "No especificado";
-        String carreraReclamante = (reclamante != null) ? reclamante.getCarrera() : "Campus UDEP";
+        String carreraReclamante = (reclamante != null && !reclamante.getCarreraNombre().isBlank()) ? reclamante.getCarreraNombre() : "Campus UDEP";
 
         String[] preguntas = obj.preguntasVerificacion();
         String[] datosReales = obj.datosVerificables();

@@ -1,5 +1,7 @@
 package modelo;
 
+import java.text.Normalizer;
+
 public enum Carrera {
     SISTEMAS("Ingeniería de Sistemas (ISIA)", Facultad.INGENIERIA),
     INDUSTRIAL("Ingeniería Industrial y de Sistemas", Facultad.INGENIERIA),
@@ -35,12 +37,32 @@ public enum Carrera {
         return nombre;
     }
 
+    private static String normalizar(String texto) {
+        if (texto == null) return "";
+        return Normalizer.normalize(texto, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .toLowerCase()
+                .trim();
+    }
+
     public static Carrera fromString(String texto) {
         if (texto == null || texto.isBlank()) {
             return SISTEMAS;
         }
+        String clean = texto.trim();
         for (Carrera c : values()) {
-            if (c.nombre.equalsIgnoreCase(texto.trim()) || c.name().equalsIgnoreCase(texto.trim())) {
+            if (c.nombre.equalsIgnoreCase(clean) || c.name().equalsIgnoreCase(clean)) {
+                return c;
+            }
+        }
+        String norm = normalizar(clean);
+        for (Carrera c : values()) {
+            if (normalizar(c.nombre).equals(norm) || normalizar(c.name()).equals(norm)) {
+                return c;
+            }
+        }
+        for (Carrera c : values()) {
+            if (normalizar(c.nombre).contains(norm) || norm.contains(normalizar(c.nombre))) {
                 return c;
             }
         }

@@ -1,6 +1,8 @@
 package servicio;
 
+import modelo.Carrera;
 import modelo.Estudiante;
+import modelo.Facultad;
 import modelo.Usuario;
 import repositorio.UsuarioCsvRepositorio;
 import repositorio.UsuarioRepositorio;
@@ -16,7 +18,7 @@ public class AutenticacionServicio {
         this.usuarioRepo = usuarioRepo;
     }
     
-    public boolean registrarUsuario(String identificacion, String nombre, String correo, String contrasena, String mensajes, String facultad, String carrera, int ciclo) {
+    public boolean registrarUsuario(String identificacion, String nombre, String correo, String contrasena, String mensajes, Facultad facultad, Carrera carrera, int ciclo) {
         if (identificacion == null || identificacion.isBlank() || correo == null || correo.isBlank()) {
             return false;
         }
@@ -35,6 +37,10 @@ public class AutenticacionServicio {
 
         usuarioRepo.guardar(nuevo);
         return true;
+    }
+
+    public boolean registrarUsuario(String identificacion, String nombre, String correo, String contrasena, String mensajes, String facultad, String carrera, int ciclo) {
+        return registrarUsuario(identificacion, nombre, correo, contrasena, mensajes, Facultad.fromString(facultad), Carrera.fromString(carrera), ciclo);
     }
     
     public Estudiante login(String correoOCodigo, String contrasena) {
